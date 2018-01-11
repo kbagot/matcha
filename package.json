@@ -1,0 +1,27 @@
+{
+	"name": "matcha",
+	"version": "1.0.0",
+	"description": "matcha",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \\\"lol\""
+	},
+	"author": "garouche kbagot",
+	"license": "ISC",
+	"dependencies": {
+		"babel-core": "~6.26.0",
+		"babel-loader": "~7.1.2",
+		"babel-preset-es2015": "~6.24.1",
+		"babel-preset-react": "~6.24.1",
+		"body-parser": "~1.18.2",
+		"express": "~4.16.2",
+		"express-session": "~1.15.6",
+		"http": "~0.0.0",
+		"mysql2": "~1.5.1",
+		"path": "~0.12.7",
+		"react": "~16.2.0",
+		"react-dom": "~16.2.0",
+		"socket.io": "~2.0.4",
+		"webpack": "~3.10.0"
+	}
+}
