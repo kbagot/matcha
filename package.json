@@ -4,7 +4,7 @@
 	"description": "matcha",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \\\"lol\""
+		"start": "webpack;node server.js"
 	},
 	"author": "garouche kbagot",
 	"license": "ISC",
