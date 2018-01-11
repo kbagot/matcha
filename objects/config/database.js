@@ -1,6 +1,6 @@
-}}var mysql = require('mysql2');
+let mysql = require('mysql2');
 
-var database = function (db){
+let database = function (db){
   this.host = "localhost";
   this.port = "3306";
   this.user = "root";
@@ -10,11 +10,9 @@ var database = function (db){
 };
 
 
-var Condb = function(db){
+let Condb = function(db){
     this.dbInfo = new database(db);
     this.con = mysql.createConnection(this.dbInfo);
 };
-
-
 
 module.exports = Condb;

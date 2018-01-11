@@ -1,10 +1,10 @@
-var database = require('./config/database'),
-    db = new database();
-var controller = require('./request');
+let database = require('./config/database'),
+     db = new database();
+let controller = require('./request');
 
-var User = function() {
+let User = function() {
     this.controller = new controller();
-    this.name = "User";
+    this.name = "Motherfucker !!!!";
 };
 
 module.exports = User;
