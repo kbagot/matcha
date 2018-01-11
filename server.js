@@ -1,12 +1,12 @@
- var     express = require('express');
-var     app = express();
-var     session = require('express-session');
-var     bodyParser = require('body-parser');
-var     http = require('http');
-var     server = http.Server(app);
+let     express = require('express');
+let     app = express();
+let     session = require('express-session');
+let     bodyParser = require('body-parser');
+let     http = require('http');
+let     server = http.Server(app);
 // var     reqsetup = require('./objects/config/setup');
-// var     user = require('./objects/user');
-// var     newUser = new user();
+let     user = require('./objects/user');
+let     newUser = new user();
 
     app.use(session({
         secret : 'test',
@@ -21,8 +21,7 @@ var     server = http.Server(app);
             extended: true
         }))
         .get("/", function(req, res, next){
-            res.sendFile(__dirname + '/src/index.html');
-            // res.end();
+            res.sendFile(__dirname + '/src/index.html', (res) => res.end());
         })
         .get("/dist/index_bundle.js", function(req, res, next){
             res.sendFile(__dirname + '/dist/index_bundle.js');
@@ -37,6 +36,7 @@ let io = require('socket.io').listen(server);
 
 io.sockets.on('connection', async function(socket){
     console.log("Connected");
+    socket.emit('user', newUser);
 });
 
 
