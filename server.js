@@ -4,10 +4,11 @@ let     session = require('express-session');
 let     bodyParser = require('body-parser');
 let     http = require('http');
 let     server = http.Server(app);
-// var     reqsetup = require('./objects/config/setup');
 let     user = require('./objects/user');
 let     newUser = new user();
-
+let     setup = require('./objects/config/setup.js');
+let     test = 1;
+let set = new setup();
     app.use(session({
         secret : 'test',
         resave: 'false',
@@ -20,6 +21,10 @@ let     newUser = new user();
         .use(bodyParser.urlencoded({
             extended: true
         }))
+        .use("/", (req, res, next) => {
+            set.setDatabase();
+            next('route');
+        })
         .get("/", function(req, res, next){
             res.sendFile(__dirname + '/src/index.html', (res) => res.end());
         })
