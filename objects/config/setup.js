@@ -1,6 +1,4 @@
-let database = require('./database');
-let connect = null;
-let     db = new database();
+let     ConDb =  require('./connect.js');
 let     sql = "DROP DATABASE IF EXISTS matcha;" +
              "CREATE DATABASE matcha;"+
              "use matcha;"+
@@ -17,17 +15,17 @@ let     sql = "DROP DATABASE IF EXISTS matcha;" +
              "orientation ENUM('hetero','bi','gay') default 'bi'" +
              ");";
 
-let Setup = function () {
-    if (!connect) {
-        db.con.connect(function (err) {
+class Setup {
+    constructor(props){
+        this.db = new ConDb();
+    }
+
+    setDatabase() {
+        this.db.con.query(sql, function (err, res, fields) {
             if (err) throw err;
-            connect = 1;
-            db.con.query(sql, function (err, res, fields) {
-                if (err) throw err;
-                console.log("db success");
-            });
+            console.log("db success");
         });
     }
-};
+}
 
 module.exports = Setup;
