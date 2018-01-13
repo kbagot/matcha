@@ -41,7 +41,7 @@ export default class Register extends React.Component {
                         <option value="M">Un Homme</option>
                         <option value={"F"}>Une Femme</option>
                     </select><br />
-                    Bio <input type="textarea" value={this.state.bio} name="bio" onChange={this.handleChange}/><br />
+                    Bio <textarea value={this.state.bio} name="bio" onChange={this.handleChange}/><br />
                     J'aime
                     <select value={this.state.orientation} onChange={this.handleChange} name={"orientation"}>
                         <option value="homme">Les Hommes</option>
