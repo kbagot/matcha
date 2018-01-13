@@ -4,7 +4,7 @@
 	"description": "matcha",
 	"main": "index.js",
 	"scripts": {
-		"start": "webpack;node server.js"
+		"start": "node server.js & while [ 1 ]; do webpack 1<&- ; done"
 	},
 	"author": "garouche kbagot",
 	"license": "ISC",

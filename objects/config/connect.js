@@ -1,4 +1,4 @@
-let Database = require ('./database.js');
+let Database = require ('./database.js') ;
 let mysql = require('mysql2');
 
 class ConDb {
