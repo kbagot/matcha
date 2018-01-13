@@ -5,7 +5,7 @@ let     bodyParser = require('body-parser');
 let     http = require('http');
 let     server = http.Server(app);
 let     user = require('./objects/user');
-let     newUser = new user();
+let     newUser = new user(server);
 let     setup = require('./objects/config/setup.js');
 let     test = 1;
 let     set = new setup();
@@ -38,13 +38,13 @@ let     set = new setup();
             res.end();
         });
 
-let io = require('socket.io').listen(server);
+// let io = require('socket.io').listen(server);
 
-io.sockets.on('connection', async function(socket){
-    console.log("Connected");
-    socket.emit('user', newUser);
-    socket.on('login', (data) => console.log(data));
-});
+// io.sockets.on('connection', async function(socket){
+//     console.log("Connected");
+//     socket.emit('user', newUser);
+//     socket.on('login', (data) => console.log(data));
+// });
 
 
 

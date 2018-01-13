@@ -2,7 +2,8 @@ let controller = require('./request');
 
 class User {
     constructor(props) {
-        this.controller = new controller();
+        console.log(props.server);
+        this.controller = new controller(props);
         this.name = "Motherfucker !!!!!!!!!!!!";
     }
 }
