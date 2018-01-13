@@ -8,7 +8,8 @@ let     user = require('./objects/user');
 let     newUser = new user();
 let     setup = require('./objects/config/setup.js');
 let     test = 1;
-let set = new setup();
+let     set = new setup();
+
     app.use(session({
         secret : 'test',
         resave: 'false',
@@ -21,9 +22,9 @@ let set = new setup();
         .use(bodyParser.urlencoded({
             extended: true
         }))
-        .use("/", (req, res, next) => {
+        .get("/setup", (req, res, next) => {
             set.setDatabase();
-            next('route');
+            res.redirect("/");
         })
         .get("/", function(req, res, next){
             res.sendFile(__dirname + '/src/index.html', (res) => res.end());
@@ -42,6 +43,7 @@ let io = require('socket.io').listen(server);
 io.sockets.on('connection', async function(socket){
     console.log("Connected");
     socket.emit('user', newUser);
+    socket.on('login', (data) => console.log(data));
 });
 
 

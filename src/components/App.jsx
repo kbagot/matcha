@@ -1,6 +1,7 @@
 import React from 'react';
 import io from 'socket.io-client';
-
+import Login from './Login.jsx';
+import Register from './Register.jsx';
 let socket = io(`http://localhost:8081`);
 
 export default class App extends React.Component {
@@ -19,6 +20,8 @@ export default class App extends React.Component {
         return (
             <div>
                 <h1> Surprise {this.state.user.name} !</h1>
+                <Login />
+                <Register />
             </div>
         );
     }

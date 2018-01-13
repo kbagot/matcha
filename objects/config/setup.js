@@ -21,10 +21,12 @@ class Setup {
     }
 
     setDatabase() {
-        this.db.con.query(sql, function (err, res, fields) {
+        setTimeout(() => {
+            this.db.con.query(sql, function (err, res, fields) {
             if (err) throw err;
             console.log("db success");
         });
+        }, 3000);
     }
 }
 
