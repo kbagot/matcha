@@ -5,23 +5,41 @@ import Register from './Register.jsx';
 let socket = io(`http://localhost:8081`);
 
 export default class App extends React.Component {
-    constructor(props){
+    constructor (props){
         super(props);
         this.state = {
-            user : {}
+            user : {},
+            login: true,
+            status: 'Login'
         };
+        this.switchButton = this.switchButton.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount (){
         socket.on('user', (user) => this.setState({user}));
     }
 
+    switchButton (){
+        this.setState(prevState =>  ({
+            ['login']: !prevState.login,
+            ['status']: !prevState.login ? 'Register' : 'Login'
+        }));
+    }
+
     render () {
+        let window = null;
+
+        if (this.state.login){
+            window = <Login />
+        }
+        else{
+            window = <Register />
+        }
         return (
             <div>
                 <h1> Surprise {this.state.user.name} !</h1>
-                <Login />
-                <Register />
+                {window}
+                <button onClick={this.switchButton}>{this.state.status}</button>
             </div>
         );
     }
