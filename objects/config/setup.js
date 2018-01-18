@@ -12,7 +12,7 @@ let     sql = "DROP DATABASE IF EXISTS matcha;" +
              "notif boolean default 1," +
              "sexe enum('M', 'F') not null," +
              "bio varchar(255)," +
-             "orientation ENUM('hetero','bi','gay') default 'bi'" +
+             "orientation ENUM('homme','femme','bi') default 'bi'" +
              ");";
 
 class Setup {

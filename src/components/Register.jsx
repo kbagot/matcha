@@ -1,4 +1,6 @@
 import React from 'react';
+import io from 'socket.io-client';
+let socket = io(`http://localhost:8081`);
 
 export default class Register extends React.Component {
     constructor(props){
@@ -7,9 +9,9 @@ export default class Register extends React.Component {
             login: '',
             password: '',
             email: '',
-            sexe: '',
+            sexe: 'M',
             bio: '',
-            orientation: ''
+            orientation: 'homme'
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -39,14 +41,14 @@ export default class Register extends React.Component {
                     Je suis
                     <select value={this.state.sexe} onChange={this.handleChange} name={"sexe"}>
                         <option value="M">Un Homme</option>
-                        <option value={"F"}>Une Femme</option>
+                        <option value="F">Une Femme</option>
                     </select><br />
                     Bio <textarea value={this.state.bio} name="bio" onChange={this.handleChange}/><br />
                     J'aime
                     <select value={this.state.orientation} onChange={this.handleChange} name={"orientation"}>
                         <option value="homme">Les Hommes</option>
-                        <option value={"femme"}>Les Femmes</option>
-                        <option value={"bi"}>Les deux</option>
+                        <option value="femme">Les Femmes</option>
+                        <option value="bi">Les deux</option>
                     </select><br />
                     <input type="submit" value="S'inscrire" name="Submit" />
                 </form>
