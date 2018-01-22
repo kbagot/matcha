@@ -8,12 +8,12 @@ class Controller {
         let io = require('socket.io').listen(props);
         this.user = new user();
         console.log("constructor");
-        // io.on('connection', async (socket) =>{
-        //     database.createConnection('matcha').then((res) => {
-        //         this.db = res;
-        //         this.socketEvents(socket);
-        //     }).catch((e) => console.log(e));
-        // });
+        io.on('connection', async (socket) =>{
+            database.createConnection('matcha').then((res) => {
+                this.db = res;
+                this.socketEvents(socket);
+            }).catch((e) => console.log(e));
+        });
     }
 
     socketEvents(socket){

@@ -30,10 +30,10 @@ export default class App extends React.Component {
         let window = null;
 
         if (this.state.login){
-            window = <Login />
+            window = <Login socket={socket}/>
         }
         else{
-            window = <Register />
+            window = <Register socket={socket}/>
         }
         return (
             <div>

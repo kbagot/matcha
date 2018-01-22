@@ -1,6 +1,4 @@
 import React from 'react';
-let socket = io(`http://localhost:8081`);
-import io from 'socket.io-client';
 
 export default class Login extends React.Component {
     constructor(props){
@@ -27,7 +25,7 @@ export default class Login extends React.Component {
     }
 
     handleSubmit(ev){
-        socket.emit('login', this.state);
+        this.props.socket.emit('login', this.state);
         ev.preventDefault();
     }
 

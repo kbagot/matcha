@@ -38,13 +38,13 @@ let     set = new setup();
             res.end();
         });
 
-let io = require('socket.io').listen(server);
-
-io.sockets.on('connection', function(socket){
-    console.log("Connected from: " +socket.id);
-    // socket.on('login', (data) => console.log(data));
-    socket.on('disconnect', () => console.log('Disconnected from :'+socket.id));
-});
+// let io = require('socket.io').listen(server);
+//
+// io.sockets.on('connection', function(socket){
+//     console.log("Connected from: " +socket.id);
+//     socket.on('login', (data) => console.log(data));
+    // socket.on('disconnect', () => console.log('Disconnected from :'+socket.id));
+// });
 
 
 

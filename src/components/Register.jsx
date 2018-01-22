@@ -1,6 +1,4 @@
 import React from 'react';
-import io from 'socket.io-client';
-let socket = io(`http://localhost:8081`);
 
 export default class Register extends React.Component {
     constructor(props){
@@ -26,7 +24,7 @@ export default class Register extends React.Component {
     }
 
     handleSubmit(ev){
-        socket.emit('register', this.state);
+        this.props.socket.emit('register', this.state);
         ev.preventDefault();
     }
 
