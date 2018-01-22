@@ -10,7 +10,7 @@ export default class App extends React.Component {
         this.state = {
             user : {},
             login: true,
-            status: 'Login'
+            status: 'Register'
         };
         this.switchButton = this.switchButton.bind(this);
     }
