@@ -1,14 +1,15 @@
-let database = require('./config/connect'),
-    db = new database('matcha'),
+let database = require('./config/connect.js'),
     crypto = require('crypto'),
     bcrypt = require('bcrypt');
 
 class Controller {
     constructor(props) {
         let io = require('socket.io').listen(props);
-        io.on('connection', function (socket) {
-            socket.on('login', function (res) {
-                console.log(res);
+        io.on('connection', async function (socket) {
+            let db = await database.createConnection('matcha');
+                socket.on('login', function (res) {
+                console.log(db);
+
                 db.con.execute(
                     "SELECT `password` FROM `users` WHERE login=?",
                     [res.login],

@@ -17,7 +17,7 @@ let     sql = "DROP DATABASE IF EXISTS matcha;" +
 
 class Setup {
     constructor(props){
-        this.db = new ConDb();
+        this.db = ConDb.createConnection();
     }
 
     setDatabase() {
