@@ -35,6 +35,7 @@ class User {
         else
             this.socket.emit('loglog');
     }
+
 }
 
 module.exports = User;
