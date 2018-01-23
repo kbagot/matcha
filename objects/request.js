@@ -1,14 +1,13 @@
 let database = require('./config/connect.js'),
     crypto = require('crypto'),
-    bcrypt = require('bcrypt'),
     user = require('./user.js');
 
 class Controller {
     constructor(props) {
         let io = require('socket.io').listen(props);
-        this.user = new user();
         console.log("constructor");
-        io.on('connection', async (socket) =>{
+        io.on('connection', async (socket) => {
+            this.user = new user({socket: socket});
             database.createConnection('matcha').then((res) => {
                 this.db = res;
                 this.socketEvents(socket);
@@ -16,9 +15,11 @@ class Controller {
         });
     }
 
-    socketEvents(socket){
-        console.log(this);
-        socket.on('login', () => console.log('caca')
+   socketEvents(socket) {
+       socket.on('login', (res) => {
+               this.user.dologin(res, this.db);
+               console.log(this.user.data);
+            }
         );
     }
 }
