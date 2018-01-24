@@ -9,14 +9,14 @@ let     request = require('./objects/request');
 let     setup = require('./objects/config/setup.js');
 let     set = new setup();
 let     controller = new request(server);
+let     expressSession = session({
+    secret : 'w3ll3w',
+    name : 'Session',
+    resave: 'false', // uselles ??
+    saveUninitialized: 'false' //usefull ?
+});
 
-
-app.use(session({
-        secret : 'w3ll3w',
-        name : 'Session',
-        resave: 'false', // uselles ??
-        saveUninitialized: 'false' //usefull ?
-    }))
+app.use(expressSession)
         .use(express.static('./views'))
         .use(express.static('./objects'))
         .use(bodyParser.json())
@@ -28,14 +28,18 @@ app.use(session({
             res.redirect("/");
         })
         .get("/", function(req, res, next){
-            let sess = req.session;
-            if (controller.user) {
-                console.log(sess.userId);
-                controller.user.updateSession(sess);
-                console.log(sess.userId);
-                console.log('finish');
-                console.log(controller.user.sess.userId);
-            }
+            controller.updateSession(req.session);
+                // expressSession(socket.handshake, {}, (err) =>{
+                //
+                //     if (err){
+                //         console.log(err);
+                //     }
+                //     let sess = socket.handshake.session;
+                //     sess.data = {login: "lol"};
+                //     sess.save((err) => console.log(err));
+                // });
+                // controller.socketEvents(socket, req);
+            console.log(req.session);
             res.sendFile(__dirname + '/src/index.html');
         })
         .get("/dist/index_bundle.js", function(req, res, next){

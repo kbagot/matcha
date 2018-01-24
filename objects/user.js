@@ -1,7 +1,7 @@
 let bcrypt = require('bcrypt');
 
 class User {
-    constructor(props) {
+    constructor() {
         this.socket = null;
         this.sess = null;
         this.data = {login: "motherfcker",
@@ -24,8 +24,9 @@ class User {
                     for (let i in this.data)
                         this.data[i] = results[0][i];
                     if (this.sess){
-                        this.sess.userId = results[0].id;
-                        console.log(this.sess.userId);
+                        this.sess.data = results[0];
+                        this.sess.save((err) => console.log(err));
+                        // console.log(this.sess.userId);
                     }
                 }
                 else
