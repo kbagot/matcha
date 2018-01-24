@@ -11,7 +11,7 @@ export default class Login extends React.Component {
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.props.socket.on('logpass', () => {this.setState({['errorpasswd']: 'error_input'})});
+        this.props.socket.on('logpass',() => {this.setState({['errorpasswd']: 'error_input'})});
         this.props.socket.on('loglog', () => {this.setState({['errorlogin']: 'error_input'})});
     }
 

@@ -1,3 +1,5 @@
+let bcrypt = require('bcrypt');
+
 class Register{
     constructor(props){
         this.socket = props.socket;
@@ -50,14 +52,16 @@ class Register{
             try{
                 data = Register.changeOrientation(data);
                 try {
-                    await this.db.con.execute("INSERT INTO users(login, password, email, sexe, bio, orientation) VALUES (?, ?, ?, ?, ?, ?)", [data.login, data.password, data.email, data.sexe, data.bio, data.orientation]);
+                    let password = await bcrypt.hash(data.password, 10);
+                    let req = "INSERT INTO users(login, password, email, sexe, bio, orientation) VALUES (?, ?, ?, ?, ?, ?)";
+
+                    await this.db.con.execute(req, [data.login, password, data.email, data.sexe, data.bio, data.orientation]);
                 }catch (e){
                     console.log(e);
                 }
             } catch(e){
                 console.log(e);
             }
-            console.log("succes");
         }
         else {
             let str = "Desole une erreure est survenue lors de l'inscription, veuillez recommencer.";
