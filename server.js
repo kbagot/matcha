@@ -8,8 +8,10 @@ let     request = require('./objects/request');
 // let     controller = new request(server);
 let     setup = require('./objects/config/setup.js');
 let     set = new setup();
+let     controller = new request(server);
 
-    app.use(session({
+
+app.use(session({
         secret : 'w3ll3w',
         name : 'ID',
         resave: 'false', // uselles ??
@@ -17,7 +19,6 @@ let     set = new setup();
     }))
         .use(express.static('./views'))
         .use(express.static('./objects'))
-        // .use(express.static('./src'))
         .use(bodyParser.json())
         .use(bodyParser.urlencoded({
             extended: true
@@ -27,11 +28,13 @@ let     set = new setup();
             res.redirect("/");
         })
         .get("/", function(req, res, next){
-            console.log('salut');
-            res.sendFile(__dirname + '/src/index.html', (res) => {
-                let controller = new request({server: server, sess: req.session});
-                // res.end();
-            });
+            let sess = req.session;
+            if (controller.user) {
+                console.log(controller.user.data.password);
+                controller.user.updateSession(sess);
+                console.log(controller.user.data.password);
+            }
+            res.sendFile(__dirname + '/src/index.html');
         })
         .get("/dist/index_bundle.js", function(req, res, next){
             res.sendFile(__dirname + '/dist/index_bundle.js');

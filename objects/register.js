@@ -1,11 +1,6 @@
 let bcrypt = require('bcrypt');
 
-class Register{
-    constructor(props){
-        this.socket = props.socket;
-        this.db = props.db;
-    }
-
+class Register {
     async   registerErrorHandling(data){
         try {
             let     error = null;
@@ -79,6 +74,10 @@ class Register{
         }
     }
 
+    updateConnection(props){
+        this.db = props.db;
+        this.socket = props.socket;
+    }
     static changeOrientation(data){
         if (data.sexe === data.orientation){
             return Object.assign({}, data, {orientation: 'gay'});
@@ -101,6 +100,8 @@ class Register{
     static checkPassword(str){
         return str.length >= 6;
     }
+
+
 }
 
 module.exports = Register;
