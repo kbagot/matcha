@@ -26,11 +26,12 @@ class User {
                     if (this.sess){
                         this.sess.data = results[0];
                         this.sess.save((err) => console.log(err));
-                        // console.log(this.sess.userId);
+                        this.socket.emit('user', this.sess.data);
                     }
                 }
                 else
                     this.socket.emit('logpass');
+
             });
         }
         else

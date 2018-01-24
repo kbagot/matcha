@@ -37,7 +37,7 @@ export default class App extends React.Component {
         }
         return (
             <div>
-                <h1> Surprise {this.state.user.name} !</h1>
+                <h1> Surprise {this.state.user.login} !</h1>
                 {window}
                 <button onClick={this.switchButton}>{this.state.status}</button>
             </div>
