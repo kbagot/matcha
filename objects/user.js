@@ -15,20 +15,18 @@ class User {
     }
 
     async dologin(res, db) {
-        // console.log(this.socket);
         const [results, fields] = await db.con.execute(
             "SELECT * FROM `users` WHERE login=?",
             [res.login]);
-        // console.log(results); // results contains rows returned by server
-        // console.log(fields);
-        // console.log(err);
         if (results[0]) {
-            console.log('LOGIN');
             bcrypt.compare(res.password, results[0].password, (err, succ) => {
                 if (succ) {
                     for (let i in this.data)
                         this.data[i] = results[0][i];
-                    console.log(this.sess);
+                    if (this.sess){
+                        this.sess.userId = results[0].id;
+                        console.log(this.sess.userId);
+                    }
                 }
                 else
                     this.socket.emit('logpass');
@@ -42,7 +40,7 @@ class User {
         this.socket = socket;
     }
     updateSession(session){
-            this.data.password = "test";
+            this.sess = session;
         }
 }
 

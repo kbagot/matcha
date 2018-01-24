@@ -16,6 +16,7 @@ export default class Login extends React.Component {
     componentDidMount() {
         this.props.socket.on('logpass', () => {
             this.setState({['errorpasswd']: 'error_input'})
+            console.log('rout');
         });
         this.props.socket.on('loglog', () => {
             this.setState({['errorlogin']: 'error_input'})
@@ -54,7 +55,7 @@ export default class Login extends React.Component {
     render() {
         return (
             <div className={'Login-Container'}>
-                <h2>Login {this.state.password}</h2>
+                <h2>Login {this.state.password}  {document.cookie}</h2>
                 <form onSubmit={this.handleSubmit}>
                     Login <input className={this.state.errorlogin} type="text" value={this.state.login} name="login"
                                  onChange={this.handleChange}/> <br/>

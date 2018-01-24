@@ -13,7 +13,7 @@ let     controller = new request(server);
 
 app.use(session({
         secret : 'w3ll3w',
-        name : 'ID',
+        name : 'Session',
         resave: 'false', // uselles ??
         saveUninitialized: 'false' //usefull ?
     }))
@@ -30,9 +30,11 @@ app.use(session({
         .get("/", function(req, res, next){
             let sess = req.session;
             if (controller.user) {
-                console.log(controller.user.data.password);
+                console.log(sess.userId);
                 controller.user.updateSession(sess);
-                console.log(controller.user.data.password);
+                console.log(sess.userId);
+                console.log('finish');
+                console.log(controller.user.sess.userId);
             }
             res.sendFile(__dirname + '/src/index.html');
         })

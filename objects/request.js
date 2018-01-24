@@ -15,14 +15,14 @@ class Controller {
                 this.socketEvents(socket);
             });
         });
-        io.on('connection', async (socket) => {
-            this.user.updateSocket(socket);
-            database.createConnection('matcha').then((res) => {
-                this.db = res;
-                this.register.updateConnection({socket: socket, db: this.db});
-                this.socketEvents(socket);
-            }).catch((e) => console.log(e));
-        });
+        // io.on('connection', async (socket) => {
+        //     this.user.updateSocket(socket);
+        //     database.createConnection('matcha').then((res) => {
+        //         this.db = res;
+        //         this.register.updateConnection({socket: socket, db: this.db});
+        //         this.socketEvents(socket);
+        //     }).catch((e) => console.log(e));
+        // });
     }
 
 
