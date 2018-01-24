@@ -24,6 +24,7 @@ class Controller {
         );
 
         socket.on('changeRegister', (data) => this.register.registerErrorHandling(data));
+        socket.on('validRegister', (data) => this.register.registerCheck(data));
     }
 
 
