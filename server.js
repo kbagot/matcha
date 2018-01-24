@@ -11,9 +11,10 @@ let     test = 1;
 let     set = new setup();
 
     app.use(session({
-        secret : 'test',
-        resave: 'false',
-        saveUninitialized: 'false'
+        secret : 'w3ll3w',
+        name : 'ID',
+        resave: 'false', // uselles ??
+        saveUninitialized: 'false' //usefull ?
     }))
         .use(express.static('./views'))
         .use(express.static('./objects'))
@@ -27,6 +28,8 @@ let     set = new setup();
             res.redirect("/");
         })
         .get("/", function(req, res, next){
+            let sess = req.session;
+            sess.email;
             res.sendFile(__dirname + '/src/index.html', (res) => res.end());
         })
         .get("/dist/index_bundle.js", function(req, res, next){
