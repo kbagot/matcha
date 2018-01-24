@@ -1,3 +1,5 @@
+let bcrypt = require('bcrypt');
+
 class Register{
     constructor(props){
         this.socket = props.socket;
@@ -12,12 +14,12 @@ class Register{
             if ([rows][0][0] && data[1] !== 'password') {
                     error = (data[1] === 'login' ? 'Ce ' : 'Cet ') + data[1] + " existe deja.";
             }
-            else{
+            else {
                 let result = data[0][data[1]];
 
                 switch (data[1]){
                     case 'password':
-                        if (Register.checkPassword(result)){
+                        if (!Register.checkPassword(result)){
                             error = result.length ? "Le mot de passe doit contenir au moins 6 caracteres." : null;
                         }
                         break;
@@ -45,6 +47,49 @@ class Register{
         }
     }
 
+    async registerCheck(data){
+        if (Register.checkEmail(data.email) && Register.checkLogin(data.login) && Register.checkPassword(data.password) && await this.uniqueInput(data)){
+            try{
+                data = Register.changeOrientation(data);
+                try {
+                    let password = await bcrypt.hash(data.password, 10);
+                    let req = "INSERT INTO users(login, password, email, sexe, bio, orientation) VALUES (?, ?, ?, ?, ?, ?)";
+
+                    await this.db.con.execute(req, [data.login, password, data.email, data.sexe, data.bio, data.orientation]);
+                }catch (e){
+                    console.log(e);
+                }
+            } catch(e){
+                console.log(e);
+            }
+        }
+        else {
+            let str = "Desole une erreure est survenue lors de l'inscription, veuillez recommencer.";
+            this.socket.emit('registerError', {error: str, type: "global"});
+        }
+    }
+
+    async uniqueInput(data){
+        try {
+            const [rows, fields] = await this.db.con.execute("SELECT login, email FROM users WHERE login = ? OR email = ?", [data.login, data.email]);
+            return ![rows][0][0];
+        }
+        catch(e){
+            console.log(e);
+        }
+    }
+
+    static changeOrientation(data){
+        if (data.sexe === data.orientation){
+            return Object.assign({}, data, {orientation: 'gay'});
+        }else if (data.sexe !== data.orientation && data.orientation !== 'bi'){
+            return Object.assign({}, data, {orientation: 'hetero'});
+        }else{
+            return data;
+        }
+    }
+
+
     static checkEmail(str){
         return str.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
     }
@@ -54,8 +99,7 @@ class Register{
     }
 
     static checkPassword(str){
-        return str.length <  6;
-
+        return str.length >= 6;
     }
 }
 

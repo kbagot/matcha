@@ -10,11 +10,17 @@ export default class Register extends React.Component {
             sexe: 'M',
             bio: '',
             orientation: 'bi',
-            error : ''
+            error : {
+                globalError: null,
+                loginError: null,
+                passwordError: null,
+                emailError: null
+            }
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleError = this.handleError.bind(this);
+        this.validSubmit = this.validSubmit.bind(this);
     }
 
     componentDidMount(){
@@ -27,7 +33,7 @@ export default class Register extends React.Component {
 
     handleError(data){
         let error = Object.assign({}, this.state.error);
-        
+
         error[data.type + 'Error'] = data.error;
         this.setState({
             ['error']: error
@@ -50,19 +56,33 @@ export default class Register extends React.Component {
     }
 
     handleSubmit(ev){
-        // console.log(ev.target.login);
-        if (this.state.error)
-            console.log(this.state.error );
-        this.props.socket.emit('register', this.state);
+        if (!this.validSubmit()){
+            this.props.socket.emit('validRegister', this.state);
+        }
         ev.preventDefault();
     }
 
+    validSubmit() {
+        let res = [];
+        let ret;
+
+        ["loginError", "passwordError", "emailError"].forEach((elem) => {
+            res.push(this.state.error[elem] === null);
+        });
+
+        ret = res.find((elem) => elem === false);
+        return !(ret === undefined && this.state.login.length > 0 && this.state.password.length > 0 && this.state.email.length > 0);
+    }
 
     render() {
+        const valid = this.validSubmit();
+        const globalError = <p>{this.state.error.globalError}</p>;
+
         return (
             <div className={'Register-Container'}>
                 <h2>Register {this.state.password}</h2>
                 <form onSubmit={this.handleSubmit}>
+                    {globalError}
                     Login  <input type="text" value={this.state.login} name="login" onChange={this.handleChange}/> {this.state.error.loginError} <br />
                     Password <input type="password" value={this.state.password} name="password" onChange={this.handleChange}/> {this.state.error.passwordError}<br />
                     Email <input type="email" value={this.state.email} name="email" onChange={this.handleChange}/> {this.state.error.emailError}<br />
@@ -74,11 +94,11 @@ export default class Register extends React.Component {
                     Bio <textarea value={this.state.bio} name="bio" onChange={this.handleChange}/><br />
                     J'aime
                     <select value={this.state.orientation} onChange={this.handleChange} name={"orientation"}>
-                        <option value="homme">Les Hommes</option>
-                        <option value="femme">Les Femmes</option>
+                        <option value="M">Les Hommes</option>
+                        <option value="F">Les Femmes</option>
                         <option value="bi">Les deux</option>
                     </select><br />
-                    <input type="submit" value="S'inscrire" name="Submit"/>
+                    <input type="submit" value="S'inscrire" name="Submit" disabled={valid}/>
                 </form>
             </div>
         );
