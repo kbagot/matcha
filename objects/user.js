@@ -3,6 +3,7 @@ let bcrypt = require('bcrypt');
 class User {
     constructor(props) {
         this.socket = props.socket;
+        this.sess = props.sess;
         this.data = {login: "motherfcker",
         password: '',
         email: '',

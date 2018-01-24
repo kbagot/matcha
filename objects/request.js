@@ -4,9 +4,10 @@ let database = require('./config/connect.js'),
 
 class Controller {
     constructor(props) {
-        let io = require('socket.io').listen(props);
+        console.log('trollrolol');
+        let io = require('socket.io').listen(props.server);
         io.on('connection', async (socket) => {
-            this.user = new user({socket: socket});
+            this.user = new user({socket: socket, sess: props.sess});
             database.createConnection('matcha').then((res) => {
                 this.register = new register({socket: socket, db: res});
                 this.db = res;

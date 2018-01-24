@@ -5,9 +5,8 @@ let     bodyParser = require('body-parser');
 let     http = require('http');
 let     server = http.Server(app);
 let     request = require('./objects/request');
-let     controller = new request(server);
+// let     controller = new request(server);
 let     setup = require('./objects/config/setup.js');
-let     test = 1;
 let     set = new setup();
 
     app.use(session({
@@ -18,7 +17,7 @@ let     set = new setup();
     }))
         .use(express.static('./views'))
         .use(express.static('./objects'))
-        .use(express.static('./src'))
+        // .use(express.static('./src'))
         .use(bodyParser.json())
         .use(bodyParser.urlencoded({
             extended: true
@@ -28,9 +27,11 @@ let     set = new setup();
             res.redirect("/");
         })
         .get("/", function(req, res, next){
-            let sess = req.session;
-            sess.email;
-            res.sendFile(__dirname + '/src/index.html', (res) => res.end());
+            console.log('salut');
+            res.sendFile(__dirname + '/src/index.html', (res) => {
+                let controller = new request({server: server, sess: req.session});
+                // res.end();
+            });
         })
         .get("/dist/index_bundle.js", function(req, res, next){
             res.sendFile(__dirname + '/dist/index_bundle.js');
