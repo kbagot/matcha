@@ -5,6 +5,8 @@ export default class Register extends React.Component {
         super(props);
         this.state = {
             login: '',
+            last: '',
+            first: '',
             password: '',
             email: '',
             sexe: 'M',
@@ -13,6 +15,8 @@ export default class Register extends React.Component {
             error : {
                 globalError: null,
                 loginError: null,
+                lastError: null,
+                firstError: null,
                 passwordError: null,
                 emailError: null
             }
@@ -48,7 +52,7 @@ export default class Register extends React.Component {
         this.setState({
            [name]: value
         }, () => {
-            if (["login", "password", "email"].indexOf(name) !== -1){
+            if (["login", "last", "first", "password", "email"].indexOf(name) !== -1){
                 change.push(this.state, name);
                 this.props.socket.emit("changeRegister", change);
             }
@@ -83,9 +87,11 @@ export default class Register extends React.Component {
                 <h2>Register {this.state.password}</h2>
                 <form onSubmit={this.handleSubmit}>
                     {globalError}
-                    Login  <input type="text" value={this.state.login} name="login" onChange={this.handleChange}/> {this.state.error.loginError} <br />
-                    Password <input type="password" value={this.state.password} name="password" onChange={this.handleChange}/> {this.state.error.passwordError}<br />
-                    Email <input type="email" value={this.state.email} name="email" onChange={this.handleChange}/> {this.state.error.emailError}<br />
+                    Login *  <input type="text" value={this.state.login} name="login" onChange={this.handleChange}/> {this.state.error.loginError} <br />
+                    Nom * <input type="text" value={this.state.last} name="last" onChange={this.handleChange}/> {this.state.error.lastError}<br />
+                    Prenom * <input type="text" value={this.state.first} name="first" onChange={this.handleChange}/> {this.state.error.firstError}<br />
+                    Password * <input type="password" value={this.state.password} name="password" onChange={this.handleChange}/> {this.state.error.passwordError}<br />
+                    Email * <input type="email" value={this.state.email} name="email" onChange={this.handleChange}/> {this.state.error.emailError}<br />
                     Je suis
                     <select value={this.state.sexe} onChange={this.handleChange} name={"sexe"}>
                         <option value="M">Un Homme</option>

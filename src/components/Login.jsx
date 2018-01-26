@@ -15,7 +15,7 @@ export default class Login extends React.Component {
 
     componentDidMount() {
         this.props.socket.on('logpass', () => {
-            this.setState({['errorpasswd']: 'error_input'})
+            this.setState({['errorpasswd']: 'error_input'});
             console.log('rout');
         });
         this.props.socket.on('loglog', () => {

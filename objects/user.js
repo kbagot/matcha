@@ -2,8 +2,6 @@ let bcrypt = require('bcrypt');
 
 class User {
     constructor() {
-        this.socket = null;
-        this.sess = null;
         this.data = {login: "motherfcker",
         password: '',
         email: '',
@@ -14,36 +12,30 @@ class User {
         orientation: ''};
     }
 
-    async dologin(res, db) {
+    async dologin(res, db, sess, socket) {
         const [results, fields] = await db.con.execute(
             "SELECT * FROM `users` WHERE login=?",
             [res.login]);
+
         if (results[0]) {
             bcrypt.compare(res.password, results[0].password, (err, succ) => {
                 if (succ) {
                     for (let i in this.data)
                         this.data[i] = results[0][i];
-                    if (this.sess){
-                        this.sess.data = results[0];
-                        this.sess.save((err) => console.log(err));
-                        this.socket.emit('user', this.sess.data);
-                    }
+                        sess.data = results[0];
+                        sess.save((err) => {
+                            if (err)
+                                console.log(err);
+                        });
+                        socket.emit('user', sess.data);
                 }
                 else
-                    this.socket.emit('logpass');
-
+                    socket.emit('logpass');
             });
         }
         else
-            this.socket.emit('loglog');
+            socket.emit('loglog');
     }
-
-    updateSocket(socket){
-        this.socket = socket;
-    }
-    updateSession(session){
-            this.sess = session;
-        }
 }
 
 module.exports = User;

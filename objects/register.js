@@ -1,7 +1,7 @@
 let bcrypt = require('bcrypt');
 
 class Register {
-    async   registerErrorHandling(data){
+    async   registerErrorHandling(data, socket){
         try {
             let     error = null;
             const   [rows, fields] = await this.db.con.execute("SELECT "+data[1]+" FROM `users` WHERE "+data[1]+" = ?", [data[0][data[1]]])
@@ -18,10 +18,16 @@ class Register {
                             error = result.length ? "Le mot de passe doit contenir au moins 6 caracteres." : null;
                         }
                         break;
+                    case 'last':
+                    case 'first':
                     case 'login':
                         if (result.length) {
                             if (!Register.checkLogin(result)) {
-                                error = "Choisissez un login.";
+                                if (data[1] === 'login') {
+                                    error = "Choisissez un login.";
+                                } else {
+                                    error = "Veuillez entrez votre " + (data[1] === 'last' ? 'nom' : 'prenom') + ".";
+                                }
                             }
                         }
                         else{
@@ -35,22 +41,22 @@ class Register {
                         break;
                 }
             }
-            this.socket.emit ('registerError', {error: error, type: data[1]});
+            socket.emit ('registerError', {error: error, type: data[1]});
         }
         catch(e){
             console.log(e);
         }
     }
 
-    async registerCheck(data){
+    async registerCheck(data, socket){
         if (Register.checkEmail(data.email) && Register.checkLogin(data.login) && Register.checkPassword(data.password) && await this.uniqueInput(data)){
             try{
                 data = Register.changeOrientation(data);
                 try {
                     let password = await bcrypt.hash(data.password, 10);
-                    let req = "INSERT INTO users(login, password, email, sexe, bio, orientation) VALUES (?, ?, ?, ?, ?, ?)";
+                    let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-                    await this.db.con.execute(req, [data.login, password, data.email, data.sexe, data.bio, data.orientation]);
+                    await this.db.con.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio, data.orientation]);
                 }catch (e){
                     console.log(e);
                 }
@@ -60,7 +66,7 @@ class Register {
         }
         else {
             let str = "Desole une erreure est survenue lors de l'inscription, veuillez recommencer.";
-            this.socket.emit('registerError', {error: str, type: "global"});
+            socket.emit('registerError', {error: str, type: "global"});
         }
     }
 
@@ -78,6 +84,7 @@ class Register {
         this.db = props.db;
         this.socket = props.socket;
     }
+
     static changeOrientation(data){
         if (data.sexe === data.orientation){
             return Object.assign({}, data, {orientation: 'gay'});
@@ -100,7 +107,6 @@ class Register {
     static checkPassword(str){
         return str.length >= 6;
     }
-
 
 }
 

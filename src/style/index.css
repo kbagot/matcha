@@ -1,0 +1,11 @@
+h1 {
+    text-align: center;
+}
+
+.input{
+    margin: 20px;
+}
+
+.error_input{
+    border-color: red;
+}
