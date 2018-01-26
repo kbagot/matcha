@@ -18,6 +18,8 @@ let     expressSession = session({
     saveUninitialized: 'false' //usefull ?
 });
 let     send = null;
+
+
 io.on("connection", (socket) => {
     expressSession(socket.handshake, {}, (err) =>{
             if (err){
@@ -36,6 +38,7 @@ app.use(expressSession)
         .use(bodyParser.urlencoded({
             extended: true
         }))
+        // .enable('trust proxy')
         .get("/setup", (req, res, next) => {
             set.setDatabase();
              res.redirect("/");
