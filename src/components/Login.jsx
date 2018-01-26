@@ -65,7 +65,6 @@ export default class Login extends React.Component {
     render() {
         return (
             <div className={'Login-Container'}>
-                <h2>Login {this.state.password}  {document.cookie}</h2>
                 <form onSubmit={this.handleSubmit}>
                     Login <input className={this.state.errorlogin} type="text" value={this.state.login} name="login"
                                  onChange={this.handleChange}/> <br/>

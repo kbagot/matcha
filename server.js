@@ -1,25 +1,38 @@
 let     express = require('express');
+let     ipAdress;
+let     http = require('http');
 let     app = express();
 let     session = require('express-session');
 let     bodyParser = require('body-parser');
-let     http = require('http');
-let     server = http.Server(app);
-let     request = require('./objects/request');
+let     server = http.createServer(app);
+let     io = require('socket.io').listen(server);
+let     req = require('./objects/request');
+let     controller = new req(server);
 let     setup = require('./objects/config/setup.js');
 let     set = new setup();
-let     controller = new request(server);
+let     os = require('os');
+let     expressSession = session({
+    secret : 'w3ll3w',
+    name : 'Session',
+    resave: false, // uselles ??
+    saveUninitialized: 'false' //usefull ?
+});
+let     send = null;
 
-app.use(session({
-            secret : 'w3ll3w',
-            name : 'Session',
-            resave: 'false', // uselles ??
-            saveUninitialized: 'false' //usefull ?
-          })
-        )
-        .use(session({
-            // console.log(session)
-        }))
-        .use(express.static('./views'))
+
+io.on("connection", (socket) => {
+    expressSession(socket.handshake, {}, (err) =>{
+            if (err){
+                console.log(err);
+            }
+            console.log(socket.handshake.address);
+            controller.socketEvents(socket);
+        });
+});
+
+
+app.use(expressSession)
+        .use(express.static('./src/style'))
         .use(express.static('./objects'))
         .use(bodyParser.json())
         .use(bodyParser.urlencoded({
@@ -28,10 +41,12 @@ app.use(session({
         // .enable('trust proxy')
         .get("/setup", (req, res, next) => {
             set.setDatabase();
-            res.redirect("/");
+             res.redirect("/");
+            res.end();
         })
-        .get("/", function(req, res, next){
-            controller.updateSession(req.session);
+        .get("/", function (req, res, next){
+            // console.log(req.session);
+            console.log("server");
             res.sendFile(__dirname + '/src/index.html');
         })
         .get("/dist/index_bundle.js", function(req, res, next){

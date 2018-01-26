@@ -1,46 +1,44 @@
 import React from 'react';
 import io from 'socket.io-client';
-import Login from './Login.jsx';
-import Register from './Register.jsx';
-let socket = io(`http://localhost:8081`);
+import Guest from './Guest.jsx';
+import User from './User.jsx';
+import Cookie from 'cookie';
 
+let ip = Cookie.parse(document.cookie).ip;
+let socket = io(ip + ':8081');
+console.log("client");
 export default class App extends React.Component {
-    constructor (props){
+    constructor(props){
         super(props);
         this.state = {
-            user : {},
-            login: true,
-            status: 'Register'
+            user: {}
         };
-        this.switchButton = this.switchButton.bind(this);
     }
 
     componentDidMount (){
-        socket.on('user', (user) => this.setState({user}));
+        // for (let event of ["user", "userDisconnect"]){
+        //     socket.on(event, (user) => this.setState({user}));
+        // }
+        // console.log("MOUNTED");
+
+
+        socket.on("error", (err) => console.log(err));
+        socket.on('user', (user) => {
+                this.setState({user});
+        });
+        socket.on('userDisconnect', (user) => {
+                this.setState({['user']: {}})
+        });
+
     }
 
-    switchButton (){
-        this.setState(prevState =>  ({
-            ['login']: !prevState.login,
-            ['status']: !prevState.login ? 'Register' : 'Login'
-        }));
-    }
-
-    render () {
-        let window = null;
-
-        if (this.state.login){
-            window = <Login socket={socket}/>
-        }
-        else{
-            window = <Register socket={socket}/>
-        }
+    render(){
+        let display = this.state.user.login ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
         return (
-            <div>
-                <h1> Surprise {this.state.user.name} !</h1>
-                {window}
-                <button onClick={this.switchButton}>{this.state.status}</button>
+            <div className={"app"}>
+                {ip}
+                {display}
             </div>
-        );
+        )
     }
 }
