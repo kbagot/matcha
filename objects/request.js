@@ -24,7 +24,9 @@ class Controller {
    socketEvents(socket) {
 
        socket.on('login', (res) => {
+           console.log(res);
                this.user.dologin(res, this.db);
+               this.user.update_coords(res);
             }
         );
         socket.on('changeRegister', (data) => this.register.registerErrorHandling(data));

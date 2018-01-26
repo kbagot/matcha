@@ -1,4 +1,6 @@
 let bcrypt = require('bcrypt');
+let NodeGeocoder = require('node-geocoder');
+let ipapi = require('ipapi.co');
 
 class User {
     constructor() {
@@ -26,7 +28,6 @@ class User {
                     if (this.sess){
                         this.sess.data = results[0];
                         this.sess.save((err) => console.log(err));
-                        // console.log(this.sess.userId);
                     }
                 }
                 else
@@ -36,6 +37,28 @@ class User {
         else
             this.socket.emit('loglog');
     }
+
+   update_coords(res, db){
+       let options = {
+           provider: 'google',
+           httpAdapter: 'https', // Default
+           apiKey: 'AIzaSyAc2MJltSS6tF0okq-aKxKdtmGIhURn0HI', // for Mapquest, OpenCage, Google Premier
+           formatter: null
+       };
+
+       // console.log(req.ip.split(":").pop());   IP CLIENT
+
+       ipapi.location((res) => {
+         console.log(res);
+       });
+
+       let geocoder = NodeGeocoder(options);
+
+       geocoder.reverse({'lat': res.coords.lat, 'lon': res.coords.lon}, (err, res) => {
+           console.log(res);
+           console.log(err);
+       });
+    };
 
     updateSocket(socket){
         this.socket = socket;

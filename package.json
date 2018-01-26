@@ -19,12 +19,18 @@
 		"express": "~4.16.2",
 		"express-session": "~1.15.6",
 		"http": "~0.0.0",
+		"ipware": "~1.0.0",
 		"mysql2": "~1.5.1",
+		"node-geocoder": "~3.21.1",
 		"path": "~0.12.7",
 		"react": "~16.2.0",
 		"react-dom": "~16.2.0",
+		"request": "~2.83.0",
+		"request-ip": "~2.0.2",
 		"socket.io": "~2.0.4",
 		"socket.io-client": "^2.0.4",
-		"webpack": "~3.10.0"
+		"webpack": "~3.10.0",
+		"https": "~1.0.0",
+		"ipapi.co": "~0.2.3"
 	}
 }

@@ -8,18 +8,28 @@ export default class Login extends React.Component {
             password: '',
             errorlogin: '',
             errorpasswd: 'input',
+            coords: {},
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        navigator.geolocation.getCurrentPosition((position) => {
+            this.setState({
+                ['coords']:
+                    {
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude,
+                    },
+            });
+        });
     }
 
     componentDidMount() {
         this.props.socket.on('logpass', () => {
-            this.setState({['errorpasswd']: 'error_input'})
+            this.setState({['errorpasswd']: 'error_input'});
             console.log('rout');
         });
         this.props.socket.on('loglog', () => {
-            this.setState({['errorlogin']: 'error_input'})
+            this.setState({['errorlogin']: 'error_input'});
         });
     }
 
