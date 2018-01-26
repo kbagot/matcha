@@ -19,17 +19,16 @@ class Controller {
        // }
        let sess = socket.handshake.session;
        if (sess.data)
-            socket.emit('user', sess.data);
-           socket.on('login', (res) => this.user.dologin(res, this.db, sess, socket));
-           socket.on('userDisconnect', () =>{
-               sess.data = undefined;
-               sess.save();
-               socket.emit("userDisconnect", "");
-           });
-           socket.on('changeRegister', (data) => this.register.registerErrorHandling(data, sess));
-           socket.on('validRegister', (data) => this.register.registerCheck(data, sess));
-           socket.on('unmount', () => console.log("react unmount"));
-
+           socket.emit('user', sess.data);
+       socket.on('login', (res) => this.user.dologin(res, this.db, sess, socket));
+       socket.on('userDisconnect', () =>{
+           sess.data = undefined;
+           sess.save();
+           socket.emit("userDisconnect", "");
+       });
+       socket.on('changeRegister', (data) => this.register.registerErrorHandling(data, socket));
+       socket.on('validRegister', (data) => this.register.registerCheck(data, socket));
+       socket.on('unmount', () => console.log("react unmount"));
     }
 
 }

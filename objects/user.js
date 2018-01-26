@@ -26,8 +26,8 @@ class User {
                         sess.save((err) => {
                             if (err)
                                 console.log(err);
+                            socket.emit('user', sess.data);
                         });
-                        socket.emit('user', sess.data);
                 }
                 else
                     socket.emit('logpass');

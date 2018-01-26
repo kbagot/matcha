@@ -2,9 +2,11 @@ import React from 'react';
 import io from 'socket.io-client';
 import Guest from './Guest.jsx';
 import User from './User.jsx';
+import Cookie from 'cookie';
 
-let socket = io('http://e3r10p14:8081');
-
+let ip = Cookie.parse(document.cookie).ip;
+let socket = io(ip + ':8081');
+console.log("client");
 export default class App extends React.Component {
     constructor(props){
         super(props);
@@ -17,21 +19,24 @@ export default class App extends React.Component {
         // for (let event of ["user", "userDisconnect"]){
         //     socket.on(event, (user) => this.setState({user}));
         // }
-        console.log("MOUNTED");
+        // console.log("MOUNTED");
+
+
         socket.on("error", (err) => console.log(err));
         socket.on('user', (user) => {
-            // if (this.state.user.login === user.login)
                 this.setState({user});
         });
         socket.on('userDisconnect', (user) => {
                 this.setState({['user']: {}})
         });
+
     }
 
     render(){
         let display = this.state.user.login ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
         return (
             <div className={"app"}>
+                {ip}
                 {display}
             </div>
         )

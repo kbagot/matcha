@@ -1,4 +1,5 @@
 let     express = require('express');
+let     ipAdress;
 let     http = require('http');
 let     app = express();
 let     session = require('express-session');
@@ -9,22 +10,24 @@ let     req = require('./objects/request');
 let     controller = new req(server);
 let     setup = require('./objects/config/setup.js');
 let     set = new setup();
+let     os = require('os');
 let     expressSession = session({
     secret : 'w3ll3w',
     name : 'Session',
     resave: false, // uselles ??
     saveUninitialized: 'false' //usefull ?
 });
-
-
+let     send = null;
 io.on("connection", (socket) => {
     expressSession(socket.handshake, {}, (err) =>{
             if (err){
                 console.log(err);
             }
+            console.log(socket.handshake.address);
             controller.socketEvents(socket);
         });
 });
+
 
 app.use(expressSession)
         .use(express.static('./src/style'))
@@ -36,20 +39,11 @@ app.use(expressSession)
         .get("/setup", (req, res, next) => {
             set.setDatabase();
              res.redirect("/");
-            // res.end();
+            res.end();
         })
         .get("/", function (req, res, next){
-            console.log(req.session);
             // console.log(req.session);
-            // controller.(req.session);
-
-            // controller.socketEvents({socket: sock, session: req.session});
-                //
-                // controller.socketEvents(socket, req);
-
-            // generator.getOne(function (user){
-            //     console.log(user)
-            // });
+            console.log("server");
             res.sendFile(__dirname + '/src/index.html');
         })
         .get("/dist/index_bundle.js", function(req, res, next){

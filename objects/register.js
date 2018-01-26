@@ -4,9 +4,10 @@ class Register {
     async   registerErrorHandling(data, socket){
         try {
             let     error = null;
+            let     change = data[1] === 'login' || data[1] === 'email';
             const   [rows, fields] = await this.db.con.execute("SELECT "+data[1]+" FROM `users` WHERE "+data[1]+" = ?", [data[0][data[1]]])
 
-            if ([rows][0][0] && data[1] !== 'password') {
+            if ([rows][0][0] && change){
                     error = (data[1] === 'login' ? 'Ce ' : 'Cet ') + data[1] + " existe deja.";
             }
             else {
