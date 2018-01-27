@@ -4,14 +4,16 @@ let ipapi = require('ipapi.co');
 
 class User {
     constructor() {
-        this.data = {login: "motherfcker",
-        password: '',
-        email: '',
-        valid: '',
-        notif: '',
-        sexe: '',
-        bio: '',
-        orientation: ''};
+        this.data = {
+            login: "motherfcker",
+            password: '',
+            email: '',
+            valid: '',
+            notif: '',
+            sexe: '',
+            bio: '',
+            orientation: ''
+        };
     }
 
     async dologin(res, db, sess, socket) {
@@ -24,41 +26,45 @@ class User {
                 if (succ) {
                     for (let i in this.data)
                         this.data[i] = results[0][i];
-                        sess.data = results[0];
-                        sess.save((err) => {
-                            if (err)
-                                console.log(err);
-                            socket.emit('user', sess.data);
-                        });
+                    sess.data = results[0];
+                    sess.save((err) => {
+                        if (err)
+                            console.log(err);
+                        socket.emit('user', sess.data);
+                    });
+                    User.update_coords(res, db, sess, socket);
                 }
                 else
                     socket.emit('logpass');
             });
         }
         else
-             socket.emit('loglog');
+            socket.emit('loglog');
     }
 
-   update_coords(res, db){
-       let options = {
-           provider: 'google',
-           httpAdapter: 'https', // Default
-           apiKey: 'AIzaSyAc2MJltSS6tF0okq-aKxKdtmGIhURn0HI', // for Mapquest, OpenCage, Google Premier
-           formatter: null
-       };
+    static update_coords(res, db, sess, socket) {
+        let options = {
+            provider: 'google',
+            httpAdapter: 'https', // Default
+            apiKey: 'AIzaSyAc2MJltSS6tF0okq-aKxKdtmGIhURn0HI', // for Mapquest, OpenCage, Google Premier
+            formatter: null
+        };
+        let geocoder = NodeGeocoder(options);
+        console.log(res.coords);
+        if ("lat" in res.coords) {  ///GEO  have been granted
+            geocoder.reverse({'lat': res.coords.lat, 'lon': res.coords.lon}, (err, res) => {
+             console.log(res);
+             // console.log(err);
+            });
+        }
+        else {// IF WE DENIED THE GEOLOC
+            if (sess.ip === '127.0.0.1' || sess.ip === '1')  ///
+                ipapi.location((res) => console.log(res));
+            else
+                ipapi.location(res => console.log(res), sess.ip);
+        }
 
-       // console.log(req.ip.split(":").pop());   IP CLIENT
 
-       ipapi.location((res) => {
-         console.log(res);
-       });
-
-       let geocoder = NodeGeocoder(options);
-
-       geocoder.reverse({'lat': res.coords.lat, 'lon': res.coords.lon}, (err, res) => {
-           console.log(res);
-           console.log(err);
-       });
     };
 }
 

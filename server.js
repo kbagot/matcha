@@ -11,6 +11,7 @@ let     controller = new req(server);
 let     setup = require('./objects/config/setup.js');
 let     set = new setup();
 let     os = require('os');
+
 let     expressSession = session({
     secret : 'w3ll3w',
     name : 'Session',
@@ -25,7 +26,7 @@ io.on("connection", (socket) => {
             if (err){
                 console.log(err);
             }
-            console.log(socket.handshake.address);
+            // console.log(socket.handshake.address);
             controller.socketEvents(socket);
         });
 });
@@ -45,8 +46,7 @@ app.use(expressSession)
             res.end();
         })
         .get("/", function (req, res, next){
-            // console.log(req.session);
-            console.log("server");
+            req.session.ip = req.connection.remoteAddress.split(":").pop();
             res.sendFile(__dirname + '/src/index.html');
         })
         .get("/dist/index_bundle.js", function(req, res, next){

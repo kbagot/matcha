@@ -10,17 +10,15 @@ export default class Login extends React.Component {
             errorpasswd: 'input',
             coords: {},
         };
+        navigator.geolocation.getCurrentPosition((position) => {
+            this.state.coords = {
+                lat: position.coords.latitude,
+                lon: position.coords.longitude,
+            };
+            console.log(this.state.coords);
+        });
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        navigator.geolocation.getCurrentPosition((position) => {
-            this.setState({
-                ['coords']:
-                    {
-                        lat: position.coords.latitude,
-                        lon: position.coords.longitude,
-                    },
-            });
-        });
     }
 
     componentDidMount() {

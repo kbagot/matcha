@@ -5,7 +5,7 @@ import User from './User.jsx';
 import Cookie from 'cookie';
 
 let ip = Cookie.parse(document.cookie).ip;
-let socket = io(ip + ':8081');
+let socket = io("localhost" + ':8081');
 console.log("client");
 export default class App extends React.Component {
     constructor(props){

@@ -22,7 +22,6 @@ class Controller {
            socket.emit('user', sess.data);
        socket.on('login', (res) => {
          this.user.dologin(res, this.db, sess, socket);
-         this.user.update_coords(res);
        });
        socket.on('userDisconnect', () =>{
            sess.data = undefined;
