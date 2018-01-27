@@ -24,6 +24,11 @@ class Controller {
            socket.emit('user', sess.data);
            console.log("updateUser");
        }
+       socket.on('locUp', (res) => {
+            console.log(res);
+           console.log('salut greg');
+             this.user.update_coords(res, this.db, sess, socket);
+       }); // not sure of the place
        socket.on('login', (res) => {
          this.user.dologin(res, this.db, sess, socket);
        });

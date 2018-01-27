@@ -32,7 +32,7 @@ class User {
                             console.log(err);
                         socket.emit('user', sess.data);
                     });
-                    User.update_coords(res, db, sess, socket);
+                    // User.update_coords(res, db, sess, socket);
                 }
                 else
                     socket.emit('logpass');
@@ -42,27 +42,23 @@ class User {
             socket.emit('loglog');
     }
 
-    static update_coords(res, db, sess, socket) {
+    update_coords(res, db, sess, socket) {
         let options = {
             provider: 'google',
             httpAdapter: 'https', // Default
             apiKey: 'AIzaSyAc2MJltSS6tF0okq-aKxKdtmGIhURn0HI', // for Mapquest, OpenCage, Google Premier
             formatter: null
         };
+        // console.log(res);
         let geocoder = NodeGeocoder(options);
-        console.log(res.coords);
-        if ("lat" in res.coords) {  ///GEO  have been granted
-            geocoder.reverse({'lat': res.coords.lat, 'lon': res.coords.lon}, (err, res) => {
-             console.log(res);
-             // console.log(err);
+            geocoder.reverse({'lat': res.coords.latitude, 'lon': res.coords.longitude}, (err, res) => {
+                if (res)
+                    console.log(res);
+                else if (err)
+                    ipapi.location(res => console.log(res), sess.ip);
+                else
+                    ipapi.location(res => console.log(res));
             });
-        }
-        else {// IF WE DENIED THE GEOLOC
-            if (sess.ip === '127.0.0.1' || sess.ip === '1')  ///
-                ipapi.location((res) => console.log(res));
-            else
-                ipapi.location(res => console.log(res), sess.ip);
-        }
     };
 }
 

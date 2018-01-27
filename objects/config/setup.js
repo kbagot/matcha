@@ -15,8 +15,18 @@ let sql = "DROP DATABASE IF EXISTS matcha;" +
     "sexe enum('M', 'F') not null," +
     "bio varchar(255)," +
     "orientation ENUM('gay','hetero','bi') default 'bi'" +
-    "location TEXT DEFAULT NOT NULL" +
+    ");" +
+    "CREATE TABLE location(" +
+    "ID int not NULL auto_increment primary key," +
+    "userid int NOT NULL," +
+    "lat decimal(10, 10)," +
+    "lon decimal(10, 10) , " +
+    "city varchar(255) not null," +
+    "country varchar(255) NOT NULL," +
+    "zipcode int NOT NULL," +
+    "ip boolean default 1" +
     ");";
+
 let request = require('request-promise');
 let bcrypt = require('bcrypt');
 

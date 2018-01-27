@@ -6,6 +6,13 @@ export default class User extends React.Component{
         this.disconnectUser = this.disconnectUser.bind(this);
     }
 
+    componentDidMount() {
+        navigator.geolocation.getCurrentPosition((position) => {
+            console.log(position.coords);
+            this.props.socket.emit('locUp', position.coords);
+        });
+    }
+
     disconnectUser(){
         this.props.socket.emit("userDisconnect", {});
     }
