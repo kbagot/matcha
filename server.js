@@ -7,6 +7,7 @@ let     options = {
 };
 let     https = require('https');
 let     app = express();
+let     cookieParser = require('cookie-parser');
 let     session = require('express-session');
 let     bodyParser = require('body-parser');
 let     server = https.createServer(options, app).listen(8081);
@@ -16,15 +17,23 @@ let     req = require('./objects/request');
 let     controller = new req();
 let     setup = require('./objects/config/setup.js');
 let     set = new setup();
+let     MySQLStore = require('express-mysql-session')(session);
 
 let     expressSession = session({
     secret : 'w3ll3w',
     name : 'Session',
+    secure: true,
     resave: true,
-    saveUninitialized: true
+    httpOnly: true,
+    saveUninitialized: false,
+    store: new MySQLStore({
+        user: 'root',
+        password: '',
+        database: 'matcha'
+    })
 });
-
 app.use(expressSession)
+        .use(cookieParser())
         .use(express.static('./src/style'))
         .use(express.static('./objects'))
         .use(bodyParser.json())
@@ -43,8 +52,11 @@ app.use(expressSession)
             
             if (req.secure) {
             req.session.ip = req.connection.remoteAddress.split(":").pop();
-               res.cookie('ip', ip);
-              res.sendFile(__dirname + '/src/index.html');
+            if (req.cookies.login === "true" && !req.session.data){
+                res.cookie('error', true);
+            }
+            res.cookie('ip', ip);
+            res.sendFile(__dirname + '/src/index.html');
             } else {
                 res.redirect('https://'+ ip + ':8081');
             }

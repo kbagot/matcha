@@ -4,14 +4,17 @@ import Guest from './Guest.jsx';
 import User from './User.jsx';
 import Cookie from 'cookie';
 
-let ip = Cookie.parse(document.cookie).ip;
+let cookie = Cookie.parse(document.cookie);
+let ip = cookie.ip;
 let socket = io(ip + ':8081');
 
 export default class App extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            user: {}
+            user: {},
+            login: cookie.login,
+            error: cookie.error
         };
     }
 
@@ -25,16 +28,20 @@ export default class App extends React.Component {
 
         socket.on("error", (err) => console.log(err));
         socket.on('user', (user) => {
-                this.setState({user});
+            document.cookie = "login=" + true;
+            document.cookie = "error=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            this.setState({['user']: user, ['login']: true, ['error']:false});
         });
         socket.on('userDisconnect', (user) => {
-                this.setState({['user']: {}})
+            document.cookie = "login=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            this.setState({['user']: {}, ['login']: false});
         });
 
     }
 
     render(){
-        let display = this.state.user.login ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
+        console.log(cookie);
+        let display = this.state.login && !this.state.error ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
         return (
             <div className={"app"}>
                 {ip}

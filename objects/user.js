@@ -50,11 +50,8 @@ class User {
             formatter: null
         };
         let geocoder = NodeGeocoder(options);
-        console.log(res.coords);
         if ("lat" in res.coords) {  ///GEO  have been granted
             geocoder.reverse({'lat': res.coords.lat, 'lon': res.coords.lon}, (err, res) => {
-             console.log(res);
-             // console.log(err);
             });
         }
         else {// IF WE DENIED THE GEOLOC

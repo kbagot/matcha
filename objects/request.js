@@ -22,14 +22,12 @@ class Controller {
        let sess = socket.handshake.session;
        if (sess.data) {
            socket.emit('user', sess.data);
-           console.log("updateUser");
        }
        socket.on('login', (res) => {
          this.user.dologin(res, this.db, sess, socket);
        });
        socket.on('userDisconnect', () =>{
-           sess.data = undefined;
-           sess.save();
+           sess.destroy();
            socket.emit("userDisconnect", "");
        });
        socket.on('changeRegister', (data) => this.register.registerErrorHandling(data, socket));
