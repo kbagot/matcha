@@ -16,6 +16,7 @@ let     req = require('./objects/request');
 let     controller = new req();
 let     setup = require('./objects/config/setup.js');
 let     set = new setup();
+
 let     expressSession = session({
     secret : 'w3ll3w',
     name : 'Session',
@@ -36,13 +37,15 @@ app.use(expressSession)
              res.redirect("/");
             res.end();
         })
-        .get("/", async function (req, res, next){
+
+  .get("/", async function (req, res, next){
             let ip = await controller.getServerIp();
             
             if (req.secure) {
-                res.sendFile(__dirname + '/src/index.html');
+            req.session.ip = req.connection.remoteAddress.split(":").pop();
+               res.cookie('ip', ip);
+              res.sendFile(__dirname + '/src/index.html');
             } else {
-                res.cookie('ip', ip);
                 res.redirect('https://'+ ip + ':8081');
             }
         })
