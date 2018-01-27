@@ -22,7 +22,6 @@ class Controller {
        let sess = socket.handshake.session;
        if (sess.data) {
            socket.emit('user', sess.data);
-           console.log("updateUser");
        }
        socket.on('locUp', (res) => {
             console.log(res);
@@ -33,8 +32,7 @@ class Controller {
          this.user.dologin(res, this.db, sess, socket);
        });
        socket.on('userDisconnect', () =>{
-           sess.data = undefined;
-           sess.save();
+           sess.destroy();
            socket.emit("userDisconnect", "");
        });
        socket.on('changeRegister', (data) => this.register.registerErrorHandling(data, socket));
