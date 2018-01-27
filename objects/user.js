@@ -63,8 +63,6 @@ class User {
             else
                 ipapi.location(res => console.log(res), sess.ip);
         }
-
-
     };
 }
 

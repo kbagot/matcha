@@ -1,36 +1,28 @@
+let     fs = require('fs');
 let     express = require('express');
-let     ipAdress;
-let     http = require('http');
+let     options = {
+    key: fs.readFileSync('./ssl/key.pem'),
+    cert: fs.readFileSync('./ssl/cert.pem'),
+    // passphrase: 'matcha',
+};
+let     https = require('https');
 let     app = express();
 let     session = require('express-session');
 let     bodyParser = require('body-parser');
-let     server = http.createServer(app);
+let     server = https.createServer(options, app).listen(8081);
+require('http').createServer(app).listen(8080);
 let     io = require('socket.io').listen(server);
 let     req = require('./objects/request');
-let     controller = new req(server);
+let     controller = new req();
 let     setup = require('./objects/config/setup.js');
 let     set = new setup();
-let     os = require('os');
 
 let     expressSession = session({
     secret : 'w3ll3w',
     name : 'Session',
-    resave: false, // uselles ??
-    saveUninitialized: 'false' //usefull ?
+    resave: true,
+    saveUninitialized: true
 });
-let     send = null;
-
-
-io.on("connection", (socket) => {
-    expressSession(socket.handshake, {}, (err) =>{
-            if (err){
-                console.log(err);
-            }
-            // console.log(socket.handshake.address);
-            controller.socketEvents(socket);
-        });
-});
-
 
 app.use(expressSession)
         .use(express.static('./src/style'))
@@ -45,9 +37,17 @@ app.use(expressSession)
              res.redirect("/");
             res.end();
         })
-        .get("/", function (req, res, next){
+
+  .get("/", async function (req, res, next){
+            let ip = await controller.getServerIp();
+            
+            if (req.secure) {
             req.session.ip = req.connection.remoteAddress.split(":").pop();
-            res.sendFile(__dirname + '/src/index.html');
+               res.cookie('ip', ip);
+              res.sendFile(__dirname + '/src/index.html');
+            } else {
+                res.redirect('https://'+ ip + ':8081');
+            }
         })
         .get("/dist/index_bundle.js", function(req, res, next){
             res.sendFile(__dirname + '/dist/index_bundle.js');
@@ -58,4 +58,11 @@ app.use(expressSession)
             res.end();
         });
 
-server.listen(8081);
+io.on("connection", (socket) => {
+    expressSession(socket.handshake, {}, (err) =>{
+        if (err){
+            console.log(err);
+        }
+        controller.socketEvents(socket);
+    });
+});

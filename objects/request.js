@@ -1,6 +1,8 @@
 let database = require('./config/connect.js'),
     register = require('./register'),
     user = require('./user.js');
+let     os = require('os');
+
 class Controller {
     constructor(props) {
         this.sess = {};
@@ -18,8 +20,10 @@ class Controller {
        //     socket.emit('user', this.user.sess.data);
        // }
        let sess = socket.handshake.session;
-       if (sess.data)
+       if (sess.data) {
            socket.emit('user', sess.data);
+           console.log("updateUser");
+       }
        socket.on('login', (res) => {
          this.user.dologin(res, this.db, sess, socket);
        });
@@ -33,6 +37,22 @@ class Controller {
        socket.on('unmount', () => console.log("react unmount"));
     }
 
+    getServerIp(){
+        return new Promise((resolve, reject) => {
+            let res = os.networkInterfaces();
+            for (let elem in res){
+                res[elem].forEach((data) =>{
+                    if (data.family === 'IPv4' && !data.internal){
+                        resolve(data.address);
+                    }
+                });
+            }
+            reject('No ip Found');
+        });
+
+    }
+
 }
+
 
 module.exports = Controller;

@@ -5,8 +5,8 @@ import User from './User.jsx';
 import Cookie from 'cookie';
 
 let ip = Cookie.parse(document.cookie).ip;
-let socket = io("localhost" + ':8081');
-console.log("client");
+let socket = io(ip + ':8081');
+
 export default class App extends React.Component {
     constructor(props){
         super(props);
@@ -16,6 +16,7 @@ export default class App extends React.Component {
     }
 
     componentDidMount (){
+        console.log(socket);
         // for (let event of ["user", "userDisconnect"]){
         //     socket.on(event, (user) => this.setState({user}));
         // }
