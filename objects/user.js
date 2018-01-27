@@ -47,17 +47,16 @@ class User {
            formatter: null
        };
 
-       // console.log(req.ip.split(":").pop());   IP CLIENT
 
        ipapi.location((res) => {
-         console.log(res);
+         // console.log(res);
        });
 
        let geocoder = NodeGeocoder(options);
 
        geocoder.reverse({'lat': res.coords.lat, 'lon': res.coords.lon}, (err, res) => {
-           console.log(res);
-           console.log(err);
+           // console.log(res);
+           // console.log(err);
        });
     };
 }
