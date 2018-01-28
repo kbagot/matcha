@@ -26,6 +26,19 @@ export default class App extends React.Component {
         // console.log("MOUNTED");
 
 
+        socket.on("doloc", () => {
+            if ("geolocation" in navigator) {
+                /* geolocation is available */
+                navigator.geolocation.getCurrentPosition(position => {
+                    socket.emit('locUp', {
+                        lat: position.coords.latitude, lon: position.coords.longitude
+                    });
+                }, error => {
+                    console.log(error);
+                    socket.emit('locUp', {lat: '', lon: ''});
+                });
+            }
+        });
         socket.on("error", (err) => console.log(err));
         socket.on('user', (user) => {
             document.cookie = "login=" + true;

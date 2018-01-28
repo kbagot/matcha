@@ -1,23 +1,28 @@
 import React from 'react';
 
-export default class User extends React.Component{
-    constructor(props){
+export default class User extends React.Component {
+    constructor(props) {
         super(props);
         this.disconnectUser = this.disconnectUser.bind(this);
     }
 
-    componentDidMount() {
-        navigator.geolocation.getCurrentPosition((position) => {
-            console.log(position.coords);
-            this.props.socket.emit('locUp', position.coords);
-        });
-    }
+    // async componentDidMount() {
+            // this.props.socket.emit('locUp', {
+            // lat: position.coords.latitude, lon: position.coords.longitude
+            // });
+        // }
+    // }
+        // } else {
+        //     /* geolocation IS NOT available */
+        //     this.props.socket.emit('locUp');
+        //     console.log('hum');
+        // }
 
-    disconnectUser(){
+    disconnectUser() {
         this.props.socket.emit("userDisconnect", {});
     }
 
-    render(){
+    render() {
         return (
             <div className={"User"}>
                 <p>Welcome {this.props.user.login}</p>

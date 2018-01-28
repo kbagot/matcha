@@ -31,6 +31,7 @@ class User {
                         if (err)
                             console.log(err);
                         socket.emit('user', sess.data);
+                        socket.emit('doloc');
                     });
                     // User.update_coords(res, db, sess, socket);
                 }
@@ -43,22 +44,33 @@ class User {
     }
 
     update_coords(res, db, sess, socket) {
+        console.log((new Date).getMinutes());
         let options = {
             provider: 'google',
             httpAdapter: 'https', // Default
             apiKey: 'AIzaSyAc2MJltSS6tF0okq-aKxKdtmGIhURn0HI', // for Mapquest, OpenCage, Google Premier
             formatter: null
         };
+        let locdata = null;
         // console.log(res);
         let geocoder = NodeGeocoder(options);
-            geocoder.reverse({'lat': res.coords.latitude, 'lon': res.coords.longitude}, (err, res) => {
-                if (res)
-                    console.log(res);
-                else if (err)
-                    ipapi.location(res => console.log(res), sess.ip);
-                else
-                    ipapi.location(res => console.log(res));
-                   });
+        geocoder.reverse({'lat': res.lat, 'lon': res.lon}, (err, res) => {
+            if (res) {
+                locdata = res;
+                // console.log(res);
+                // console.log(err);
+            }
+            else if (err) {
+                ipapi.location(res => {
+                        locdata = res;
+                        if (res.reserved)
+                            ipapi.location(res => locdata = res);
+                    },
+                    sess.ip);
+                console.log(locdata);
+            }
+            console.log(locdata);
+        });
     };
 }
 
