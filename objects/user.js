@@ -16,7 +16,7 @@ class User {
         };
     }
 
-    async dologin(res, db, sess, socket) {
+    async dologin(res, db, sess, socket, chatUsers) {
         const [results, fields] = await db.con.execute(
             "SELECT * FROM `users` WHERE login=?",
             [res.login]);
@@ -27,10 +27,12 @@ class User {
                     for (let i in this.data)
                         this.data[i] = results[0][i];
                     sess.data = results[0];
+                    chatUsers.push(results[0].login);
                     sess.save((err) => {
                         if (err)
                             console.log(err);
                         socket.emit('user', sess.data);
+                        socket.broadcast.emit('newChatUser', chatUsers);
                         socket.emit('doloc');
                     });
                     // User.update_coords(res, db, sess, socket);

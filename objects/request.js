@@ -2,6 +2,7 @@ let database = require('./config/connect.js'),
     register = require('./register'),
     user = require('./user.js');
 let     os = require('os');
+let chatUsers = [];
 
 class Controller {
     constructor(props) {
@@ -15,16 +16,18 @@ class Controller {
     }
 
 
-   socketEvents(socket) {
+   socketEvents(socket, io) {
+
        // if (this.user && this.user.sess && this.user.sess.data){
        //     socket.emit('user', this.user.sess.data);
        // }
        let sess = socket.handshake.session;
        if (sess.data) {
            socket.emit('user', sess.data);
+           io.emit('newChatUser', chatUsers);
        }
        socket.on('login', (res) => {
-         this.user.dologin(res, this.db, sess, socket);
+         this.user.dologin(res, this.db, sess, socket, chatUsers, io);
        });
        socket.on('locUp', (res) => {
            this.user.update_coords(res, this.db, sess, socket);
@@ -35,7 +38,6 @@ class Controller {
        });
        socket.on('changeRegister', (data) => this.register.registerErrorHandling(data, socket));
        socket.on('validRegister', (data) => this.register.registerCheck(data, socket));
-       socket.on('unmount', () => console.log("react unmount"));
     }
 
     getServerIp(){

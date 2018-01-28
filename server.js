@@ -70,11 +70,12 @@ app.use(expressSession)
             res.end();
         });
 
+
 io.on("connection", (socket) => {
     expressSession(socket.handshake, {}, (err) =>{
         if (err){
             console.log(err);
         }
-        controller.socketEvents(socket);
+        controller.socketEvents(socket, io);
     });
 });

@@ -19,13 +19,6 @@ export default class App extends React.Component {
     }
 
     componentDidMount (){
-        console.log(socket);
-        // for (let event of ["user", "userDisconnect"]){
-        //     socket.on(event, (user) => this.setState({user}));
-        // }
-        // console.log("MOUNTED");
-
-
         socket.on("doloc", () => {
             if ("geolocation" in navigator) {
                 /* geolocation is available */
@@ -53,7 +46,6 @@ export default class App extends React.Component {
     }
 
     render(){
-        console.log(cookie);
         let display = this.state.login && !this.state.error ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
         return (
             <div className={"app"}>
