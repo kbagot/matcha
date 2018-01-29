@@ -15,8 +15,7 @@ require('http').createServer(app).listen(8080);
 let     io = require('socket.io').listen(server);
 let     req = require('./objects/request');
 let     controller = new req();
-let     setup = require('./objects/config/setup.js');
-let     set = new setup();
+let     setup = require('./objects/config/connect.js');
 let     MySQLStore = require('express-mysql-session')(session);
 
 let     expressSession = session({
@@ -41,9 +40,11 @@ app.use(expressSession)
             extended: true
         }))
         // .enable('trust proxy')
-        .get("/setup", (req, res, next) => {
-            set.setDatabase();
-             res.redirect("/");
+        .get("/setup", async (req, res, next) => {
+            let     set = new setup(await setup.createConnection());
+
+            set.seedUsers();
+            res.redirect("/");
             res.end();
         })
 

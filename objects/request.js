@@ -16,26 +16,16 @@ class Controller {
     }
 
 
-   socketEvents(socket, io) {
-
-       // if (this.user && this.user.sess && this.user.sess.data){
-       //     socket.emit('user', this.user.sess.data);
-       // }
+   async socketEvents(socket, io) {
        let sess = socket.handshake.session;
+
        if (sess.data) {
-           socket.emit('user', sess.data);
-           io.emit('newChatUser', chatUsers);
+           this.triggerRefresh(io, socket, sess)
        }
-       socket.on('login', (res) => {
-         this.user.dologin(res, this.db, sess, socket, chatUsers, io);
-       });
-       socket.on('locUp', (res) => {
-           this.user.update_coords(res, this.db, sess, socket);
-       }); // not sure of the place
-       socket.on('userDisconnect', () =>{
-           sess.destroy();
-           socket.emit("userDisconnect", "");
-       });
+       socket.on('chatUsers', () => console.log("hey"));
+       socket.on('login', (res) => this.user.dologin(res, this.db, sess, io, socket, chatUsers, io));
+       socket.on('locUp', (res) => this.user.update_coords(res, this.db, sess, socket)); // not sure of the place
+       socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, chatUsers));
        socket.on('changeRegister', (data) => this.register.registerErrorHandling(data, socket));
        socket.on('validRegister', (data) => this.register.registerCheck(data, socket));
     }
@@ -52,7 +42,13 @@ class Controller {
             }
             reject('No ip Found');
         });
+    }
 
+    triggerRefresh(io, socket, sess){
+        socket.emit('user', sess.data);
+        this.user.updateUsers(sess.data.login, chatUsers)
+            .then(() => io.emit('chatUsers', chatUsers))
+            .catch(() => null);
     }
 
 }

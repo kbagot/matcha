@@ -16,8 +16,8 @@ class User {
         };
     }
 
-    async dologin(res, db, sess, socket, chatUsers) {
-        const [results, fields] = await db.con.execute(
+    async dologin(res, db, sess, io, socket, chatUsers) {
+        const [results, fields] = await db.execute(
             "SELECT * FROM `users` WHERE login=?",
             [res.login]);
 
@@ -27,12 +27,13 @@ class User {
                     for (let i in this.data)
                         this.data[i] = results[0][i];
                     sess.data = results[0];
-                    chatUsers.push(results[0].login);
                     sess.save((err) => {
                         if (err)
                             console.log(err);
                         socket.emit('user', sess.data);
-                        socket.broadcast.emit('newChatUser', chatUsers);
+                        this.updateUsers(sess.data.login, chatUsers)
+                            .then(() => io.emit('chatUsers', chatUsers))
+                            .catch(() => null);
                         socket.emit('doloc');
                     });
                     // User.update_coords(res, db, sess, socket);
@@ -42,7 +43,7 @@ class User {
             });
         }
         else
-            socket.emit('loglog');
+            io.sockets.emit('loglog');
     }
 
     update_coords(res, db, sess, socket) {
@@ -74,6 +75,35 @@ class User {
             console.log(locdata);
         });
     };
+
+    userDisconnect(io, sess, socket, chatUsers){
+        let index = chatUsers.indexOf(sess.data.login);
+        chatUsers.splice(index, 1);
+        sess.destroy();
+        socket.emit("userDisconnect", "");
+        io.emit("chatUsers", chatUsers);
+    }
+
+    updateUsers(login, chatUsers){
+        return new Promise((resolve, reject) => {
+            this.alreadyConnected(login, chatUsers).then((res) => resolve())
+                .catch(() => {
+                        chatUsers.push(login);
+                        resolve();
+                });
+        });
+    }
+
+    alreadyConnected(login, chatUsers){
+        return new Promise((resolve, reject) =>{
+            for (let elem of chatUsers){
+                if (elem === login){
+                    resolve(login);
+                }
+            }
+            reject();
+        });
+    }
 }
 
 module.exports = User;
