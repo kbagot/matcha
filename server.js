@@ -28,9 +28,11 @@ let     expressSession = session({
     store: new MySQLStore({
         user: 'root',
         password: '',
-        database: 'matcha'
+        database: 'matcha',
+        checkExpirationInterval: 900
     })
 });
+
 app.use(expressSession)
         .use(cookieParser())
         .use(express.static('./src/style'))

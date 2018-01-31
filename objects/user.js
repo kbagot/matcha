@@ -1,6 +1,7 @@
 let bcrypt = require('bcrypt');
 let NodeGeocoder = require('node-geocoder');
 let ipapi = require('ipapi.co');
+let likes = require('./likes.js');
 
 class User {
     constructor() {
@@ -14,6 +15,7 @@ class User {
             bio: '',
             orientation: ''
         };
+        this.likes = new likes();
     }
 
     async dologin(res, db, sess, io, socket, chatUsers) {
@@ -34,7 +36,7 @@ class User {
                         this.updateUsers(sess.data.login, chatUsers)
                             .then(() => io.emit('chatUsers', chatUsers))
                             .catch(() => null);
-                        socket.emit('doloc');
+                        // socket.emit('doloc');
                     });
                     // User.update_coords(res, db, sess, socket);
                 }
@@ -104,6 +106,7 @@ class User {
             reject();
         });
     }
+
 }
 
 module.exports = User;

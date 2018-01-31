@@ -16,11 +16,15 @@ export default class Chat extends React.Component{
         });
     }
 
+    handleLike(ev, user){
+        this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
+    }
+
     chatUsers(){
         let array = this.state.chatUsers;
         return array.map((user, index) =>{
             if (user !== this.props.user.login)
-                return <li key={index}>{user}</li>
+                return <li key={index}>{user} <button onClick={(ev) => this.handleLike(ev, user)}> Add </button> <button onClick={(ev) => this.handleLike(ev, user)}> Remove </button></li>
         });
     }
 

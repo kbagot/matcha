@@ -49,7 +49,7 @@ export default class App extends React.Component {
     }
 
     render(){
-        let display = this.state.user.login && !this.state.error ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
+        let display = cookie.login && this.state.user.login && !this.state.error ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
         return (
             <div className={"app"}>
                 {ip}

@@ -22,6 +22,7 @@ class Controller {
        if (sess.data) {
            this.triggerRefresh(io, socket, sess)
        }
+       socket.on('like', (data) => this.user.likes.handleLikes(data, chatUsers, socket, this.db, sess));
        socket.on('chatUsers', () => console.log("hey"));
        socket.on('login', (res) => this.user.dologin(res, this.db, sess, io, socket, chatUsers, io));
        socket.on('locUp', (res) => this.user.update_coords(res, this.db, sess, socket)); // not sure of the place

@@ -56,6 +56,11 @@ class ConDb {
                         "country varchar(255) NOT NULL," +
                         "zipcode int NOT NULL," +
                         "ip boolean default 1);" +
+                        "CREATE TABLE likes (" +
+                        "id int not null auto_increment primary key," +
+                        "user1 varchar(255) not null," +
+                        "user2 varchar(255) not null," +
+                        "matcha boolean default false);";
                     db.query(sql).then(() => resolve(db))
                         .catch((err) => reject(err));
                 });
