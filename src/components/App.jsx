@@ -19,13 +19,6 @@ export default class App extends React.Component {
     }
 
     componentDidMount (){
-        console.log(socket);
-        // for (let event of ["user", "userDisconnect"]){
-        //     socket.on(event, (user) => this.setState({user}));
-        // }
-        // console.log("MOUNTED");
-
-
         socket.on("doloc", () => {
             if ("geolocation" in navigator) {
                 /* geolocation is available */
@@ -40,21 +33,23 @@ export default class App extends React.Component {
             }
         });
         socket.on("error", (err) => console.log(err));
-        socket.on('user', (user) => {
-            document.cookie = "login=" + true;
-            document.cookie = "error=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            this.setState({['user']: user, ['login']: true, ['error']:false});
-        });
-        socket.on('userDisconnect', (user) => {
-            document.cookie = "login=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            this.setState({['user']: {}, ['login']: false});
-        });
+        socket.on('user', (user) => this.userLogin(user));
+        socket.on('userDisconnect', (user) => this.userLogout());
+    }
 
+    userLogin(user){
+        document.cookie = "login=" + true;
+        document.cookie = "error=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        this.setState({['user']: user,['login']:true, ['error']:false});
+    }
+
+    userLogout(){
+        document.cookie = "login=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        this.setState({['user']: {}, ['login']: false});
     }
 
     render(){
-        console.log(cookie);
-        let display = this.state.login && !this.state.error ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
+        let display = this.state.user.login && !this.state.error ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
         return (
             <div className={"app"}>
                 {ip}

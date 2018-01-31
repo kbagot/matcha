@@ -1,22 +1,11 @@
 import React from 'react';
+import Chat from './Chat.jsx';
 
 export default class User extends React.Component {
     constructor(props) {
         super(props);
         this.disconnectUser = this.disconnectUser.bind(this);
     }
-
-    // async componentDidMount() {
-            // this.props.socket.emit('locUp', {
-            // lat: position.coords.latitude, lon: position.coords.longitude
-            // });
-        // }
-    // }
-        // } else {
-        //     /* geolocation IS NOT available */
-        //     this.props.socket.emit('locUp');
-        //     console.log('hum');
-        // }
 
     disconnectUser() {
         this.props.socket.emit("userDisconnect", {});
@@ -27,6 +16,7 @@ export default class User extends React.Component {
             <div className={"User"}>
                 <p>Welcome {this.props.user.login}</p>
                 <button onClick={this.disconnectUser}>Disconnect</button>
+                <Chat user={this.props.user} socket={this.props.socket}/>
             </div>
         )
     }

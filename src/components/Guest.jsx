@@ -18,6 +18,7 @@ export default class Guest extends React.Component{
             ['status']: !prevState.login ? 'Register' : 'Login'
         }));
     }
+
     render () {
         let window = null;
         if (this.state.login){

@@ -25,7 +25,11 @@ let sql = "DROP DATABASE IF EXISTS matcha;" +
     "country varchar(255) NOT NULL," +
     "zipcode int NOT NULL," +
     "ip boolean default 1" +
-    ");";
+    "); CREATE TABLE IF NOT EXISTS`sessions`(" +
+    "session_id varchar(128) COLLATE utf8mb4_bin NOT NULL primary key," +
+    "expires int(11) unsigned not null," +
+    "data text COLLATE utf8mb4_bin" +
+    ") ENGINE=InnoDB;";
 
 let request = require('request-promise');
 let bcrypt = require('bcrypt');
@@ -35,7 +39,9 @@ class Setup {
         this.db = await ConDb.createConnection();
         this.db.con.query(sql, (err, res, fields) => {
             if (err) throw err;
-            request('https://randomuser.me/api/?results=500&exc=picture,id,cell,phone,registered,dob,login,location&nat=fr,be').then((res) => this.fillDb(JSON.parse(res).results));
+            request('https://randomuser.me/api/?results=500&exc=picture,id,cell,phone,registered,dob,login,location&nat=fr,be')
+                .then((res) => this.fillDb(JSON.parse(res).results))
+                .catch((err) => console.log(err));
         });
 
     }
