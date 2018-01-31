@@ -18,14 +18,15 @@ let sql = "DROP DATABASE IF EXISTS matcha;" +
     ");" +
     "CREATE TABLE location(" +
     "ID int not NULL auto_increment primary key," +
-    "userid int NOT NULL," +
-    "lat decimal(10, 10)," +
-    "lon decimal(10, 10) , " +
+    "login varchar(255) NOT NULL," +
+    "lat decimal(15, 10)," +
+    "lon decimal(15, 10) , " +
     "city varchar(255) not null," +
     "country varchar(255) NOT NULL," +
     "zipcode int NOT NULL," +
     "ip boolean default 1" +
-    "); CREATE TABLE IF NOT EXISTS`sessions`(" +
+    "); " +
+    "CREATE TABLE IF NOT EXISTS`sessions`(" +
     "session_id varchar(128) COLLATE utf8mb4_bin NOT NULL primary key," +
     "expires int(11) unsigned not null," +
     "data text COLLATE utf8mb4_bin" +

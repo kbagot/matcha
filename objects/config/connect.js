@@ -49,13 +49,13 @@ class ConDb {
                         ");" +
                         "CREATE TABLE location(" +
                         "ID int not NULL auto_increment primary key," +
-                        "userid int NOT NULL," +
-                        "lat decimal(10, 10)," +
-                        "lon decimal(10, 10) , " +
+                        "login varchar(255) NOT NULL," +
+                        "lat decimal(15, 10) NOT NULL," +
+                        "lon decimal(15, 10) NOT NULL," +
                         "city varchar(255) not null," +
                         "country varchar(255) NOT NULL," +
                         "zipcode int NOT NULL," +
-                        "ip boolean default 1);" +
+                        "ip boolean default 1);";
                     db.query(sql).then(() => resolve(db))
                         .catch((err) => reject(err));
                 });

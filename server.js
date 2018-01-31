@@ -50,7 +50,7 @@ app.use(expressSession)
 
   .get("/", async function (req, res, next){
             let ip = await controller.getServerIp();
-            
+
             if (req.secure) {
             req.session.ip = req.connection.remoteAddress.split(":").pop();
             if (req.cookies.login === "true" && !req.session.data){
