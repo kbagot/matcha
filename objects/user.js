@@ -115,16 +115,16 @@ class User {
 
     };
 
-    userDisconnect(io, sess, socket, chatUsers) {
-        let index = chatUsers.indexOf(sess.data.login);
+    userDisconnect(io, sess, socket, allUsers) {
+        let index = allUsers.indexOf(sess.data.login);
       
-        chatUsers.splice(index, 1);
+        allUsers.splice(index, 1);
         sess.destroy();
         socket.emit("userDisconnect", "");
         io.emit("allUsers", allUsers);
     }
 
-    updateUsers(login, chatUsers) {
+    updateUsers(sess, allUsers) {
         return new Promise((resolve, reject) => {
             this.alreadyExists(sess.data.login, allUsers)
                 .then(() => {
