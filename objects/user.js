@@ -56,9 +56,14 @@ class User {
         };
         let geocoder = NodeGeocoder(options);
 
+        // let geodist = require('geodist');
+        //
+        // let dist = geodist({lat: res.lat, lon: res.lon}, {lat: 33.7489, lon: -84.3881}, {unit: 'km'});  // opt limit   $(USER INPUT DISTANCE)
+        // console.log(dist);
+
         geocoder.reverse({'lat': res.lat, 'lon': res.lon})
             .then(res => {
-                User.update_coords_db(res[0]);
+                User.update_coords_db(res[0], db, sess);
             })
             .catch(err => {
                 rp('https://ipapi.co/' + sess.ip + '/json')
