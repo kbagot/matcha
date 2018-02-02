@@ -7,6 +7,7 @@ export default class User extends React.Component {
         this.disconnectUser = this.disconnectUser.bind(this);
     }
 
+
     disconnectUser() {
         this.props.socket.emit("userDisconnect", {});
     }
