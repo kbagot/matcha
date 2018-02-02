@@ -1,6 +1,6 @@
 let bcrypt = require('bcrypt');
 let NodeGeocoder = require('node-geocoder');
-let ipapi = require('ipapi.co');
+let rp = require('request-promise');
 let likes = require('./likes.js');
 
 class User {
@@ -39,7 +39,7 @@ class User {
                                 })
                                 .catch(() => console.log("ERROR"));
                         });
-                        // socket.emit('doloc');
+                         socket.emit('doloc');
                     });
                 }
                 else
@@ -50,46 +50,81 @@ class User {
             io.sockets.emit('loglog');
     }
 
-    update_coords(res, db, sess, socket) {
-        console.log((new Date).getMinutes());
+    update_coords(res, db, sess) {
         let options = {
             provider: 'google',
             httpAdapter: 'https', // Default
             apiKey: 'AIzaSyAc2MJltSS6tF0okq-aKxKdtmGIhURn0HI', // for Mapquest, OpenCage, Google Premier
             formatter: null
         };
-        let locdata = null;
-        // console.log(res);
         let geocoder = NodeGeocoder(options);
-        geocoder.reverse({'lat': res.lat, 'lon': res.lon}, (err, res) => {
-            if (res) {
-                locdata = res;
-                // console.log(res);
-                // console.log(err);
-            }
-            else if (err) {
-                ipapi.location(res => {
-                        locdata = res;
+
+        // let geodist = require('geodist');
+        //
+        // let dist = geodist({lat: res.lat, lon: res.lon}, {lat: 33.7489, lon: -84.3881}, {unit: 'km'});  // opt limit   $(USER INPUT DISTANCE)
+        // console.log(dist);
+
+        geocoder.reverse({'lat': res.lat, 'lon': res.lon})
+            .then(res => {
+                User.update_coords_db(res[0], db, sess);
+            })
+            .catch(err => {
+                rp('https://ipapi.co/' + sess.ip + '/json')
+                    .then(res => {
+                        res = JSON.parse(res);
                         if (res.reserved)
-                            ipapi.location(res => locdata = res);
-                    },
-                    sess.ip);
-                console.log(locdata);
+                            return rp('https://ipapi.co/json');
+                        else
+                            User.update_coords_db(res, db, sess);
+                    })
+                    .then(res => {
+                        if (res) {
+                            res = JSON.parse(res);
+                            User.update_coords_db(res, db, sess);
+                        }
+                    })
+                    .catch(err => console.log(err));
+            });
+    }
+
+    static async update_coords_db(res, db, sess) {
+        let entry = [];
+        if (res.ip) {
+            entry.push(res.country_name);
+            entry.push(res.postal);
+            entry.push('1');
+        } else {
+            entry.push(res.country);
+            entry.push(res.zipcode);
+            entry.push('0');
+        }
+
+        try {
+            let req = "SELECT login FROM location WHERE login=?";
+            let [results, fields] = await db.execute(req, [sess.data.login]);
+
+            if (results[0]) {
+                req = "DELETE FROM location WHERE login=?";
+                [results, fields] = await db.execute(req, [sess.data.login]);
             }
-            console.log(locdata);
-        });
+            req = "INSERT INTO location(login, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            [results, fields] = await db.execute(req, [sess.data.login, res.latitude, res.longitude, res.city, ...entry]);
+        } catch (e) {
+            console.log(e);
+        }
+
     };
 
-    userDisconnect(io, sess, socket, allUsers){
-        let index = allUsers.indexOf(sess.data.login);
-
-        allUsers.splice(index, 1);
+    userDisconnect(io, sess, socket, chatUsers) {
+        let index = chatUsers.indexOf(sess.data.login);
+      
+        chatUsers.splice(index, 1);
         sess.destroy();
         socket.emit("userDisconnect", "");
         io.emit("allUsers", allUsers);
     }
 
-    updateUsers(sess, allUsers){
+    updateUsers(login, chatUsers) {
         return new Promise((resolve, reject) => {
             this.alreadyExists(sess.data.login, allUsers)
                 .then(() => {

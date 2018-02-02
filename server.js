@@ -52,7 +52,7 @@ app.use(expressSession)
 
   .get("/", async function (req, res, next){
             let ip = await controller.getServerIp();
-            
+
             if (req.secure) {
                 if (req.session.data)
                     console.log(req.session.data.chat);
