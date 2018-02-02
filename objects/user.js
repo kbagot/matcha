@@ -1,9 +1,10 @@
 let bcrypt = require('bcrypt');
 let NodeGeocoder = require('node-geocoder');
 let rp = require('request-promise');
+let likes = require('./likes.js');
 
 class User {
-    constructor() {
+    constructor(props) {
         this.data = {
             login: "motherfcker",
             password: '',
@@ -14,9 +15,10 @@ class User {
             bio: '',
             orientation: ''
         };
+        this.likes = new likes();
     }
 
-    async dologin(res, db, sess, io, socket, chatUsers) {
+    async dologin(res, db, sess, io, socket, allUsers) {
         const [results, fields] = await db.execute(
             "SELECT * FROM `users` WHERE login=?",
             [res.login]);
@@ -30,14 +32,15 @@ class User {
                     sess.save((err) => {
                         if (err)
                             console.log(err);
-                        socket.emit('user', sess.data);
-                        this.updateUsers(sess.data.login, chatUsers)
-                            .then(() => io.emit('chatUsers', chatUsers))
-                            .catch(() => null);
-                        socket.emit('doloc');
-
+                        socket.emit('user', sess.data, () => {
+                            this.updateUsers(sess, allUsers)
+                                .then(() => {
+                                    io.emit('allUsers', allUsers);
+                                })
+                                .catch(() => console.log("ERROR"));
+                        });
+                         socket.emit('doloc');
                     });
-                    // User.update_coords(res, db, sess, socket);
                 }
                 else
                     socket.emit('logpass');
@@ -114,32 +117,39 @@ class User {
 
     userDisconnect(io, sess, socket, chatUsers) {
         let index = chatUsers.indexOf(sess.data.login);
+      
         chatUsers.splice(index, 1);
         sess.destroy();
         socket.emit("userDisconnect", "");
-        io.emit("chatUsers", chatUsers);
+        io.emit("allUsers", allUsers);
     }
 
     updateUsers(login, chatUsers) {
         return new Promise((resolve, reject) => {
-            this.alreadyConnected(login, chatUsers).then((res) => resolve())
+            this.alreadyExists(sess.data.login, allUsers)
+                .then(() => {
+                    allUsers.push(sess.data.login);
+                    resolve()
+                })
                 .catch(() => {
-                    chatUsers.push(login);
                     resolve();
                 });
         });
     }
 
-    alreadyConnected(login, chatUsers) {
-        return new Promise((resolve, reject) => {
-            for (let elem of chatUsers) {
-                if (elem === login) {
-                    resolve(login);
+    alreadyExists(login, allUsers){
+        return new Promise((resolve, reject) =>{
+            if (allUsers) {
+                for (let elem of allUsers) {
+                    if (elem === login) {
+                        reject("Login already exists");
+                    }
                 }
             }
-            reject();
+            resolve();
         });
     }
+
 }
 
 module.exports = User;

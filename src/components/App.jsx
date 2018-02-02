@@ -33,7 +33,10 @@ export default class App extends React.Component {
             }
         });
         socket.on("error", (err) => console.log(err));
-        socket.on('user', (user) => this.userLogin(user));
+        socket.on('user', (user, fn) => {
+            this.userLogin(user);
+            fn();
+        });
         socket.on('userDisconnect', (user) => this.userLogout());
     }
 
@@ -49,7 +52,7 @@ export default class App extends React.Component {
     }
 
     render(){
-        let display = this.state.user.login && !this.state.error ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
+        let display = this.state.login && !this.state.error ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
         return (
             <div className={"app"}>
                 {ip}

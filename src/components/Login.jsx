@@ -56,9 +56,9 @@ export default class Login extends React.Component {
         return (
             <div className={'Login-Container'}>
                 <form onSubmit={this.handleSubmit}>
-                    Login <input className={this.state.errorlogin} type="text" value={this.state.login} name="login"
+                    Login <input className={this.state.errorlogin} autoComplete="username" type="text" value={this.state.login} name="login"
                                  onChange={this.handleChange}/> <br/>
-                    Password <input className={this.state.errorpasswd} type="password" value={this.state.password}
+                    Password <input className={this.state.errorpasswd} autoComplete="current-password" type="password" value={this.state.password}
                                     name="password" onChange={this.handleChange}/><br/>
                     <input type="submit" value="S'identifier" name="Submit"/>
                 </form>
