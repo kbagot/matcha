@@ -12,10 +12,16 @@ export default class Chat extends React.Component{
     };
 
     componentDidMount(){
-        this.props.socket.on('allUsers', (data) => {
+        this.props.socket.on('allUsers', (data, fn) => {
             this.setState({['test']: data});
         });
-        this.props.socket.on('chatUsers', (res, fn) => {
+        this.props.socket.on('chatUsers', (res) => {
+            if (res.type === 'chat') {
+                console.log("AEAOEIOPFKEF");
+                this.setState({['chatUsers']: res.chat});
+            } else {
+                this.props.socket.emit('like', {type: res.type, login: res.login});
+            }
         });
     }
 
@@ -24,16 +30,25 @@ export default class Chat extends React.Component{
     }
 
     chatUsers(list){
-        let array = list;
+        let array = list.data;
 
         if (array) {
-            return array.map((user, index) => {
-                if (user !== this.props.user.login)
-                    return <li key={index}>{user}
-                        <button onClick={(ev) => this.handleLike(ev, user)}> Add</button>
-                        <button onClick={(ev) => this.handleLike(ev, user)}> Remove</button>
-                    </li>
-            });
+            if (list.type === "all") {
+                return array.map((user, index) => {
+                    if (user !== this.props.user.login)
+                        return <li key={index}>{user}
+                            <button onClick={(ev) => this.handleLike(ev, user)}> Add</button>
+                            <button onClick={(ev) => this.handleLike(ev, user)}> Remove</button>
+                        </li>
+                });
+            } else if (list.type === "chat"){
+                return array.map((user, index) => {
+                    if (user !== this.props.user.login)
+                        return <li key={index}>
+                            <button> {user}</button>
+                        </li>
+                });
+            }
         }
     }
 
@@ -42,14 +57,15 @@ export default class Chat extends React.Component{
     }
 
     render (){
-        let list = this.chatUsers(this.state.test);
+        let list = this.chatUsers({type: "all", data: this.state.test});
+        let list2 = this.chatUsers({type: "chat", data: this.state.chatUsers});
 
         return (
             <div className={"chat"}>
                 <h2>All Users</h2>
                 <ul>{list}</ul>
                 <h2>Chat Users</h2>
-                <ul></ul>
+                <ul>{list2}</ul>
             </div>
         )
     }
