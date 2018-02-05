@@ -36,8 +36,9 @@ class User {
                             this.updateUsers(sess, allUsers)
                                 .then(() => {
                                     io.emit('allUsers', allUsers);
+                                    User.getMatch(db, sess, socket);
                                 })
-                                .catch(() => console.log("ERROR"));
+                                .catch((e) => console.log(e));
                         });
                          socket.emit('doloc');
                     });
@@ -147,6 +148,23 @@ class User {
                 }
             }
             resolve();
+        });
+    }
+
+    static getMatch(db, sess, socket){
+        let sql = "SELECT  (CASE u1 WHEN ? THEN u2 ELSE u1 END) AS user FROM (SELECT user1 AS u1, user2 AS u2 FROM likes WHERE (user1=? OR user2=?) AND matcha=true) AS results";
+        let login = sess.data.login;
+
+        db.execute(sql, [login, login, login]).then(([rows]) => {
+            rows.forEach((elem) => {
+               if (!sess.data.chat){
+                   sess.data.chat = [elem.user];
+               } else if (sess.data.chat.indexOf(elem.user) === -1) {
+                   sess.data.chat.push(elem.user);
+               }
+               sess.save();
+            });
+            socket.emit('chatUsers', {type: 'chat', chat: sess.data.chat});
         });
     }
 

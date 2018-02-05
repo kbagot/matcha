@@ -1,23 +1,21 @@
 import React from 'react';
 
+
 export default class Chat extends React.Component{
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             chatUsers: [],
-            test: [],
-            socket: this.props.socket
+            socket: this.props.socket,
+            chat: []
         };
-        this.chatUsers = this.chatUsers.bind(this);
-    };
+        this.handleClick = this.handleClick.bind(this);
+        this.renderChat = this.renderChat.bind(this);
+    }
 
     componentDidMount(){
-        this.props.socket.on('allUsers', (data, fn) => {
-            this.setState({['test']: data});
-        });
         this.props.socket.on('chatUsers', (res) => {
             if (res.type === 'chat') {
-                console.log("AEAOEIOPFKEF");
                 this.setState({['chatUsers']: res.chat});
             } else {
                 this.props.socket.emit('like', {type: res.type, login: res.login});
@@ -25,47 +23,44 @@ export default class Chat extends React.Component{
         });
     }
 
-    handleLike(ev, user){
-        this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
+
+    handleClick(ev){
+        let array = this.state.chat;
+        let index = array.indexOf(ev.target.innerHTML);
+
+        if (index === -1) {
+            array.push(ev.target.innerHTML);
+        } else {
+            array.splice(index, 1);
+        }
+        this.setState({['chat']: array});
     }
 
-    chatUsers(list){
-        let array = list.data;
-
-        if (array) {
-            if (list.type === "all") {
-                return array.map((user, index) => {
-                    if (user !== this.props.user.login)
-                        return <li key={index}>{user}
-                            <button onClick={(ev) => this.handleLike(ev, user)}> Add</button>
-                            <button onClick={(ev) => this.handleLike(ev, user)}> Remove</button>
-                        </li>
-                });
-            } else if (list.type === "chat"){
-                return array.map((user, index) => {
-                    if (user !== this.props.user.login)
-                        return <li key={index}>
-                            <button> {user}</button>
-                        </li>
-                });
-            }
-        }
+    renderChat(){
+        return this.state.chat.map(user => {
+            return <div key={user}>
+                <h3>{user}</h3>
+                <form>
+                <input type={"text"} name={user+"Chat"} value={""}/>
+                </form>
+            </div>
+        })  ;
     }
 
     componentWillUnmount(){
-        this.props.socket.removeListener('allUsers');
+        this.props.socket.removeListener('chatUsers');
     }
 
+
     render (){
-        let list = this.chatUsers({type: "all", data: this.state.test});
-        let list2 = this.chatUsers({type: "chat", data: this.state.chatUsers});
+        let list = this.props.listUsers({type: "chat", data: this.state.chatUsers, click: this.handleClick});
+        let chat = this.renderChat();
 
         return (
             <div className={"chat"}>
-                <h2>All Users</h2>
-                <ul>{list}</ul>
                 <h2>Chat Users</h2>
-                <ul>{list2}</ul>
+                <ul>{list}</ul>
+                <div> {chat} </div>
             </div>
         )
     }
