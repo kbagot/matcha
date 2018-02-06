@@ -1,5 +1,5 @@
 import React from 'react';
-
+import ChatWindow from './ChatWindow.jsx';
 
 export default class Chat extends React.Component{
     constructor(props) {
@@ -7,10 +7,14 @@ export default class Chat extends React.Component{
         this.state = {
             chatUsers: [],
             socket: this.props.socket,
-            chat: []
+            chat: [],
+            input: {},
+            message: {}
         };
         this.handleClick = this.handleClick.bind(this);
         this.renderChat = this.renderChat.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount(){
@@ -36,12 +40,33 @@ export default class Chat extends React.Component{
         this.setState({['chat']: array});
     }
 
+    handleSubmit(ev){
+        let oldMessage = this.state.message[ev.target.name];
+        let str = this.props.user.login + ": " + this.state.input[ev.target.name+"Input"] + "\n";
+        let obj = {[ev.target.name]: oldMessage ? oldMessage + str :  str };
+        let obj2 = {[ev.target.name+"Input"]: ""};
+
+        this.setState({['message']: Object.assign({}, this.state.message, obj), ['input']: Object.assign({}, this.state.input, obj2)});
+        ev.preventDefault();
+    }
+
+    handleChange(ev){
+        let obj = {[ev.target.name.trim()]: ev.target.value};
+
+        this.setState({['input']: Object.assign({}, this.state.input, obj)});
+    }
+
+
     renderChat(){
         return this.state.chat.map(user => {
-            return <div key={user}>
+            let value = this.state.input[user+"Input"] ? this.state.input[user+"Input"] : "";
+
+            return <div className={"chatWindow"} key={user}>
                 <h3>{user}</h3>
-                <form>
-                <input type={"text"} name={user+"Chat"} value={""}/>
+                <ChatWindow msg={this.state.message[user]}/>
+                <form name={user} onSubmit={this.handleSubmit}>
+                    <input type={"text"} name={user+"Input"} value={value} onChange={this.handleChange}/>
+                    <input type={"submit"} name={"submit"} value={String.fromCodePoint(0x2934)}/>
                 </form>
             </div>
         })  ;
@@ -60,7 +85,7 @@ export default class Chat extends React.Component{
             <div className={"chat"}>
                 <h2>Chat Users</h2>
                 <ul>{list}</ul>
-                <div> {chat} </div>
+                 {chat}
             </div>
         )
     }

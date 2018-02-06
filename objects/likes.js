@@ -93,17 +93,17 @@ class Likes{
                 sess.data.chat = [login];
             } else {
                 sess.data.chat.push(login);
-                sess.save(() => {
-                    socket.emit("chatUsers", {type: 'chat', chat: sess.data.chat});
-                    if (refresh) {
-                        Likes.findSocket(db, login).then((res) => {
-                            for (let elem of res) {
-                                socket.to(elem).emit('chatUsers', {type: 'addMatch', login: sess.data.login});
-                            }
-                        });
-                    }
-                });
             }
+            sess.save(() => {
+                socket.emit("chatUsers", {type: 'chat', chat: sess.data.chat});
+                if (refresh) {
+                    Likes.findSocket(db, login).then((res) => {
+                        for (let elem of res) {
+                            socket.to(elem).emit('chatUsers', {type: 'addMatch', login: sess.data.login});
+                        }
+                    });
+                }
+            });
         }
     }
 

@@ -45,7 +45,7 @@ export default class User extends React.Component {
                 return array.map((user, index) => {
                     if (user !== this.props.user.login)
                         return <li key={index}>
-                            <button onClick={(ev) => list.click(ev)}> {user}</button>
+                            <button onClick={(ev) => list.click(ev)}>{user}</button>
                         </li>
                 });
             }
