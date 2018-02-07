@@ -64,6 +64,8 @@ class User {
         // let dist = geodist({lat: res.lat, lon: res.lon}, {lat: 33.7489, lon: -84.3881}, {unit: 'km'});  // opt limit   $(USER INPUT DISTANCE)
         // console.log(dist);
 
+        // Select login from location WHERE (st_distance_sphere(POINT(location.lon, location.lat), POINT(2.3292, 48.8628)) / 1000) < 11;
+        // REQUEST FOR GET users list from a distance input
         geocoder.reverse({'lat': res.lat, 'lon': res.lon})
             .then(res => {
                 User.update_coords_db(res[0], db, sess);
