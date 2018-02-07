@@ -10,10 +10,10 @@ class Likes{
                 Likes.removeLike(data.login, socket, db, sess);
                 break ;
             case 'addMatch':
-                Likes.addMatchList(socket, db, sess, data.login);
+                Likes.addMatchList(socket, db, sess, data.login, false);
                 break;
             case 'delMatch':
-                Likes.deleteMatchList(socket, db, sess, data.login);
+                Likes.deleteMatchList(socket, db, sess, data.login, false);
                 break ;
         }
     }
@@ -93,18 +93,17 @@ class Likes{
                 sess.data.chat = [login];
             } else {
                 sess.data.chat.push(login);
-                sess.save(() => {
-                    if (refresh) {
-                        Likes.findSocket(db, login).then((res) => {
-                            socket.emit("chatUsers", {type: 'chat', chat: sess.data.chat});
-                            for (let elem of res) {
-                                socket.to(elem).emit('chatUsers', {type: 'addMatch', login: sess.data.login});
-                            }
-                        });
-                    }
-                });
-
             }
+            sess.save(() => {
+                socket.emit("chatUsers", {type: 'chat', chat: sess.data.chat});
+                if (refresh) {
+                    Likes.findSocket(db, login).then((res) => {
+                        for (let elem of res) {
+                            socket.to(elem).emit('chatUsers', {type: 'addMatch', login: sess.data.login});
+                        }
+                    });
+                }
+            });
         }
     }
 
@@ -114,20 +113,17 @@ class Likes{
         if (sess.data.chat && (index = sess.data.chat.indexOf(login)) !== -1){
             sess.data.chat.splice(index, 1);
             sess.save(() => {
+                socket.emit("chatUsers", {type: 'chat', chat: sess.data.chat});
                 if (refresh) {
                     Likes.findSocket(db, login).then((res) => {
-                        socket.emit("chatUsers", {type: 'chat', chat: sess.data.chat});
                         for (let elem of res) {
                             socket.to(elem).emit('chatUsers', {type: 'delMatch', login: sess.data.login});
                         }
                     });
                 }
             });
-
         }
-
     }
-
 }
 
 module.exports = Likes;
