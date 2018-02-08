@@ -29,16 +29,15 @@ class Likes{
                     sql = "INSERT INTO likes(user1, user2) VALUES (?, ?)";
                     db.execute(sql, [login2, login]);
                 } else if (!res.matcha && res.user1 !== login2 ){
-                    let sql2 = "INSERT INTO chat(id, user1, user2) VALUES((SELECT id FROM (SELECT id FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) AS fdp) , ?, ?) ON DUPLICATE KEY UPDATE history=''; ";
-                    // let sql2= "INSERT INTO chat(user1, user2) VALUES(?, ?); ";
-                    sql = "UPDATE likes SET matcha=true WHERE (user1=? AND user2=?) OR (user1=? AND user2=?); " + sql2;
-                    console.log(sql);
-                    db.query(sql, [login, login2, login2, login, login, login2, login2, login, login, login2])
+                    sql = "INSERT INTO chat(user1, user2, messages) SELECT ?, ? , '{}' WHERE NOT EXISTS (SELECT user1 FROM chat WHERE (user1= ? AND user2=?) OR (user1=? AND user2=?)) LIMIT 1";
+                    db.execute(sql, [login, login2, login, login2, login2, login]).catch(e => console.log(e));
+                    sql = "UPDATE likes SET matcha=true WHERE (user1=? AND user2=?) OR (user1=? AND user2=?); " ;
+                    db.execute(sql, [login, login2, login2, login])
                         .then(() => Likes.addMatchList(socket, db, sess, login, true))
                         .catch((e) => console.log(e));
                 }
             })
-            .catch(() => console.log("OupsAdd"));
+            .catch((e) => console.log(e));
     }
 
     static removeLike(login, socket, db, sess){

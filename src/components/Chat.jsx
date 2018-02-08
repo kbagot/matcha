@@ -7,7 +7,7 @@ export default class Chat extends React.Component{
         this.state = {
             chatUsers: [],
             socket: this.props.socket,
-            chat: [],
+            chat: this.props.user.chat ? this.props.user.chat : [],
             input: {},
             message: {},
             notif: {}
@@ -23,20 +23,17 @@ export default class Chat extends React.Component{
 
     componentDidMount() {
         this.props.socket.on('match', (res) => {
-            console.log(res);
             if (res.type === 'match') {
                 this.setState({['chatUsers']: res.match});
             } else {
                 this.props.socket.emit('like', {type: res.type, login: res.login});
             }
         });
-        this.props.socket.on('user', (data) => this.setState({['chat']: data.chat}));
         this.props.socket.on('chat', (data) => this.newMessage(data));
     }
 
     componentWillUnmount(){
-        this.props.socket.removeListener('user');
-        this.props.socket.removeListener('chatUsers');
+        this.props.socket.removeListener('match');
         this.props.socket.removeListener('chat');
     }
 
@@ -103,18 +100,20 @@ export default class Chat extends React.Component{
     }
 
     renderChat(){
-        return this.state.chat.map(user => {
-            let value = this.state.input[user+"Input"] ? this.state.input[user+"Input"] : "";
+        if (this.state.chat) {
+            return this.state.chat.map(user => {
+                let value = this.state.input[user + "Input"] ? this.state.input[user + "Input"] : "";
 
-            return <div className={"chatWindow"} key={user}>
-                <h3>{user}</h3>
-                <ChatWindow msg={this.state.message[user]} socket={this.props.socket} />
-                <form name={user} onSubmit={this.handleSubmit}>
-                    <input type={"text"} name={user+"Input"} value={value} onChange={this.handleChange}/>
-                    <input type={"submit"} name={"submit"} value={String.fromCodePoint(0x2934)}/>
-                </form>
-            </div>
-        })  ;
+                return <div className={"chatWindow"} key={user}>
+                    <h3>{user}</h3>
+                    <ChatWindow msg={this.state.message[user]} socket={this.props.socket}/>
+                    <form name={user} onSubmit={this.handleSubmit}>
+                        <input type={"text"} name={user + "Input"} value={value} onChange={this.handleChange}/>
+                        <input type={"submit"} name={"submit"} value={String.fromCodePoint(0x2934)}/>
+                    </form>
+                </div>
+            });
+        }
     }
 
     render (){
