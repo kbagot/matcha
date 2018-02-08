@@ -31,7 +31,6 @@ export default class User extends React.Component {
 
     listUsers(list){
         let array = list.data;
-
         if (array) {
             if (list.type === "all") {
                 return array.map((user, index) => {
@@ -43,9 +42,11 @@ export default class User extends React.Component {
                 });
             } else if (list.type === "chat"){
                 return array.map((user, index) => {
+                    let notif = list.notif[user];
+
                     if (user !== this.props.user.login)
                         return <li key={index}>
-                            <button onClick={(ev) => list.click(ev)}>{user}</button>
+                            <button onClick={(ev) => list.click(ev)}>{user}</button> {notif}
                         </li>
                 });
             }

@@ -9,22 +9,82 @@ export default class Chat extends React.Component{
             socket: this.props.socket,
             chat: [],
             input: {},
-            message: {}
+            message: {},
+            notif: {}
         };
         this.handleClick = this.handleClick.bind(this);
         this.renderChat = this.renderChat.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.updateObject = this.updateObject.bind(this);
+        this.newMessage = this.newMessage.bind(this);
+        this.addNotif = this.addNotif.bind(this);
     }
 
-    componentDidMount(){
-        this.props.socket.on('chatUsers', (res) => {
-            if (res.type === 'chat') {
-                this.setState({['chatUsers']: res.chat});
+    componentDidMount() {
+        this.props.socket.on('match', (res) => {
+            console.log(res);
+            if (res.type === 'match') {
+                this.setState({['chatUsers']: res.match});
             } else {
                 this.props.socket.emit('like', {type: res.type, login: res.login});
             }
         });
+        this.props.socket.on('user', (data) => this.setState({['chat']: data.chat}));
+        this.props.socket.on('chat', (data) => this.newMessage(data));
+    }
+
+    componentWillUnmount(){
+        this.props.socket.removeListener('user');
+        this.props.socket.removeListener('chatUsers');
+        this.props.socket.removeListener('chat');
+    }
+
+    newMessage(data){
+        let obj = this.updateObject(this.state.message, data.login, data.login, data.msg);
+        let obj2 = {};
+
+        if (this.state.chat.indexOf(data.login) === -1){
+            this.props.socket.emit('chat', {type: 'unreadMsg', msg: data.msg, from: data.login});
+            obj2 = this.addNotif(data.login);
+        }
+        this.setState({['message']: obj, ['notif']: obj2});
+    }
+
+    addNotif(login){
+        let old = this.state.notif[login];
+        let obj = {[login]: old ? old + 1 : 1};
+
+        return Object.assign({}, this.state.notif, obj);
+    }
+
+    updateObject(object, loginConv, loginMsg, msg){
+        let old = object[loginConv];
+        let obj = {login: loginMsg, msg: msg};
+
+        if (old) {
+            old.push(obj);
+        } else {
+            old = [obj];
+        }
+
+        obj = {[loginConv]: old};
+        return Object.assign({}, object, obj);
+    }
+
+    handleSubmit(ev){
+        let input = Object.assign({}, this.state.input, {[ev.target.name + "Input"]: ""});
+        let message = this.updateObject(this.state.message, ev.target.name, this.props.user.login, this.state.input[ev.target.name + "Input"]);
+
+        this.setState({['message']: message, ['input']: input});
+        this.props.socket.emit("chat", {type:'newMsg', login: ev.target.name ,msg: this.state.input[ev.target.name + "Input"]});
+        ev.preventDefault();
+    }
+
+    handleChange(ev){
+        let obj = {[ev.target.name.trim()]: ev.target.value};
+
+        this.setState({['input']: Object.assign({}, this.state.input, obj)});
     }
 
 
@@ -37,25 +97,10 @@ export default class Chat extends React.Component{
         } else {
             array.splice(index, 1);
         }
+
+        this.props.socket.emit('chat', {type: 'chatList', chatList: array});
         this.setState({['chat']: array});
     }
-
-    handleSubmit(ev){
-        let oldMessage = this.state.message[ev.target.name];
-        let str = this.props.user.login + ": " + this.state.input[ev.target.name+"Input"] + "\n";
-        let obj = {[ev.target.name]: oldMessage ? oldMessage + str :  str };
-        let obj2 = {[ev.target.name+"Input"]: ""};
-
-        this.setState({['message']: Object.assign({}, this.state.message, obj), ['input']: Object.assign({}, this.state.input, obj2)});
-        ev.preventDefault();
-    }
-
-    handleChange(ev){
-        let obj = {[ev.target.name.trim()]: ev.target.value};
-
-        this.setState({['input']: Object.assign({}, this.state.input, obj)});
-    }
-
 
     renderChat(){
         return this.state.chat.map(user => {
@@ -63,7 +108,7 @@ export default class Chat extends React.Component{
 
             return <div className={"chatWindow"} key={user}>
                 <h3>{user}</h3>
-                <ChatWindow msg={this.state.message[user]}/>
+                <ChatWindow msg={this.state.message[user]} socket={this.props.socket} />
                 <form name={user} onSubmit={this.handleSubmit}>
                     <input type={"text"} name={user+"Input"} value={value} onChange={this.handleChange}/>
                     <input type={"submit"} name={"submit"} value={String.fromCodePoint(0x2934)}/>
@@ -72,13 +117,8 @@ export default class Chat extends React.Component{
         })  ;
     }
 
-    componentWillUnmount(){
-        this.props.socket.removeListener('chatUsers');
-    }
-
-
     render (){
-        let list = this.props.listUsers({type: "chat", data: this.state.chatUsers, click: this.handleClick});
+        let list = this.props.listUsers({type: "chat", data: this.state.chatUsers, click: this.handleClick, notif: this.state.notif});
         let chat = this.renderChat();
 
         return (

@@ -157,14 +157,14 @@ class User {
 
         db.execute(sql, [login, login, login]).then(([rows]) => {
             rows.forEach((elem) => {
-               if (!sess.data.chat){
-                   sess.data.chat = [elem.user];
-               } else if (sess.data.chat.indexOf(elem.user) === -1) {
-                   sess.data.chat.push(elem.user);
+               if (!sess.data.match){
+                   sess.data.match = [elem.user];
+               } else if (sess.data.match.indexOf(elem.user) === -1) {
+                   sess.data.match.push(elem.user);
                }
                sess.save();
             });
-            socket.emit('chatUsers', {type: 'chat', chat: sess.data.chat});
+            socket.emit('match', {type: 'match', match: sess.data.match});
         });
     }
 
