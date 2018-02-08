@@ -29,13 +29,15 @@ class Likes{
                     sql = "INSERT INTO likes(user1, user2) VALUES (?, ?)";
                     db.execute(sql, [login2, login]);
                 } else if (!res.matcha && res.user1 !== login2 ){
-                    sql = "UPDATE likes SET matcha=true WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
+                    sql = "INSERT INTO chat(user1, user2, messages) SELECT ?, ? , '{}' WHERE NOT EXISTS (SELECT user1 FROM chat WHERE (user1= ? AND user2=?) OR (user1=? AND user2=?)) LIMIT 1";
+                    db.execute(sql, [login, login2, login, login2, login2, login]).catch(e => console.log(e));
+                    sql = "UPDATE likes SET matcha=true WHERE (user1=? AND user2=?) OR (user1=? AND user2=?); " ;
                     db.execute(sql, [login, login2, login2, login])
                         .then(() => Likes.addMatchList(socket, db, sess, login, true))
                         .catch((e) => console.log(e));
                 }
             })
-            .catch(() => console.log("OupsAdd"));
+            .catch((e) => console.log(e));
     }
 
     static removeLike(login, socket, db, sess){
@@ -87,19 +89,19 @@ class Likes{
     }
 
     static addMatchList(socket, db, sess, login, refresh){
-        if (!sess.data.chat || (sess.data.chat && sess.data.chat.indexOf(login) === -1))
+        if (!sess.data.match || (sess.data.match && sess.data.match.indexOf(login) === -1))
         {
-            if (!sess.data.chat){
-                sess.data.chat = [login];
+            if (!sess.data.match){
+                sess.data.match = [login];
             } else {
-                sess.data.chat.push(login);
+                sess.data.match.push(login);
             }
             sess.save(() => {
-                socket.emit("chatUsers", {type: 'chat', chat: sess.data.chat});
+                socket.emit("match", {type: 'match', match: sess.data.match});
                 if (refresh) {
                     Likes.findSocket(db, login).then((res) => {
                         for (let elem of res) {
-                            socket.to(elem).emit('chatUsers', {type: 'addMatch', login: sess.data.login});
+                            socket.to(elem).emit('match', {type: 'addMatch', login: sess.data.login});
                         }
                     });
                 }
@@ -110,14 +112,14 @@ class Likes{
     static deleteMatchList(socket, db, sess, login, refresh){
         let index;
 
-        if (sess.data.chat && (index = sess.data.chat.indexOf(login)) !== -1){
-            sess.data.chat.splice(index, 1);
+        if (sess.data.match && (index = sess.data.match.indexOf(login)) !== -1){
+            sess.data.match.splice(index, 1);
             sess.save(() => {
-                socket.emit("chatUsers", {type: 'chat', chat: sess.data.chat});
-                if (refresh) {
+                socket.emit("match", {type: 'match', match: sess.data.match});
+                if (refresh) {}{
                     Likes.findSocket(db, login).then((res) => {
                         for (let elem of res) {
-                            socket.to(elem).emit('chatUsers', {type: 'delMatch', login: sess.data.login});
+                            socket.to(elem).emit('match', {type: 'delMatch', login: sess.data.login});
                         }
                     });
                 }

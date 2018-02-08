@@ -35,7 +35,8 @@ export default class App extends React.Component {
         socket.on("error", (err) => console.log(err));
         socket.on('user', (user, fn) => {
             this.userLogin(user);
-            fn();
+            if (fn)
+                fn();
         });
         socket.on('userDisconnect', (user) => this.userLogout());
     }
@@ -48,7 +49,7 @@ export default class App extends React.Component {
 
     userLogout(){
         document.cookie = "login=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        this.setState({['user']: {}, ['login']: false});
+        this.setState({['user']: {}, ['login']: undefined});
     }
 
     render(){
