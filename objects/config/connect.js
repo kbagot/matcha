@@ -45,7 +45,8 @@ class ConDb {
                         "notif boolean default 1," +
                         "sexe enum('M', 'F') not null," +
                         "bio varchar(255)," +
-                        "orientation ENUM('gay','hetero','bi') default 'bi'" +
+                        "orientation ENUM('gay','hetero','bi') default 'bi'," +
+                        "tags JSON" +
                         ");" +
                         "CREATE TABLE location(" +
                         "ID int not NULL auto_increment primary key," +
@@ -55,13 +56,18 @@ class ConDb {
                         "city varchar(255) not null," +
                         "country varchar(255) NOT NULL," +
                         "zipcode varchar(255) NOT NULL," +
-                        "ip boolean default 1);" +
+                        "ip boolean default 1" +
+                        ");" +
                         "CREATE TABLE likes (" +
                         "id int not null auto_increment primary key," +
                         "user1 varchar(255) not null," +
                         "user2 varchar(255) not null," +
-                        "matcha boolean default false);";
-
+                        "matcha boolean default false" +
+                        ");" +
+                        "CREATE TABLE tags(" +
+                        "ID int not null auto_increment primary key," +
+                        "tag_name varchar(255)" +
+                        ");";
                     db.query(sql).then(() => resolve(db))
                         .catch((err) => reject(err));
                 });
