@@ -97,7 +97,7 @@ class Likes{
                 sess.data.match.push(login);
             }
             sess.save(() => {
-                socket.emit("match", {type: 'match', match: sess.data.match});
+                socket.emit('user', sess.data);
                 if (refresh) {
                     Likes.findSocket(db, login).then((res) => {
                         for (let elem of res) {
@@ -115,7 +115,7 @@ class Likes{
         if (sess.data.match && (index = sess.data.match.indexOf(login)) !== -1){
             sess.data.match.splice(index, 1);
             sess.save(() => {
-                socket.emit("match", {type: 'match', match: sess.data.match});
+                socket.emit('user', sess.data);
                 if (refresh) {}{
                     Likes.findSocket(db, login).then((res) => {
                         for (let elem of res) {

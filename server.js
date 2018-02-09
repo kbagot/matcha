@@ -55,7 +55,7 @@ app.use(expressSession)
 
             if (req.secure) {
                 if (req.session.data)
-                    console.log(req.session.data.chat);
+                    console.log(req.session.data.match);
             req.session.ip = req.connection.remoteAddress.split(":").pop();
             if (req.cookies.login === "true" && !req.session.data){
                 res.cookie('error', true);

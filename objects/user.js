@@ -167,6 +167,12 @@ class User {
         });
     }
 
+    static async getNotif(db, sess){
+        let sql = "SELECT type, notif FROM notif WHERE login = ?";
+        let [rows] = await db.execute(sql, [sess.data.login]);
+
+        return rows;
+    }
 }
 
 module.exports = User;

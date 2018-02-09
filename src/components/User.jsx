@@ -42,11 +42,10 @@ export default class User extends React.Component {
                 });
             } else if (list.type === "chat"){
                 return array.map((user, index) => {
-                    let notif = list.notif[user];
 
                     if (user !== this.props.user.login)
                         return <li key={index}>
-                            <button onClick={(ev) => list.click(ev)}>{user}</button> {notif}
+                            <button onClick={ev => this.props.socket.emit('chat', {type: 'chatList', login: ev.target.innerHTML})}>{user}</button>
                         </li>
                 });
             }
@@ -55,7 +54,6 @@ export default class User extends React.Component {
 
     render() {
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
-
         return (
             <div className={"User"}>
                 <p>Welcome {this.props.user.login}</p>

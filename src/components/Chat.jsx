@@ -5,14 +5,12 @@ export default class Chat extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            chatUsers: [],
             socket: this.props.socket,
-            chat: this.props.user.chat ? this.props.user.chat : [],
+            chat: [].concat(this.props.user.chat),
             input: {},
             message: {},
             notif: {}
         };
-        this.handleClick = this.handleClick.bind(this);
         this.renderChat = this.renderChat.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -23,11 +21,7 @@ export default class Chat extends React.Component{
 
     componentDidMount() {
         this.props.socket.on('match', (res) => {
-            if (res.type === 'match') {
-                this.setState({['chatUsers']: res.match});
-            } else {
-                this.props.socket.emit('like', {type: res.type, login: res.login});
-            }
+            this.props.socket.emit('like', {type: res.type, login: res.login});
         });
         this.props.socket.on('chat', (data) => this.newMessage(data));
     }
@@ -84,40 +78,27 @@ export default class Chat extends React.Component{
         this.setState({['input']: Object.assign({}, this.state.input, obj)});
     }
 
-
-    handleClick(ev){
-        let array = this.state.chat;
-        let index = array.indexOf(ev.target.innerHTML);
-
-        if (index === -1) {
-            array.push(ev.target.innerHTML);
-        } else {
-            array.splice(index, 1);
-        }
-
-        this.props.socket.emit('chat', {type: 'chatList', chatList: array});
-        this.setState({['chat']: array});
-    }
-
     renderChat(){
-        if (this.state.chat) {
-            return this.state.chat.map(user => {
+        if (this.props.user.chat) {
+            return this.props.user.chat.map(user => {
                 let value = this.state.input[user + "Input"] ? this.state.input[user + "Input"] : "";
 
-                return <div className={"chatWindow"} key={user}>
-                    <h3>{user}</h3>
-                    <ChatWindow msg={this.state.message[user]} socket={this.props.socket}/>
-                    <form name={user} onSubmit={this.handleSubmit}>
-                        <input type={"text"} name={user + "Input"} value={value} onChange={this.handleChange}/>
-                        <input type={"submit"} name={"submit"} value={String.fromCodePoint(0x2934)}/>
-                    </form>
-                </div>
+                if (user) {
+                    return <div className={"chatWindow"} key={user}>
+                        <h3>{user}</h3>
+                        <ChatWindow msg={this.state.message[user]} socket={this.props.socket}/>
+                        <form name={user} onSubmit={this.handleSubmit}>
+                            <input type={"text"} name={user + "Input"} value={value} onChange={this.handleChange}/>
+                            <input type={"submit"} name={"submit"} value={String.fromCodePoint(0x2934)}/>
+                        </form>
+                    </div>
+                }
             });
         }
     }
 
     render (){
-        let list = this.props.listUsers({type: "chat", data: this.state.chatUsers, click: this.handleClick, notif: this.state.notif});
+        let list = this.props.listUsers({type: "chat", data: this.props.user.match});
         let chat = this.renderChat();
 
         return (
