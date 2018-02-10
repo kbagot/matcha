@@ -1,7 +1,8 @@
 let database = require('./config/connect.js'),
     register = require('./register'),
     user = require('./user.js'),
-    chat = require('./chat.js');
+    chat = require('./chat.js'),
+    update = require('./update');
 let     os = require('os');
 let allUsers = [];
 
@@ -54,7 +55,7 @@ class Controller {
             this.user.updateUsers(sess, allUsers)
                 .then(() => {
                     io.emit('allUsers', allUsers);
-                    user.getMatch(this.db, sess, socket);
+                    update.refreshUser(this.db, sess, socket);
                 })
                 .catch((e) => console.log(e));
         });

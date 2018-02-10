@@ -29,6 +29,10 @@ export default class User extends React.Component {
         this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
     }
 
+    testFUncton = test => {
+        console.log("lol");
+    }
+
     listUsers(list){
         let array = list.data;
         if (array) {
@@ -42,7 +46,6 @@ export default class User extends React.Component {
                 });
             } else if (list.type === "chat"){
                 return array.map((user, index) => {
-
                     if (user !== this.props.user.login)
                         return <li key={index}>
                             <button onClick={ev => this.props.socket.emit('chat', {type: 'chatList', login: ev.target.innerHTML})}>{user}</button>

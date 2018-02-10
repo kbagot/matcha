@@ -1,4 +1,5 @@
 let like = require('./likes');
+let update = require('./update.js');
 
 class Chat {
     handleChat(data, socket, db, sess, allUsers){
@@ -10,7 +11,7 @@ class Chat {
                 Chat.updateList(data, sess, socket);
                 break ;
             case 'unreadMsg':
-                Chat.unreadMsg(data, socket, db, sess);
+                Chat.unreadMsg(data, socket, db, sess, true);
         }
     }
 
@@ -20,23 +21,33 @@ class Chat {
                 .then(res => {
                     res.forEach((id) => {
                         socket.to(id).emit("chat", {type: 'newMsg', login: sess.data.login, msg: data.msg});
+                        // temporary shit until history
+                        update.updateMsg(data.login, sess, data.msg);
+                        socket.emit('user', sess.data);
+                        //shit end
                     })
                 });
         } else {
-            console.log(data.login + "Offline");
+            Chat.unreadMsg(data, socket, db, sess, false);
+            update.updateMsg(data.login, sess, data.msg);
+            socket.emit('user', sess.data);
         }
     }
 
-    static unreadMsg(data, socket, db, sess){
-        let sql = "INSERT INTO notif (login, type, notif) VALUES (?, ?, ?);";
-        let sql2 = 'UPDATE chat SET messages = JSON_MERGE((SELECT messages FROM(SELECT messages FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) as lol), ?) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)';
-        let login  = sess.data.login;
+    static unreadMsg(data, socket, db, sess, online){
+        let sql = "INSERT INTO notif (login, type, `from`) VALUES (?, ?, ?);";
+        let sql2 = 'UPDATE chat SET `from`= ? , messages = JSON_MERGE((SELECT messages FROM(SELECT messages FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) as lol), ?) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)';
+        let login  = online ? sess.data.login : data.login;
         let login2 = data.from;
 
-        db.execute(sql, [login, 'message', 'Vous avez recu un nouveau message de la part de ' + login2])
-            .then(() => db.execute(sql2, [login, login2, login2, login, JSON.stringify({[login2]: data.msg}), login, login2, login2, login ]))
-            .then(() => db.query("SELECT * FROM notif;SELECT * FROM chat"))
-            .then(([rows]) => console.log(rows));
+        db.execute(sql, [login, 'message', login2])
+            .then(() => db.execute(sql2, [login2, login, login2, login2, login, JSON.stringify([data.msg]), login, login2, login2, login ]))
+            .then(() => {
+            if (online){
+                update.updateMsg(login2, sess, data.msg);
+                socket.emit('user', sess.data);
+            }
+            })
     }
 
     static updateList(data, sess, socket){

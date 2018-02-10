@@ -2,6 +2,7 @@ let bcrypt = require('bcrypt');
 let NodeGeocoder = require('node-geocoder');
 let rp = require('request-promise');
 let likes = require('./likes.js');
+let update = require('./update.js');
 
 class User {
     constructor(props) {
@@ -35,7 +36,7 @@ class User {
                             this.updateUsers(sess, allUsers)
                                 .then(() => {
                                     io.emit('allUsers', allUsers);
-                                    User.getMatch(db, sess, socket);
+                                    update.refreshUser(db, sess, socket);
                                 })
                                 .catch((e) => console.log(e));
                         });
@@ -148,30 +149,6 @@ class User {
             }
             resolve();
         });
-    }
-
-    static getMatch(db, sess, socket){
-        let sql = "SELECT  (CASE u1 WHEN ? THEN u2 ELSE u1 END) AS user FROM (SELECT user1 AS u1, user2 AS u2 FROM likes WHERE (user1=? OR user2=?) AND matcha=true) AS results";
-        let login = sess.data.login;
-
-        db.execute(sql, [login, login, login]).then(([rows]) => {
-            rows.forEach((elem) => {
-               if (!sess.data.match){
-                   sess.data.match = [elem.user];
-               } else if (sess.data.match.indexOf(elem.user) === -1) {
-                   sess.data.match.push(elem.user);
-               }
-               sess.save();
-            });
-            socket.emit('match', {type: 'match', match: sess.data.match});
-        });
-    }
-
-    static async getNotif(db, sess){
-        let sql = "SELECT type, notif FROM notif WHERE login = ?";
-        let [rows] = await db.execute(sql, [sess.data.login]);
-
-        return rows;
     }
 }
 

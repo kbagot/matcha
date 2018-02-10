@@ -9,14 +9,12 @@ export default class Chat extends React.Component{
             chat: [].concat(this.props.user.chat),
             input: {},
             message: {},
-            notif: {}
         };
         this.renderChat = this.renderChat.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.updateObject = this.updateObject.bind(this);
         this.newMessage = this.newMessage.bind(this);
-        this.addNotif = this.addNotif.bind(this);
     }
 
     componentDidMount() {
@@ -33,20 +31,13 @@ export default class Chat extends React.Component{
 
     newMessage(data){
         let obj = this.updateObject(this.state.message, data.login, data.login, data.msg);
-        let obj2 = {};
 
         if (this.state.chat.indexOf(data.login) === -1){
             this.props.socket.emit('chat', {type: 'unreadMsg', msg: data.msg, from: data.login});
-            obj2 = this.addNotif(data.login);
+        } else {
+            this.props.socket.emit('chat', {type: 'readMsg', msg: data.msg, from: data.login});
         }
-        this.setState({['message']: obj, ['notif']: obj2});
-    }
-
-    addNotif(login){
-        let old = this.state.notif[login];
-        let obj = {[login]: old ? old + 1 : 1};
-
-        return Object.assign({}, this.state.notif, obj);
+        this.setState({['message']: obj});
     }
 
     updateObject(object, loginConv, loginMsg, msg){
@@ -64,11 +55,19 @@ export default class Chat extends React.Component{
     }
 
     handleSubmit(ev){
-        let input = Object.assign({}, this.state.input, {[ev.target.name + "Input"]: ""});
-        let message = this.updateObject(this.state.message, ev.target.name, this.props.user.login, this.state.input[ev.target.name + "Input"]);
+        let inputMsg = this.state.input[ev.target.name + "Input"].trim();
+        if (inputMsg) {
+            let input = Object.assign({}, this.state.input, {[ev.target.name + "Input"]: ""});
+            let message = this.updateObject(this.state.message, ev.target.name, this.props.user.login, inputMsg);
 
-        this.setState({['message']: message, ['input']: input});
-        this.props.socket.emit("chat", {type:'newMsg', login: ev.target.name ,msg: this.state.input[ev.target.name + "Input"]});
+            this.setState({['message']: message, ['input']: input});
+            this.props.socket.emit("chat", {
+                type: 'newMsg',
+                from: this.props.user.login,
+                login: ev.target.name,
+                msg: inputMsg
+            });
+        }
         ev.preventDefault();
     }
 
@@ -86,7 +85,7 @@ export default class Chat extends React.Component{
                 if (user) {
                     return <div className={"chatWindow"} key={user}>
                         <h3>{user}</h3>
-                        <ChatWindow msg={this.state.message[user]} socket={this.props.socket}/>
+                        <ChatWindow msg={this.props.user.message[user]} socket={this.props.socket}/>
                         <form name={user} onSubmit={this.handleSubmit}>
                             <input type={"text"} name={user + "Input"} value={value} onChange={this.handleChange}/>
                             <input type={"submit"} name={"submit"} value={String.fromCodePoint(0x2934)}/>
