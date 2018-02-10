@@ -65,6 +65,14 @@ class User {
         // let dist = geodist({lat: res.lat, lon: res.lon}, {lat: 33.7489, lon: -84.3881}, {unit: 'km'});  // opt limit   $(USER INPUT DISTANCE)
         // console.log(dist);
 
+        // Select login from location WHERE (st_distance_sphere(POINT(location.lon, location.lat), POINT(2.3292, 48.8628)) / 1000) < 11;
+        // REQUEST FOR GET users list from a distance input
+
+
+        // SELECT * from users INNER JOIN location ON location.login = users.login  WHERE users.orientation IN ('hetero', 'bi', 'gay')  AND (st_distance_sphere(POINT(location.lon, location.lat), POINT(2.3522, 48.8566)) / 1000) < 1 AND users.sexe IN ('M', 'F');
+        // select * from users WHERE JSON_CONTAINS(tags, json_array('test', 'lol'));
+
+        // SELECT * from users INNER JOIN location ON location.login = users.login  WHERE users.orientation IN ('hetero', 'bi', 'gay')  AND (st_distance_sphere(POINT(location.lon, location.lat), POINT(2.3522, 48.8566)) / 1000) < 1 AND users.sexe IN ('M', 'F') AND JSON_CONTAINS(users.tags, json_array('lol', 'test'));
         geocoder.reverse({'lat': res.lat, 'lon': res.lon})
             .then(res => {
                 User.update_coords_db(res[0], db, sess);

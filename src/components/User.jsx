@@ -1,5 +1,6 @@
 import React from 'react';
 import Chat from './Chat.jsx';
+import Research from './Research.jsx';
 
 export default class User extends React.Component {
     constructor(props) {
@@ -8,6 +9,10 @@ export default class User extends React.Component {
             allUsers: [],
         };
         this.disconnectUser = this.disconnectUser.bind(this);
+        this.seekUser = this.seekUser.bind(this);
+        this.state = {
+            view: false
+        };
         this.listUsers = this.listUsers.bind(this);
     }
 
@@ -25,7 +30,11 @@ export default class User extends React.Component {
         this.props.socket.emit("userDisconnect", {});
     }
 
-    handleLike(ev, user){
+    seekUser() {
+        this.setState({['view']: true})
+    }
+
+  handleLike(ev, user){
         this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
     }
 
@@ -57,13 +66,22 @@ export default class User extends React.Component {
 
     render() {
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
-        return (
+       let view = null;
+       
+      if (this.state.view) {
+            view = <Research />
+        }else{
+            view = <button onClick={this.seekUser}>Research</button>
+        }
+
+      return (
             <div className={"User"}>
                 <p>Welcome {this.props.user.login}</p>
                 <button onClick={this.disconnectUser}>Disconnect</button>
                 <h2>All Users</h2>
                 <ul>{list}</ul>
                 <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket} listUsers={this.listUsers}/>{}
+                {view}
             </div>
         );
     }
