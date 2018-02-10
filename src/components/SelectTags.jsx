@@ -32,7 +32,8 @@ export default class SelectTags extends React.Component {
         } else {
             this.setState({value});
         }
-        this.props.sendTags(this.state.multiValue);
+        if (this.props.sendTags)
+            this.props.sendTags(this.state.multiValue);
     }
 
     render() {

@@ -69,7 +69,7 @@ export default class User extends React.Component {
        let view = null;
        
       if (this.state.view) {
-            view = <Research />
+            view = <Research socket={this.props.socket}/>
         }else{
             view = <button onClick={this.seekUser}>Research</button>
         }
