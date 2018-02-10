@@ -2,6 +2,7 @@ let bcrypt = require('bcrypt');
 let NodeGeocoder = require('node-geocoder');
 let rp = require('request-promise');
 let likes = require('./likes.js');
+let update = require('./update.js');
 
 class User {
     constructor(props) {
@@ -22,7 +23,6 @@ class User {
         const [results, fields] = await db.execute(
             "SELECT * FROM `users` WHERE login=?",
             [res.login]);
-
         if (results[0]) {
             bcrypt.compare(res.password, results[0].password, (err, succ) => {
                 if (succ) {
@@ -36,8 +36,9 @@ class User {
                             this.updateUsers(sess, allUsers)
                                 .then(() => {
                                     io.emit('allUsers', allUsers);
+                                    update.refreshUser(db, sess, socket);
                                 })
-                                .catch(() => console.log("ERROR"));
+                                .catch((e) => console.log(e));
                         });
                          socket.emit('doloc');
                     });
@@ -157,7 +158,6 @@ class User {
             resolve();
         });
     }
-
 }
 
 module.exports = User;
