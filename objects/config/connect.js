@@ -65,13 +65,14 @@ class ConDb {
                         "id int auto_increment  primary key," +
                         "login varchar(255) not null," +
                         "type ENUM('like', 'unlike', 'visit', 'message', 'match', 'unmatch') not null," +
-                        "notif varchar(255) not null);" +
+                        "`from` varchar(255) not null);" +
                         "CREATE TABLE chat(" +
                         "id int auto_increment primary key," +
                         "user1 varchar(255) not null," +
                         "user2 varchar(255) not null," +
                         "history text," +
                         "messages text" +
+                        "`from` varchar(255)"+
                         ");";
               
                     db.query(sql).then(() => resolve(db))

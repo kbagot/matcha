@@ -6,11 +6,14 @@ export default class ChatWindow extends React.Component{
         this.renderMessages = this.renderMessages.bind(this);
     }
 
+
     renderMessages(){
         if (this.props.msg){
-            return this.props.msg.split("\n").map((msg, index) => {
-                return <p key={index}>{msg}</p>
-            });
+           return this.props.msg.map((elem, index) => {
+               return (
+               <p key={index}>{elem}</p>
+               );
+           })
         }
     }
 

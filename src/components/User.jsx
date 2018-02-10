@@ -29,9 +29,12 @@ export default class User extends React.Component {
         this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
     }
 
+    testFUncton = test => {
+        console.log("lol");
+    }
+
     listUsers(list){
         let array = list.data;
-
         if (array) {
             if (list.type === "all") {
                 return array.map((user, index) => {
@@ -45,7 +48,7 @@ export default class User extends React.Component {
                 return array.map((user, index) => {
                     if (user !== this.props.user.login)
                         return <li key={index}>
-                            <button onClick={(ev) => list.click(ev)}>{user}</button>
+                            <button onClick={ev => this.props.socket.emit('chat', {type: 'chatList', login: ev.target.innerHTML})}>{user}</button>
                         </li>
                 });
             }
@@ -54,14 +57,13 @@ export default class User extends React.Component {
 
     render() {
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
-
         return (
             <div className={"User"}>
                 <p>Welcome {this.props.user.login}</p>
                 <button onClick={this.disconnectUser}>Disconnect</button>
                 <h2>All Users</h2>
                 <ul>{list}</ul>
-                <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket} listUsers={this.listUsers}/>
+                <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket} listUsers={this.listUsers}/>{}
             </div>
         );
     }
