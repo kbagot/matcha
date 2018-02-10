@@ -1,4 +1,5 @@
 import React from 'react';
+import SelectTags from './SelectTags.jsx';
 
 export default class Register extends React.Component {
     constructor(props){
@@ -12,6 +13,7 @@ export default class Register extends React.Component {
             sexe: 'M',
             bio: '',
             orientation: 'bi',
+            tags: [],
             error : {
                 globalError: null,
                 loginError: null,
@@ -25,6 +27,7 @@ export default class Register extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleError = this.handleError.bind(this);
         this.validSubmit = this.validSubmit.bind(this);
+        this.getUserTags= this.getUserTags.bind(this);
     }
 
     componentDidMount(){
@@ -78,6 +81,10 @@ export default class Register extends React.Component {
         return !(ret === undefined && this.state.login.length > 0 && this.state.password.length > 0 && this.state.email.length > 0);
     }
 
+    getUserTags(tags) {
+        this.setState({['tags']: tags});
+    }
+
     render() {
         const valid = this.validSubmit();
         const globalError = <p>{this.state.error.globalError}</p>;
@@ -104,6 +111,8 @@ export default class Register extends React.Component {
                         <option value="F">Les Femmes</option>
                         <option value="bi">Les deux</option>
                     </select><br />
+                    Tags
+                    <SelectTags socket={this.props.socket} sendTags={this.getUserTags}/><br />
                     <input type="submit" value="S'inscrire" name="Submit" disabled={valid}/>
                 </form>
             </div>

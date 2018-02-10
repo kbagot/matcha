@@ -31,6 +31,10 @@ class Controller {
         socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, allUsers));
         socket.on('changeRegister', (data) => this.register.registerErrorHandling(data, socket));
         socket.on('validRegister', (data) => this.register.registerCheck(data, socket));
+        socket.on('getTags', async (fct) => {
+            let [results, fields] = await this.db.query("SELECT tag_name FROM tags");
+            fct(results);
+        } );
     }
 
     getServerIp() {

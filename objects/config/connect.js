@@ -43,6 +43,7 @@ class ConDb {
                         "valid boolean default 0," +
                         "hash varchar(255)," +
                         "notif boolean default 1," +
+                        "age TINYINT," +
                         "sexe enum('M', 'F') not null," +
                         "bio varchar(255)," +
                         "orientation ENUM('gay','hetero','bi') default 'bi'," +
@@ -67,7 +68,11 @@ class ConDb {
                         "CREATE TABLE tags(" +
                         "ID int not null auto_increment primary key," +
                         "tag_name varchar(255)" +
-                        ");";
+                        ");" +
+                        "INSERT INTO tags " +
+                        "(tag_name)" +
+                        "VALUES ('test'), ('GenUser'), ('film'), ('musique')" +
+                        ";";
                     db.query(sql).then(() => resolve(db))
                         .catch((err) => reject(err));
                 });
@@ -88,19 +93,19 @@ class ConDb {
         fakeloc.push(['50.8503', '4.3517', 'Brussels', 'Belgium']);
         fakeloc.push(['45.7640', '4.8357', 'Lyon', 'France']);
         fakeloc.push(['51.5074', '0.1278', 'London', 'England']);
+        let tags = [];
 
         for (const [i, elem] of data.entries()) {
-            let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, age, orientation, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             let login = elem.name.last + elem.name.first + i;
             let password = await bcrypt.hash("test", 10);
 
-            await this.con.execute(req, [login, elem.name.last, elem.name.first, password, elem.email, elem.gender === 'female' ? 'F' : 'M', '', ConDb.randomOrientation()]);
+            await this.con.execute(req, [login, elem.name.last, elem.name.first, password, elem.email, elem.gender === 'female' ? 'F' : 'M', 'Je suis moche', Math.floor(Math.random()* 80) + 18, ConDb.randomOrientation(), JSON.stringify(tags)]);
             console.log("db success => " + i);
 
 
-            let floc = fakeloc[Math.floor(Math.random()*fakeloc.length)];
             req = "INSERT INTO location(login, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            await this.con.execute(req, [login, ...floc, 'null', '1']);
+            await this.con.execute(req, [login, ...fakeloc[Math.floor(Math.random()*fakeloc.length)], 'null', '1']);
         }
     }
 
