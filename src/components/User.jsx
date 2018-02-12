@@ -38,10 +38,6 @@ export default class User extends React.Component {
         this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
     }
 
-    testFUncton = test => {
-        console.log("lol");
-    }
-
     listUsers(list){
         let array = list.data;
         if (array) {

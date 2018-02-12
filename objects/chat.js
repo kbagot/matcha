@@ -52,6 +52,9 @@ class Chat {
 
     static updateList(data, sess, socket){
         if (!sess.data.chat){
+            if (!sess.data.message){
+                sess.data.message = {};
+            }
             sess.data.chat = [data.login];
         } else {
             let index = sess.data.chat.indexOf(data.login);

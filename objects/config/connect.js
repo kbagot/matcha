@@ -83,7 +83,7 @@ class ConDb {
                         "user1 varchar(255) not null," +
                         "user2 varchar(255) not null," +
                         "history text," +
-                        "messages text" +
+                        "messages text," +
                         "`from` varchar(255)"+
                         ");";
               

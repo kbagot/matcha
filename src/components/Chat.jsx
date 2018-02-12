@@ -79,6 +79,7 @@ export default class Chat extends React.Component{
 
     renderChat(){
         if (this.props.user.chat) {
+            console.log(this.props.user);
             return this.props.user.chat.map(user => {
                 let value = this.state.input[user + "Input"] ? this.state.input[user + "Input"] : "";
 
