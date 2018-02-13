@@ -8,10 +8,14 @@ class Chat {
                 Chat.handleNewMsg(data, socket, db, sess, allUsers);
                 break ;
             case 'chatList':
-                Chat.updateList(data, sess, socket);
+                Chat.updateList(db, data, sess, socket);
                 break ;
             case 'unreadMsg':
                 Chat.unreadMsg(data, socket, db, sess, true);
+                break ;
+            case 'readMsg':
+                Chat.readMsg(data, socket, db, sess);
+                break ;
         }
     }
 
@@ -22,16 +26,25 @@ class Chat {
                     res.forEach((id) => {
                         socket.to(id).emit("chat", {type: 'newMsg', login: sess.data.login, msg: data.msg});
                         // temporary shit until history
-                        update.updateMsg(data.login, sess, data.msg);
-                        socket.emit('user', sess.data);
+                        // update.updateMsg(data.login, sess, data.msg);
+                        // socket.emit('user', sess.data);
                         //shit end
                     })
                 });
         } else {
             Chat.unreadMsg(data, socket, db, sess, false);
-            update.updateMsg(data.login, sess, data.msg);
-            socket.emit('user', sess.data);
+            // update.updateMsg(data.login, sess, data.msg);
+            // socket.emit('user', sess.data);
         }
+    }
+
+    static readMsg(data, socket, db, sess){
+        let login = data.from;
+        let login2 = sess.data.login;
+        let sql = "UPDATE chat SET history = JSON_MERGE((SELECT history FROM (SELECT history FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) as lol), ?) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
+
+        db.execute(sql, [login, login2, login2, login, JSON.stringify([{from: login, msg: data.msg}]), login, login2, login2, login])
+            .catch(e => console.log(e));
     }
 
     static unreadMsg(data, socket, db, sess, online){
@@ -50,17 +63,16 @@ class Chat {
             })
     }
 
-    static updateList(data, sess, socket){
+    static updateList(db, data, sess, socket){
         if (!sess.data.chat){
-            if (!sess.data.message){
-                sess.data.message = {};
-            }
             sess.data.chat = [data.login];
+            update.getChatLog(db, data, sess, socket);
         } else {
             let index = sess.data.chat.indexOf(data.login);
 
             if (index === -1) {
                 sess.data.chat.push(data.login);
+                update.getChatLog(db, data, sess, socket);
             } else {
                 sess.data.chat.splice(index, 1);
             }
@@ -68,6 +80,8 @@ class Chat {
         sess.save();
         socket.emit('user', sess.data);
     }
+
+
 }
 
 module.exports = Chat;

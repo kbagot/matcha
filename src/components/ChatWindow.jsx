@@ -11,7 +11,7 @@ export default class ChatWindow extends React.Component{
         if (this.props.msg){
            return this.props.msg.map((elem, index) => {
                return (
-               <p key={index}>{elem}</p>
+               <p key={index}>{elem.msg}</p>
                );
            })
         }
