@@ -18,7 +18,6 @@ class Controller {
         });
     }
 
-
     async socketEvents(socket, io) {
         let sess = socket.handshake.session;
 

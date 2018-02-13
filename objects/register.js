@@ -54,10 +54,14 @@ class Register {
             try{
                 data = Register.changeOrientation(data);
                 try {
-                    let password = await bcrypt.hash(data.password, 10);
-                    let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-                    await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio, data.orientation]);
+                    let password = await bcrypt.hash(data.password, 10);  //TODO    add  validation account  for avoid issue if no location dbentry for register user
+                    let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    let tags = data.tags.map(val => {
+                        if (val.className)
+                            this.addTags(val.value);
+                        return val.value;
+                    });
+                    await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio, data.orientation, JSON.stringify(tags)]);
                 }catch (e){
                     console.log(e);
                 }
@@ -78,6 +82,15 @@ class Register {
         }
         catch(e){
             console.log(e);
+        }
+    }
+
+    async addTags(ntag){
+        try {
+            const [rows, fields] = await this.db.execute("REPLACE INTO tags (tag_name) VALUES (?);", [ntag]);
+            return rows[0];
+        } catch(err){
+            console.log(err);
         }
     }
 

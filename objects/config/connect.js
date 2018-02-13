@@ -44,9 +44,9 @@ class ConDb {
                         "hash varchar(255)," +
                         "notif boolean default 1," +
                         "age TINYINT," +
-                        "sexe enum('M', 'F') not null," +
+                        "sexe enum('M', 'F', 'T') not null," +
                         "bio varchar(255)," +
-                        "orientation ENUM('gay','hetero','bi') default 'bi'," +
+                        "orientation ENUM('gay','hetero','bi', 'trans') default 'bi'," +
                         "tags JSON" +
                         ");" +
                         "CREATE TABLE location(" +
@@ -66,8 +66,7 @@ class ConDb {
                         "matcha boolean default false" +
                         ");" +
                         "CREATE TABLE tags(" +
-                        "ID int not null auto_increment primary key," +
-                        "tag_name varchar(255)" +
+                        "tag_name varchar(255) primary key" +
                         ");" +
                         "INSERT INTO tags " +
                         "(tag_name)" +
@@ -107,7 +106,7 @@ class ConDb {
         fakeloc.push(['50.8503', '4.3517', 'Brussels', 'Belgium']);
         fakeloc.push(['45.7640', '4.8357', 'Lyon', 'France']);
         fakeloc.push(['51.5074', '0.1278', 'London', 'England']);
-        let tags = [];
+        let tags = ['fake'];
 
         for (const [i, elem] of data.entries()) {
             let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, age, orientation, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -116,7 +115,6 @@ class ConDb {
 
             await this.con.execute(req, [login, elem.name.last, elem.name.first, password, elem.email, elem.gender === 'female' ? 'F' : 'M', 'Je suis moche', Math.floor(Math.random()* 80) + 18, ConDb.randomOrientation(), JSON.stringify(tags)]);
             console.log("db success => " + i);
-
 
             req = "INSERT INTO location(login, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
             await this.con.execute(req, [login, ...fakeloc[Math.floor(Math.random()*fakeloc.length)], 'null', '1']);
