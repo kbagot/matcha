@@ -3,7 +3,7 @@ class Update {
         try {
             await Update.getMatch(db, sess);
             await Update.getNotif(db, sess);
-            await Update.getMsg(db, sess);
+            // await Update.getMsg(db, sess);
             await Update.getAllChatLog(db, sess, socket);
         } catch (e) {
             console.log(e);
@@ -58,7 +58,6 @@ class Update {
                 reject(e);
             }
         }));
-
     }
 
     static updateMsg(login, sess, msg){
@@ -91,8 +90,6 @@ class Update {
                 rows.forEach(elem => {
                     let history = JSON.parse(elem.history);
                     if (history) {
-                        console.log(elem.login);
-                        console.log(history);
                         obj = Object.assign({}, obj, {[elem.login]: history});
                     }
                 });
@@ -119,6 +116,20 @@ class Update {
         }
     }
 
+    static updateNotif(db, data, sess){
+        if (sess.data.notif){
+            sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && elem.from !== data.login) || elem.type !== 'message'));
+            sess.save();
+            let sql = "DELETE FROM notif WHERE login = ? AND type = ? AND `from` = ?";
+
+            db.execute(sql, [sess.data.login, 'message', data.login]);
+        }
+    }
+
+    static openChat(db, data, sess, socket){
+        Update.getChatLog(db, data, sess, socket);
+        Update.updateNotif(db, data, sess);
+    }
 }
 
 module.exports = Update;

@@ -60,7 +60,7 @@ export default class User extends React.Component {
             } else if (list.type === "chat"){
                 return array.map((user, index) => {
                     if (user !== this.props.user.login) {
-                        let notif = this.getMessagesNotif(user, this.props.user.message);
+                        let notif = this.getMessagesNotif(user, this.props.user.notif);
 
                         return <li key={index}>
                             <button onClick={ev => this.props.socket.emit('chat', {
@@ -76,12 +76,12 @@ export default class User extends React.Component {
     }
 
     getMessagesNotif(login, list){
-        let messages;
+        let notif;
 
-        if (list){
-            messages = list[login];
+        if (list && typeof list === typeof []){
+            notif = list.filter(elem => elem.type === 'message' && elem.from === login);
         }
-        return messages ? messages.length : null;
+        return notif ? notif.length : null;
     }
 
     render() {

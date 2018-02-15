@@ -14,6 +14,7 @@ export default class Chat extends React.Component{
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.newMessage = this.newMessage.bind(this);
+        this.addMsg = this.addMsg.bind(this);
     }
 
     componentDidMount() {
@@ -38,6 +39,7 @@ export default class Chat extends React.Component{
         if (this.props.user.chat.indexOf(data.login) === -1){
             this.props.socket.emit('chat', {type: 'unreadMsg', msg: data.msg, from: data.login});
         } else {
+            this.addMsg(data.msg, data.login, data.login);
             this.props.socket.emit('chat', {type: 'readMsg', msg: data.msg, from: data.login});
         }
     }
@@ -54,8 +56,22 @@ export default class Chat extends React.Component{
                 login: ev.target.name,
                 msg: inputMsg
             });
+            this.addMsg(inputMsg, ev.target.name, this.props.user.login);
         }
         ev.preventDefault();
+    }
+
+    addMsg(msg, loginTo, loginFrom){
+        let obj;
+        let old = this.state.history[loginTo];
+
+        if (!old){
+            obj = {[loginTo]: [{msg: msg, from: loginFrom}]};
+        } else {
+            old.push({msg: msg, from: loginFrom});
+            obj = {[loginTo]: old};
+        }
+        this.setState({['history']: Object.assign({}, this.state.history, obj)});
     }
 
     handleChange(ev){
