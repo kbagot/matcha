@@ -6,6 +6,7 @@ export default class Register extends React.Component {
         super(props);
         this.state = {
             login: '',
+            age: '',
             last: '',
             first: '',
             password: '',
@@ -16,6 +17,7 @@ export default class Register extends React.Component {
             tags: [],
             error : {
                 globalError: null,
+                ageError: null,
                 loginError: null,
                 lastError: null,
                 firstError: null,
@@ -55,7 +57,7 @@ export default class Register extends React.Component {
         this.setState({
            [name]: value
         }, () => {
-            if (["login", "last", "first", "password", "email"].indexOf(name) !== -1){
+            if (["login", "last", "first", "password", "email", "age"].indexOf(name) !== -1){
                 change.push(this.state, name);
                 this.props.socket.emit("changeRegister", change);
             }
@@ -74,12 +76,12 @@ export default class Register extends React.Component {
         let res = [];
         let ret;
 
-        ["loginError", "passwordError", "emailError"].forEach((elem) => {
+        ["loginError", "passwordError", "emailError", "ageError"].forEach((elem) => {
             res.push(this.state.error[elem] === null);
         });
 
         ret = res.find((elem) => elem === false);
-        return !(ret === undefined && this.state.login.length > 0 && this.state.password.length > 0 && this.state.email.length > 0);
+        return !(ret === undefined && this.state.login.length > 0 && this.state.password.length > 0 && this.state.email.length > 0 && this.state.age >= 18 && this.state.age <= 99);
     }
 
     getUserTags(tags) {
@@ -98,6 +100,7 @@ export default class Register extends React.Component {
                     Login *  <input type="text" autoComplete={"username"} value={this.state.login} name="login" onChange={this.handleChange}/> {this.state.error.loginError} <br />
                     Nom * <input type="text" autoComplete={"family-name"} value={this.state.last} name="last" onChange={this.handleChange}/> {this.state.error.lastError}<br />
                     Prenom * <input type="text" autoComplete={"given-name"}value={this.state.first} name="first" onChange={this.handleChange}/> {this.state.error.firstError}<br />
+                    Age * <input type={"number"} min={"18"} max={"99"} name="age" onChange={this.handleChange} value={this.state.age}/> {this.state.error.ageError} <br />
                     Password * <input type="password" autoComplete={""} value={this.state.password} name="password" onChange={this.handleChange}/> {this.state.error.passwordError}<br />
                     Email * <input type="email" autoComplete={"email"} value={this.state.email} name="email" onChange={this.handleChange}/> {this.state.error.emailError}<br />
                     Je suis
