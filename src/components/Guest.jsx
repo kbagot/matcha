@@ -25,7 +25,7 @@ export default class Guest extends React.Component{
             window = <Login socket={this.props.socket}/>
         }
         else{
-            window = <Register socket={this.props.socket}/>
+            window = <Register socket={this.props.socket} switch={this.switchButton}/>
         }
         return (
             <div>
