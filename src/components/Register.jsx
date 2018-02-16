@@ -107,6 +107,7 @@ export default class Register extends React.Component {
                     <select value={this.state.sexe} onChange={this.handleChange} name={"sexe"}>
                         <option value="M">Un Homme</option>
                         <option value="F">Une Femme</option>
+                        <option value="T">Erreur de la nature</option>
                     </select><br />
                     Bio <textarea value={this.state.bio} name="bio" onChange={this.handleChange}/><br />
                     J'aime
@@ -114,9 +115,10 @@ export default class Register extends React.Component {
                         <option value="M">Les Hommes</option>
                         <option value="F">Les Femmes</option>
                         <option value="bi">Les deux</option>
+                        <option value="trans">dégénérer sexuelle (ovni)</option>
                     </select><br />
                     Tags
-                    <SelectTags socket={this.props.socket} sendTags={this.getUserTags}/><br />
+                    <SelectTags socket={this.props.socket} sendTags={this.getUserTags} create/><br />
                     <input type="submit" value="S'inscrire" name="Submit" disabled={valid}/>
                 </form>
             </div>
