@@ -1,21 +1,21 @@
 let bcrypt = require('bcrypt');
 
 class Register {
-    async   registerErrorHandling(data, socket){
+    async registerErrorHandling(data, socket) {
         try {
-            let     error = null;
-            let     change = data[1] === 'login' || data[1] === 'email';
-            const   [rows, fields] = await this.db.execute("SELECT "+data[1]+" FROM `users` WHERE "+data[1]+" = ?", [data[0][data[1]]])
+            let error = null;
+            let change = data[1] === 'login' || data[1] === 'email';
+            const [rows, fields] = await this.db.execute("SELECT " + data[1] + " FROM `users` WHERE " + data[1] + " = ?", [data[0][data[1]]])
 
-            if ([rows][0][0] && change){
-                    error = (data[1] === 'login' ? 'Ce ' : 'Cet ') + data[1] + " existe deja.";
+            if ([rows][0][0] && change) {
+                error = (data[1] === 'login' ? 'Ce ' : 'Cet ') + data[1] + " existe deja.";
             }
             else {
                 let result = data[0][data[1]];
 
-                switch (data[1]){
+                switch (data[1]) {
                     case 'password':
-                        if (!Register.checkPassword(result)){
+                        if (!Register.checkPassword(result)) {
                             error = result.length ? "Le mot de passe doit contenir au moins 6 caracteres." : null;
                         }
                         break;
@@ -31,37 +31,43 @@ class Register {
                                 }
                             }
                         }
-                        else{
+                        else {
                             error = null;
                         }
                         break;
                     case 'email':
-                        if (!Register.checkEmail(result)){
+                        if (!Register.checkEmail(result)) {
                             error = result.length ? "Entrez une adresse email valide." : null;
                         }
                         break;
                 }
             }
-            socket.emit ('registerError', {error: error, type: data[1]});
+            socket.emit('registerError', {error: error, type: data[1]});
         }
-        catch(e){
+        catch (e) {
             console.log(e);
         }
     }
 
-    async registerCheck(data, socket){
-        if (Register.checkEmail(data.email) && Register.checkLogin(data.login) && Register.checkPassword(data.password) && await this.uniqueInput(data)){
-            try{
+    async registerCheck(data, socket) {
+        if (Register.checkEmail(data.email) && Register.checkLogin(data.login) && Register.checkPassword(data.password) && await this.uniqueInput(data)) {
+            try {
                 data = Register.changeOrientation(data);
                 try {
-                    let password = await bcrypt.hash(data.password, 10);
-                    let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-                    await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio, data.orientation]);
-                }catch (e){
+                    let password = await bcrypt.hash(data.password, 10);  //TODO    add  validation account  for avoid issue if no location dbentry for register user
+                    let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    let tags = data.tags.map(val => {
+                        if (val.className)
+                            this.addTags(val.value);
+                            return val.value;
+                    });
+                    if (tags.length = '0')
+                        tags = ['notag'];
+                    await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio, data.orientation, JSON.stringify(tags)]);
+                } catch (e) {
                     console.log(e);
                 }
-            } catch(e){
+            } catch (e) {
                 console.log(e);
             }
         }
@@ -71,36 +77,45 @@ class Register {
         }
     }
 
-    async uniqueInput(data){
+    async uniqueInput(data) {
         try {
             const [rows, fields] = await this.db.execute("SELECT login, email FROM users WHERE login = ? OR email = ?", [data.login, data.email]);
             return ![rows][0][0];
         }
-        catch(e){
+        catch (e) {
             console.log(e);
         }
     }
 
-    static changeOrientation(data){
-        if (data.sexe === data.orientation){
+    async addTags(ntag) {
+        try {
+            const [rows, fields] = await this.db.execute("REPLACE INTO tags (tag_name) VALUES (?);", [ntag]);
+            return rows[0];
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static changeOrientation(data) {
+        if (data.sexe === data.orientation) {
             return Object.assign({}, data, {orientation: 'gay'});
-        }else if (data.sexe !== data.orientation && data.orientation !== 'bi'){
+        } else if (data.sexe !== data.orientation && data.orientation !== 'bi') {
             return Object.assign({}, data, {orientation: 'hetero'});
-        }else{
+        } else {
             return data;
         }
     }
 
 
-    static checkEmail(str){
+    static checkEmail(str) {
         return str.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
     }
 
-    static checkLogin(str){
+    static checkLogin(str) {
         return str.replace(/\s/g, '').length
     }
 
-    static checkPassword(str){
+    static checkPassword(str) {
         return str.length >= 6;
     }
 
