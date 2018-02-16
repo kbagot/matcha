@@ -7,6 +7,7 @@ export default class User extends React.Component {
         super(props);
         this.state = {
             allUsers: [],
+            history: []
         };
         this.disconnectUser = this.disconnectUser.bind(this);
         this.seekUser = this.seekUser.bind(this);
@@ -17,6 +18,10 @@ export default class User extends React.Component {
     }
 
     componentDidMount(){
+        this.props.socket.on('match', (res) => {
+            this.props.socket.emit('like', {type: res.type, login: res.login});
+        });
+
         this.props.socket.on('allUsers', (data) => {
             this.setState({['allUsers']: data});
         });
@@ -24,6 +29,8 @@ export default class User extends React.Component {
 
     componentWillUnmount(){
         this.props.socket.removeListener('allUsers');
+        this.props.socket.removeListener('match');
+
     }
 
     disconnectUser() {
@@ -40,6 +47,7 @@ export default class User extends React.Component {
 
     listUsers(list){
         let array = list.data;
+
         if (array) {
             if (list.type === "all") {
                 return array.map((user, index) => {
@@ -51,13 +59,29 @@ export default class User extends React.Component {
                 });
             } else if (list.type === "chat"){
                 return array.map((user, index) => {
-                    if (user !== this.props.user.login)
+                    if (user !== this.props.user.login) {
+                        let notif = this.getMessagesNotif(user, this.props.user.notif);
+
                         return <li key={index}>
-                            <button onClick={ev => this.props.socket.emit('chat', {type: 'chatList', login: ev.target.innerHTML})}>{user}</button>
+                            <button onClick={ev => this.props.socket.emit('chat', {
+                                type: 'chatList',
+                                login: ev.target.innerHTML,
+                                history: list.history['user']
+                            })}>{user}</button> {notif}
                         </li>
+                    }
                 });
             }
         }
+    }
+
+    getMessagesNotif(login, list){
+        let notif;
+
+        if (list && typeof list === typeof []){
+            notif = list.filter(elem => elem.type === 'message' && elem.from === login);
+        }
+        return notif ? notif.length : null;
     }
 
     render() {

@@ -1,7 +1,24 @@
 let bcrypt = require('bcrypt');
 
 class Register {
-    async registerErrorHandling(data, socket) {
+    registerHandling(data, socket, fn){
+        if (data.type === 'change'){
+            this.registerErrorHandling(data.value, socket);
+        } else if (data.type === 'submit'){
+            this.registerCheck(data.value, socket);
+        } else if (data.type === 'resetChange'){
+            let error = null;
+
+            if (!Register.checkEmail(data.value)){
+                error = data.value.length ? "Entrez une adresse email valide." : null;
+                }
+            if (fn){
+                fn(error);
+            }
+        }
+    }
+
+    async   registerErrorHandling(data, socket){
         try {
             let error = null;
             let change = data[1] === 'login' || data[1] === 'email';
@@ -40,6 +57,11 @@ class Register {
                             error = result.length ? "Entrez une adresse email valide." : null;
                         }
                         break;
+                    case 'age':
+                        if (result < 18 || result > 99){
+                            error = "Vous devez avoir entre 18 et 99 ans.";
+                        }
+                        break ;
                 }
             }
             socket.emit('registerError', {error: error, type: data[1]});
@@ -49,9 +71,9 @@ class Register {
         }
     }
 
-    async registerCheck(data, socket) {
-        if (Register.checkEmail(data.email) && Register.checkLogin(data.login) && Register.checkPassword(data.password) && await this.uniqueInput(data)) {
-            try {
+    async registerCheck(data, socket){
+        if (Register.checkAge(data.age) && Register.checkEmail(data.email) && Register.checkLogin(data.login) && Register.checkPassword(data.password) && await this.uniqueInput(data)){
+            try{
                 data = Register.changeOrientation(data);
                 try {
                     let password = await bcrypt.hash(data.password, 10);  //TODO    add  validation account  for avoid issue if no location dbentry for register user
@@ -106,6 +128,9 @@ class Register {
         }
     }
 
+    static checkAge(age){
+        return age >= 18 && age <= 99;
+    }
 
     static checkEmail(str) {
         return str.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);

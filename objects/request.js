@@ -31,8 +31,7 @@ class Controller {
         socket.on('login', (res) => this.user.dologin(res, this.db, sess, io, socket, allUsers, io));
         socket.on('locUp', (res) => this.user.update_coords(res, this.db, sess, socket)); // not sure of the place
         socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, allUsers));
-        socket.on('changeRegister', (data) => this.register.registerErrorHandling(data, socket));
-        socket.on('validRegister', (data) => this.register.registerCheck(data, socket));
+        socket.on('Register', (data, fn) => this.register.registerHandling(data, socket, fn));
         socket.on('getTags', async (fct) => {
             let [results, fields] = await this.db.query("SELECT tag_name FROM tags");
             fct(results);

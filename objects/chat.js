@@ -8,10 +8,14 @@ class Chat {
                 Chat.handleNewMsg(data, socket, db, sess, allUsers);
                 break ;
             case 'chatList':
-                Chat.updateList(data, sess, socket);
+                Chat.updateList(db, data, sess, socket);
                 break ;
             case 'unreadMsg':
                 Chat.unreadMsg(data, socket, db, sess, true);
+                break ;
+            case 'readMsg':
+                Chat.addMsg(data, db, sess);
+                break ;
         }
     }
 
@@ -21,46 +25,52 @@ class Chat {
                 .then(res => {
                     res.forEach((id) => {
                         socket.to(id).emit("chat", {type: 'newMsg', login: sess.data.login, msg: data.msg});
-                        // temporary shit until history
-                        update.updateMsg(data.login, sess, data.msg);
-                        socket.emit('user', sess.data);
-                        //shit end
                     })
                 });
         } else {
             Chat.unreadMsg(data, socket, db, sess, false);
-            update.updateMsg(data.login, sess, data.msg);
-            socket.emit('user', sess.data);
         }
+    }
+
+    static addMsg(data, db, sess){
+        return new Promise((resolve, reject) => {
+            let login = data.from;
+            let login2 = data.login ? data.login : sess.data.login;
+            let sql = "UPDATE chat SET history = JSON_MERGE((SELECT history FROM (SELECT history FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) as lol), ?) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
+
+            db.execute(sql, [login, login2, login2, login, JSON.stringify([{from: login, msg: data.msg}]), login, login2, login2, login])
+                .then(resolve())
+                .catch(e => reject(e));
+        });
     }
 
     static unreadMsg(data, socket, db, sess, online){
         let sql = "INSERT INTO notif (login, type, `from`) VALUES (?, ?, ?);";
-        let sql2 = 'UPDATE chat SET `from`= ? , messages = JSON_MERGE((SELECT messages FROM(SELECT messages FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) as lol), ?) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)';
         let login  = online ? sess.data.login : data.login;
         let login2 = data.from;
 
-        db.execute(sql, [login, 'message', login2])
-            .then(() => db.execute(sql2, [login2, login, login2, login2, login, JSON.stringify([data.msg]), login, login2, login2, login ]))
+        Chat.addMsg(data, db, sess)
+            .then(() => db.execute(sql, [login, 'message', login2]))
             .then(() => {
             if (online){
-                update.updateMsg(login2, sess, data.msg);
-                socket.emit('user', sess.data);
+                update.getNotif(db, sess)
+                    .then(() => socket.emit('user', sess.data));
             }
-            })
+        })
     }
 
-    static updateList(data, sess, socket){
+    static updateList(db, data, sess, socket){
+        console.log(sess.data.notif);
         if (!sess.data.chat){
-            if (!sess.data.message){
-                sess.data.message = {};
-            }
             sess.data.chat = [data.login];
+
+            update.openChat(db, data, sess, socket);
         } else {
             let index = sess.data.chat.indexOf(data.login);
 
             if (index === -1) {
                 sess.data.chat.push(data.login);
+                update.openChat(db, data, sess, socket);
             } else {
                 sess.data.chat.splice(index, 1);
             }
@@ -68,6 +78,8 @@ class Chat {
         sess.save();
         socket.emit('user', sess.data);
     }
+
+
 }
 
 module.exports = Chat;
