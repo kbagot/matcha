@@ -3,7 +3,6 @@ class Update {
         try {
             await Update.getMatch(db, sess);
             await Update.getNotif(db, sess);
-            // await Update.getMsg(db, sess);
             await Update.getAllChatLog(db, sess, socket);
         } catch (e) {
             console.log(e);
@@ -24,26 +23,12 @@ class Update {
                         } else if (sess.data.match.indexOf(elem.user) === -1) {
                             sess.data.match.push(elem.user);
                         }
-                        sess.save(() => resolve());
+                        sess.save();
                     });
+                    resolve();
                 })
                 .catch((e) => reject(e));
         }));
-    }
-
-    static getMsg(db, sess){
-        return new Promise(async (resolve, reject) => {
-            try {
-                let sql = "SELECT messages, `from` FROM chat WHERE (user1 = ? OR user2 = ?) AND `from` != ?";
-                let [rows] = await db.execute(sql, [sess.data.login, sess.data.login, sess.data.login]);
-
-                rows.forEach((elem) => JSON.parse(elem.messages).forEach((msg) => Update.updateMsg(elem.from, sess, msg)));
-            } catch (e) {
-                console.log(e);
-            }
-            resolve();
-        });
-
     }
 
     static  getNotif(db, sess){
@@ -58,24 +43,6 @@ class Update {
                 reject(e);
             }
         }));
-    }
-
-    static updateMsg(login, sess, msg){
-        if (!sess.data.message){
-            sess.data.message = {[login]: [msg]};
-        } else {
-            let old = sess.data.message[login];
-
-            if ((old && old.indexOf(msg) === -1) || !old) {
-                if (!old) {
-                    old = [msg];
-                } else {
-                    old.push(msg);
-                }
-                sess.data.message = Object.assign({}, sess.data.message, {[login]: old});
-            }
-        }
-        sess.save();
     }
 
     static getAllChatLog(db, sess, socket){
@@ -118,7 +85,6 @@ class Update {
 
     static updateNotif(db, data, sess){
         if (sess.data.notif){
-            console.log(sess.data.notif);
             sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && elem.from !== data.login) || elem.type !== 'message'));
             sess.save();
             let sql = "DELETE FROM notif WHERE login = ? AND type = ? AND `from` = ?";
