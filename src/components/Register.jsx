@@ -52,21 +52,21 @@ export default class Register extends React.Component {
     handleChange(ev){
         let name = ev.target.name;
         let change = [];
-        let value = ev.target.value;
+        let value = (ev.target.name === 'bio' ? ev.target.value : ev.target.value.trim());
 
         this.setState({
            [name]: value
         }, () => {
             if (["login", "last", "first", "password", "email", "age"].indexOf(name) !== -1){
                 change.push(this.state, name);
-                this.props.socket.emit("changeRegister", change);
+                this.props.socket.emit("Register", {type: "change", value: change});
             }
         });
     }
 
     handleSubmit(ev){
         if (!this.validSubmit()){
-            this.props.socket.emit('validRegister', this.state);
+            this.props.socket.emit('Register', {type:"submit" , value: this.state});
             this.props.switch();
         }
         ev.preventDefault();
@@ -102,7 +102,7 @@ export default class Register extends React.Component {
                     Prenom * <input type="text" autoComplete={"given-name"}value={this.state.first} name="first" onChange={this.handleChange}/> {this.state.error.firstError}<br />
                     Age * <input type={"number"} min={"18"} max={"99"} name="age" onChange={this.handleChange} value={this.state.age}/> {this.state.error.ageError} <br />
                     Password * <input type="password" autoComplete={""} value={this.state.password} name="password" onChange={this.handleChange}/> {this.state.error.passwordError}<br />
-                    Email * <input type="email" autoComplete={"email"} value={this.state.email} name="email" onChange={this.handleChange}/> {this.state.error.emailError}<br />
+                    Email * <input type="text" autoComplete={"email"} value={this.state.email} name="email" onChange={this.handleChange}/> {this.state.error.emailError}<br />
                     Je suis
                     <select value={this.state.sexe} onChange={this.handleChange} name={"sexe"}>
                         <option value="M">Un Homme</option>

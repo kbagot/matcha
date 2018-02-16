@@ -60,6 +60,7 @@ class Chat {
     }
 
     static updateList(db, data, sess, socket){
+        console.log(sess.data.notif);
         if (!sess.data.chat){
             sess.data.chat = [data.login];
 

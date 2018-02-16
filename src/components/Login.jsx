@@ -62,6 +62,7 @@ export default class Login extends React.Component {
                                     name="password" onChange={this.handleChange}/><br/>
                     <input type="submit" value="S'identifier" name="Submit"/>
                 </form>
+                <a href="" onClick={this.props.reset}> Mot de passe oublie ?</a>
                 <h1>{this.state.error}</h1>
             </div>
         );

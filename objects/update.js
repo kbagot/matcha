@@ -118,6 +118,7 @@ class Update {
 
     static updateNotif(db, data, sess){
         if (sess.data.notif){
+            console.log(sess.data.notif);
             sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && elem.from !== data.login) || elem.type !== 'message'));
             sess.save();
             let sql = "DELETE FROM notif WHERE login = ? AND type = ? AND `from` = ?";
@@ -128,7 +129,7 @@ class Update {
 
     static openChat(db, data, sess, socket){
         Update.getChatLog(db, data, sess, socket);
-        Update.updateNotif(db, data, sess);
+         Update.updateNotif(db, data, sess);
     }
 }
 

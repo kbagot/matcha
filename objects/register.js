@@ -1,6 +1,23 @@
 let bcrypt = require('bcrypt');
 
 class Register {
+    registerHandling(data, socket, fn){
+        if (data.type === 'change'){
+            this.registerErrorHandling(data.value, socket);
+        } else if (data.type === 'submit'){
+            this.registerCheck(data.value, socket);
+        } else if (data.type === 'resetChange'){
+            let error = null;
+
+            if (!Register.checkEmail(data.value)){
+                error = data.value.length ? "Entrez une adresse email valide." : null;
+                }
+            if (fn){
+                fn(error);
+            }
+        }
+    }
+
     async   registerErrorHandling(data, socket){
         try {
             let     error = null;
