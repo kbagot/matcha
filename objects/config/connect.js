@@ -70,7 +70,7 @@ class ConDb {
                         ");" +
                         "INSERT INTO tags " +
                         "(tag_name)" +
-                        "VALUES ('test'), ('GenUser'), ('film'), ('musique')" +
+                        "VALUES ('fake'), ('notag')" +
                         ";" +
                         "CREATE TABLE notif(" +
                         "id int auto_increment  primary key," +
@@ -106,8 +106,8 @@ class ConDb {
         fakeloc.push(['50.8503', '4.3517', 'Brussels', 'Belgium']);
         fakeloc.push(['45.7640', '4.8357', 'Lyon', 'France']);
         fakeloc.push(['51.5074', '0.1278', 'London', 'England']);
-        let tags = ['fake'];
-
+        // let tags = ['fake'];
+         let tags = null;
         for (const [i, elem] of data.entries()) {
             let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, age, orientation, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             let login = elem.name.last + elem.name.first + i;

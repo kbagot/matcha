@@ -15,7 +15,7 @@ export default class SelectTags extends React.Component {
 
     componentDidMount() {
         this.props.socket.emit("getTags", (tags) => {
-            console.log(tags);
+            // console.log(tags);
             for (let i in tags) {
                 let newt = {value: tags[i].tag_name, label: tags[i].tag_name};
                 this.setState({

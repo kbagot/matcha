@@ -5,23 +5,46 @@ export default class Research extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            M: '',
+            M:'',
             F: '',
             T: '',
-            AH: '',
-            AB: '',
-            AT: '',
-            min: '',
-            max: '',
-            distance: '',
-            tags: null,
+            hetero: '',
+            bi: '',
+            trans: '',
+            gay: '',
+            min: '18',
+            max: '99',
+            distance: '100',
+            tags: ['notag'],
+            result: null,
         };
         this.getTags = this.getTags.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
+    // componentWillUpdate(nextProps, nextState)  //TODO refresh animation  maybe  on this
+
+    componentDidUpdate(prevProps, prevState) {
+        this.props.socket.emit('ResearchUsers', this.state, (users) => {
+            console.log(users);
+
+            // for (let i in tags) {
+            //     let newt = {value: tags[i].tag_name, label: tags[i].tag_name};
+            //     this.setState({
+            //         options: [...this.state.options, newt]
+            //     });
+        });
+    }
+
+    // refresh() {
+    //
+    //
+    // }
+
     getTags(tags) {
-        this.setState({['tags']: tags});
+        let ptags = tags.map(val => val.value);
+        this.setState({['tags']: ptags});
+        // this.refresh();
     }
 
     async handleChange(ev) {
@@ -37,7 +60,8 @@ export default class Research extends React.Component {
             // }
             await this.setState({[ev.target.name]: ev.target.value});
         }
-        console.log(this.state);
+        // console.log(this.state);
+        // this.refresh();
     }
 
     render() {
@@ -48,13 +72,14 @@ export default class Research extends React.Component {
                 F :<input type="checkbox" name="F" onChange={this.handleChange}/>
                 T :<input type="checkbox" name="T" onChange={this.handleChange}/>
                 <br/>Attirances :<br/>
-                Hetero :<input type="checkbox" name="AH" onChange={this.handleChange}/>
-                Bi :<input type="checkbox" name="AB" onChange={this.handleChange}/>
-                Trans :<input type="checkbox" name="AT" onChange={this.handleChange}/>
+                Hetero :<input type="checkbox" name="hetero" onChange={this.handleChange}/>
+                Bi :<input type="checkbox" name="bi" onChange={this.handleChange}/>
+                Gay :<input type="checkbox" name="gay" onChange={this.handleChange}/>
+                Trans :<input type="checkbox" name="trans" onChange={this.handleChange}/>
                 <br/>Age:<br/>
-                minimum :<input type="number" name="min" min="18" max="99" value={this.state.min}
+                minimum :<input type="number" name="min" min="18" max="99"
                                 onChange={this.handleChange}/>
-                maximum :<input type="number" name="max" min="18" max="99" value={this.state.max}
+                maximum :<input type="number" name="max" min="18" max="99"
                                 onChange={this.handleChange}/>
                 <br/>Distance:<br/>
                 max distance en km :<input type="number" name="distance" min="0" max="20000"
