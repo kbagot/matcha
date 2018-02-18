@@ -7,13 +7,11 @@ export default class User extends React.Component {
         super(props);
         this.state = {
             allUsers: [],
-            history: []
+            history: [],
+            view: false
         };
         this.disconnectUser = this.disconnectUser.bind(this);
         this.seekUser = this.seekUser.bind(this);
-        this.state = {
-            view: false
-        };
         this.listUsers = this.listUsers.bind(this);
     }
 
@@ -96,7 +94,7 @@ export default class User extends React.Component {
 
       return (
             <div className={"User"}>
-                <p>Welcome {this.props.user.login}</p>
+                <p>Welcome {this.props.user.login} </p>
                 <button onClick={this.disconnectUser}>Disconnect</button>
                 <h2>All Users</h2>
                 <ul>{list}</ul>

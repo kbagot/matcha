@@ -28,7 +28,9 @@ class Likes{
                 {
                     sql = "INSERT INTO likes(user1, user2) VALUES (?, ?)";
                     db.execute(sql, [login2, login]);
+                    Likes.addNotif(db, sess, 'like', login, login2);
                 } else if (!res.matcha && res.user1 !== login2 ){
+                    Likes.addNotif(db, sess, 'match', login, login2);
                     sql = "INSERT INTO chat(user1, user2, history) SELECT ?, ? , '[]' WHERE NOT EXISTS (SELECT user1 FROM chat WHERE (user1= ? AND user2=?) OR (user1=? AND user2=?)) LIMIT 1";
                     db.execute(sql, [login, login2, login, login2, login2, login]).catch(e => console.log(e));
                     sql = "UPDATE likes SET matcha=true WHERE (user1=? AND user2=?) OR (user1=? AND user2=?); " ;
@@ -46,16 +48,18 @@ class Likes{
 
         Likes.likeExist(login, sess, db)
             .then((res) =>{
-            if (res.matcha){
-               sql = "UPDATE likes SET matcha=false ,user1= (CASE WHEN user1=? THEN ? ELSE ? END), user2= (CASE WHEN user2=? THEN ? ELSE ? END) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
+            if (res && res.matcha){
+                Likes.addNotif(db, sess, 'unmatch', login, login2);
+                sql = "UPDATE likes SET matcha=false ,user1= (CASE WHEN user1=? THEN ? ELSE ? END), user2= (CASE WHEN user2=? THEN ? ELSE ? END) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
                db.execute(sql, [login2, login, login, login, login2, login2, login, login2, login2, login])
                    .then(() => Likes.deleteMatchList(socket, db, sess, login, true));
            } else {
-               sql = "DELETE FROM likes WHERE user1=? AND user2=?";
+                Likes.addNotif(db, sess, 'unlike', login, login2);
+                sql = "DELETE FROM likes WHERE user1=? AND user2=?";
                db.execute(sql, [login2, login]);
            }
         })
-            .catch((e) => console.log("OupsREmove"));
+            .catch((e) => console.log(e));
     }
 
     static likeExist(login, sess, db){
@@ -64,9 +68,10 @@ class Likes{
             let login2 = sess.data.login;
 
             db.execute(sql, [login, login2, login2, login])
-                .then(([rows, fields]) => { resolve(rows[0])
+                .then(([rows, fields]) => {
+                    resolve(rows[0])
                 })
-                .catch(() => reject(false));
+                .catch((e) => reject(e));
         });
     }
 
@@ -86,6 +91,13 @@ class Likes{
                 resolve(res);
             });
         }) ;
+    }
+
+
+    static addNotif(db, sess, type, login, login2){
+        let sql =  "INSERT INTO notif SET type = ?, login = ?, `from` = ?";
+
+        db.execute(sql, [type, login, login2]);
     }
 
     static addMatchList(socket, db, sess, login, refresh){
