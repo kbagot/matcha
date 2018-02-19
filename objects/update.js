@@ -4,10 +4,10 @@ class Update {
             await Update.getMatch(db, sess);
             await Update.getNotif(db, sess);
             await Update.getAllChatLog(db, sess, socket);
+            socket.emit('user', sess.data, () => console.log("REFRESH"));
         } catch (e) {
             console.log(e);
         }
-        socket.emit('user', sess.data);
     }
 
     static getMatch(db, sess){

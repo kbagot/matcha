@@ -1,19 +1,26 @@
+let update = require('./update.js');
+
 class Likes{
 
-    handleLikes(data, socket, db, sess){
+    handleLikes(data, socket, db, sess, allUsers){
 
         switch(data.type){
             case 'Add':
                 Likes.addLike(data.login, socket, db, sess);
+                Likes.sendNotif(db, data.login, socket, allUsers);
                 break;
             case 'Remove':
                 Likes.removeLike(data.login, socket, db, sess);
+                Likes.sendNotif(db, data.login, socket, allUsers);
                 break ;
             case 'addMatch':
                 Likes.addMatchList(socket, db, sess, data.login, false);
                 break;
             case 'delMatch':
                 Likes.deleteMatchList(socket, db, sess, data.login, false);
+                break ;
+            case 'refresh':
+                update.getNotif(db, sess).then(() => socket.emit('user', sess.data));
                 break ;
         }
     }
@@ -60,6 +67,18 @@ class Likes{
            }
         })
             .catch((e) => console.log(e));
+    }
+
+
+    static sendNotif(db, login, socket, allUsers){
+        if (allUsers.indexOf(login) !== -1){
+            Likes.findSocket(db, login)
+                .then(res => {
+                    res.forEach(id => {
+                        socket.to(id).emit('match', {type: 'refresh'});
+                    })
+                })
+        }
     }
 
     static likeExist(login, sess, db){

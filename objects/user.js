@@ -32,14 +32,18 @@ class User {
                     sess.save((err) => {
                         if (err)
                             console.log(err);
-                        socket.emit('user', sess.data, () => {
-                            this.updateUsers(sess, allUsers)
-                                .then(() => {
-                                    io.emit('allUsers', allUsers);
-                                    update.refreshUser(db, sess, socket);
-                                })
-                                .catch((e) => console.log(e));
-                        });
+
+                        update.refreshUser(db, sess, socket)
+                            .then(() =>this.updateUsers(sess, allUsers))
+                            .then(() => io.emit('allUsers', allUsers));
+                        // socket.emit('user', sess.data, () => {
+                        //     this.updateUsers(sess, allUsers)
+                        //         .then(() => {
+                        //             io.emit('allUsers', allUsers);
+                        //             update.refreshUser(db, sess, socket);
+                        //         })
+                        //         .catch((e) => console.log(e));
+                        // });
                          socket.emit('doloc');
                     });
                 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import Chat from './Chat.jsx';
+import Notif from './Notif.jsx';
 import Research from './Research.jsx';
 
 export default class User extends React.Component {
@@ -84,17 +85,17 @@ export default class User extends React.Component {
 
     render() {
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
-       let view = null;
-       
-      if (this.state.view) {
+        let view = null;
+
+        if (this.state.view) {
             view = <Research socket={this.props.socket}/>
         }else{
             view = <button onClick={this.seekUser}>Research</button>
         }
 
-      return (
+        return (
             <div className={"User"}>
-                <p>Welcome {this.props.user.login} </p>
+                <p>Welcome {this.props.user.login} </p> <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/>
                 <button onClick={this.disconnectUser}>Disconnect</button>
                 <h2>All Users</h2>
                 <ul>{list}</ul>

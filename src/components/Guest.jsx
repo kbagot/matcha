@@ -5,7 +5,6 @@ import ResetPassword from './ResetPassword.jsx';
 
 let prevState = JSON.parse(sessionStorage.getItem('GuestState'));
 
-console.log(prevState);
 export default class Guest extends React.Component{
     constructor (props){
         super(props);

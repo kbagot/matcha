@@ -27,31 +27,30 @@ class Controller {
             this.triggerRefresh(io, socket, sess)
         }
         socket.on('chat', (data) => this.chat.handleChat(data, socket, this.db, sess, allUsers));
-        socket.on('like', (data) => this.user.likes.handleLikes(data, socket, this.db, sess));
+        socket.on('like', (data) => this.user.likes.handleLikes(data, socket, this.db, sess, allUsers));
         socket.on('login', (res) => this.user.dologin(res, this.db, sess, io, socket, allUsers, io));
         socket.on('locUp', (res) => this.user.update_coords(res, this.db, sess, socket)); // not sure of the place
         socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, allUsers));
         socket.on('Register', (data, fn) => this.register.registerHandling(data, socket, fn));
-        socket.on('getTags', async (fct) => {
-            let [results, fields] = await this.db.query("SELECT tag_name FROM tags");
-            fct(results);
-        });
-        socket.on('ResearchUsers', async (opt, fct) => {
-            try {
-                console.log(opt);
-                let [req, lol] = await this.db.query("SELECT * FROM location WHERE login = ?", [sess.data.login]);
+        // socket.on('getTags', async (fct) => {
+        //     let [results, fields] = await this.db.query("SELECT tag_name FROM tags");
+        //     fct(results);
+        // });
+        // socket.on('ResearchUsers', async (opt, fct) => {
+        //     try {
+        //         console.log(opt);
+        //         let [req, lol] = await this.db.query("SELECT * FROM location WHERE login = ?", [sess.data.login]);
                 // console.log(opt, req);
-                let [results, fields] = await this.db.execute("SELECT * from users INNER JOIN location ON location.login = users.login  " +
-                    "WHERE users.orientation IN (?, ?, ?) " +
-                    "AND (st_distance_sphere(POINT(location.lon, location.lat), POINT(?, ?)) / 1000) < ? AND " +
-                    "users.sexe IN (?, ?, ?, ?) AND JSON_CONTAINS(users.tags, json_array(?)) AND (users.age >= ? AND users.age <= ?);",
-                    [opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, req[0].lon, req[0].lat, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max]);
-                console.log(results);
-                fct(results);
-            } catch (e) {
-                console.log(e);
-            }
-        });
+                // let [results, fields] = await this.db.execute("SELECT * from users INNER JOIN location ON location.login = users.login  " +
+                //     "WHERE users.orientation IN (?, ?, ?) " +
+                //     "AND (st_distance_sphere(POINT(location.lon, location.lat), POINT(?, ?)) / 1000) < ? AND " +
+                //     "users.sexe IN (?, ?, ?, ?) AND JSON_CONTAINS(users.tags, json_array(?)) AND (users.age >= ? AND users.age <= ?);",
+                //     [opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, req[0].lon, req[0].lat, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max]);
+                // fct(results);
+            // } catch (e) {
+            //     console.log(e);
+            // }
+        // });
     }
 
     getServerIp() {
