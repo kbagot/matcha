@@ -15,36 +15,46 @@ export default class Research extends React.Component {
             min: '18',
             max: '99',
             distance: '100',
-            tags: ['notag'],
-            result: null,
+            tags: [],
+            order: {
+                age: '',
+                distance: '',
+                tags: '',
+            },
+            result: [],
         };
         this.getTags = this.getTags.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.refresh = this.refresh.bind(this);
     }
 
     // componentWillUpdate(nextProps, nextState)  //TODO refresh animation  maybe  on this
 
-    componentDidUpdate(prevProps, prevState) {
-        this.props.socket.emit('ResearchUsers', this.state, (users) => {
-            console.log(users);
-
-            // for (let i in tags) {
-            //     let newt = {value: tags[i].tag_name, label: tags[i].tag_name};
-            //     this.setState({
-            //         options: [...this.state.options, newt]
-            //     });
-        });
-    }
+    // componentDidUpdate(prevProps, prevState) {
+    // }
 
     // refresh() {
     //
     //
     // }
 
+    refresh() {
+        this.props.socket.emit('ResearchUsers', this.state, (users) => {
+            console.log(users);
+            // for (let i in users) {
+                this.setState({
+                    result: [users]
+                    // result: [...this.state.result, users[i].login]  for TODO: scroll
+                });
+            // }
+            console.log(this.state.result);
+        });
+    }
+
     getTags(tags) {
         let ptags = tags.map(val => val.value);
         this.setState({['tags']: ptags});
-        // this.refresh();
+        this.refresh();
     }
 
     async handleChange(ev) {
@@ -60,6 +70,7 @@ export default class Research extends React.Component {
             // }
             await this.setState({[ev.target.name]: ev.target.value});
         }
+        this.refresh();
         // console.log(this.state);
         // this.refresh();
     }
@@ -84,9 +95,9 @@ export default class Research extends React.Component {
                 <br/>Distance:<br/>
                 max distance en km :<input type="number" name="distance" min="0" max="20000"
                                            onChange={this.handleChange}/>
-                <input type="checkbox"/>
                 <br/>Tags:<br/>
                 <SelectTags socket={this.props.socket} sendTags={this.getTags}/>
+                <span>{this.state.result}</span>
             </form>
         );
     }

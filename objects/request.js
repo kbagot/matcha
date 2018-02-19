@@ -38,15 +38,27 @@ class Controller {
         });
         socket.on('ResearchUsers', async (opt, fct) => {
             try {
-                console.log(opt);
+                let order = ' ';
+                let val = opt.order;
+
+                for (let i in val) {
+                    console.log(val[i]);
+                }
+
                 let [req, lol] = await this.db.query("SELECT * FROM location WHERE login = ?", [sess.data.login]);
-                // console.log(opt, req);
-                let [results, fields] = await this.db.execute("SELECT * from users INNER JOIN location ON location.login = users.login  " +
-                    "WHERE users.orientation IN (?, ?, ?) " +
-                    "AND (st_distance_sphere(POINT(location.lon, location.lat), POINT(?, ?)) / 1000) < ? AND " +
-                    "users.sexe IN (?, ?, ?, ?) AND JSON_CONTAINS(users.tags, json_array(?)) AND (users.age >= ? AND users.age <= ?);",
-                    [opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, req[0].lon, req[0].lat, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max]);
-                console.log(results);
+
+                let sql = "SELECT *, (st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance," +
+                    "JSON_EXTRACT(tags, '$') AS usertag" +
+                    "from users INNER JOIN location ON location.login = users.login  " +
+                    "HAVING orientation IN (?, ?, ?)" +
+                    "AND distance < ? AND " +
+                    "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
+                    "AND (age >= ? AND age <= ?) ORDER BY " + order;
+                // SELECT tags , JSON_EXTRACT(tags, '$') AS usertags from users HAVING JSON_LENGTH(usertags) >= 1 AND JSON_CONTAINS(tags, '["lol", "fake"]');
+                // SELECT tags , JSON_EXTRACT(tags, '$') AS usertags from users WHERE JSON_CONTAINS(tags, '["lol"]') ORDER BY JSON_LENGTH(usertags) DESC;
+                let inserts = [req[0].lon, req[0].lat, opt.hetero, opt.bi, opt.trans, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
+                sql = this.db.format(sql, inserts);
+                let [results] = await this.db.query(sql);
                 fct(results);
             } catch (e) {
                 console.log(e);
