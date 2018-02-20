@@ -38,24 +38,61 @@ class Controller {
         });
         socket.on('ResearchUsers', async (opt, fct) => {
             try {
-                let order = ' ';
-                let val = opt.order;
+                console.log(opt);
+                let ord = opt.order;
 
-                for (let i in val) {
-                    console.log(val[i]);
+                // if (ord.tags) {
+                //         order += tlist + ord.tags;
+                // }
+                // for (let i in ord) {
+                //     console.log(ord);
+                // }
+
+                let [req, lol] = await this.db.query("SELECT * FROM users INNER JOIN location ON location.login = users.login WHERE users.login = ?", [sess.data.login]);
+
+                let usertag = '';
+                let order = '';
+
+
+                ///////////
+                let ordertag = '';
+                req[0].tags.forEach((elem) => {
+                    usertag += ', JSON_CONTAINS(tags, \'[\"' + elem + '\"]\') AS ' + elem + ' ';
+                    ordertag += elem + '+';
+                });
+                let cnt = 0;
+                for (let i in opt.order){
+                    if (opt.order[i]){
+                        if (cnt !== 0)
+                            order += ',';
+                        if (ordertag && i === 'tags'){
+                            order += ordertag + '0' + ' ' + opt.order.tags; //add ordertag to order
+                        }
+                        else
+                            order += i + ' ' + opt.order[i];
+                        cnt++;
+                    }
                 }
+                // if (ordertag && opt.order.tags)
+                //     order += ordertag + '0' + opt.order.tags; //add ordertag to order
+                ///////////
 
-                let [req, lol] = await this.db.query("SELECT * FROM location WHERE login = ?", [sess.data.login]);
 
-                let sql = "SELECT *, (st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance," +
-                    "JSON_EXTRACT(tags, '$') AS usertag" +
+                if (!usertag)
+                    usertag = '\'\'';
+                if (!order)
+                    order = '\'\'';
+                let sql = "SELECT *, (st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " +
+                    usertag +
                     "from users INNER JOIN location ON location.login = users.login  " +
                     "HAVING orientation IN (?, ?, ?)" +
                     "AND distance < ? AND " +
                     "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
                     "AND (age >= ? AND age <= ?) ORDER BY " + order;
+                console.log(sql);
                 // SELECT tags , JSON_EXTRACT(tags, '$') AS usertags from users HAVING JSON_LENGTH(usertags) >= 1 AND JSON_CONTAINS(tags, '["lol", "fake"]');
                 // SELECT tags , JSON_EXTRACT(tags, '$') AS usertags from users WHERE JSON_CONTAINS(tags, '["lol"]') ORDER BY JSON_LENGTH(usertags) DESC;
+                // SELECT tags, JSON_CONTAINS(tags, '["lol"]') AS t1, JSON_CONTAINS(tags, '["fake"]') AS t1 from users ORDER BY t1+t2 ASC;
                 let inserts = [req[0].lon, req[0].lat, opt.hetero, opt.bi, opt.trans, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
                 sql = this.db.format(sql, inserts);
                 let [results] = await this.db.query(sql);

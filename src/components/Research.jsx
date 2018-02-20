@@ -5,7 +5,7 @@ export default class Research extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            M:'',
+            M: '',
             F: '',
             T: '',
             hetero: '',
@@ -14,12 +14,12 @@ export default class Research extends React.Component {
             gay: '',
             min: '18',
             max: '99',
-            distance: '100',
+            distance: '1000',
             tags: [],
             order: {
-                age: '',
+                tags: 'DESC',
                 distance: '',
-                tags: '',
+                age: '',
             },
             result: [],
         };
@@ -41,12 +41,16 @@ export default class Research extends React.Component {
     refresh() {
         this.props.socket.emit('ResearchUsers', this.state, (users) => {
             console.log(users);
-            // for (let i in users) {
-                this.setState({
-                    result: [users]
-                    // result: [...this.state.result, users[i].login]  for TODO: scroll
-                });
-            // }
+
+            let login = [];
+            users.forEach(users => {
+                login.push(users.login);
+            });
+            this.setState({
+                // result: [users.login]
+                result: [login]
+                // result: [...this.state.result, users.login]
+            });
             console.log(this.state.result);
         });
     }
@@ -60,15 +64,26 @@ export default class Research extends React.Component {
     async handleChange(ev) {
         let t = ev.target;
 
+        console.log(ev.target.name);
+        console.log(ev.target.value);
         if (ev.target.type === 'checkbox') {
             this.state[ev.target.name] === '' ? await this.setState({[ev.target.name]: ev.target.name}) : await this.setState({[ev.target.name]: ''});
-        } else {
+        } else if (ev.target.name.split(' ')[0] !== 'sort') {
             // if ((t.name === 'min' || t.name === 'max') && (t.value < 18 || t.value > 99)){
             //     if (t.name === 'min')
             //        await this.setState({[ev.target.name]: '18'});
             //     return;
             // }
             await this.setState({[ev.target.name]: ev.target.value});
+        }
+        else {
+            let val = this.state.order[ev.target.name.split(' ')[1]];
+            let order = Object.assign({}, this.state.order);  // TODO {...this.state.order} why didnotW?
+
+            order[ev.target.name.split(' ')[1]] = val === '' ? 'ASC' : val === 'ASC' ? 'DESC' : '';
+            await this.setState(
+                {order}
+            );
         }
         this.refresh();
         // console.log(this.state);
@@ -78,6 +93,14 @@ export default class Research extends React.Component {
     render() {
         return (
             <form>
+                <br/>TRIE<br/>
+                <input type="button" name="sort age" value={"age " + this.state.order.age}
+                       onClick={this.handleChange}/>
+                <input type="button" name="sort distance" value={"distance " + this.state.order.distance}
+                       onClick={this.handleChange}/>
+                <input type="button" name="sort tags" value={"tags " + this.state.order.tags}
+                       onClick={this.handleChange}/>
+
                 <br/>Genres :<br/>
                 M :<input type="checkbox" name="M" onChange={this.handleChange}/>
                 F :<input type="checkbox" name="F" onChange={this.handleChange}/>
