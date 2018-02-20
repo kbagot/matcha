@@ -2,6 +2,7 @@ import React from 'react';
 import Chat from './Chat.jsx';
 import Notif from './Notif.jsx';
 import Research from './Research.jsx';
+import UserPannel from './UserPannel.jsx';
 
 export default class User extends React.Component {
     constructor(props) {
@@ -50,11 +51,12 @@ export default class User extends React.Component {
         if (array) {
             if (list.type === "all") {
                 return array.map((user, index) => {
-                    if (user !== this.props.user.login)
+                    if (user !== this.props.user.login) {
                         return <li key={index}>{user}
                             <button onClick={(ev) => this.handleLike(ev, user)}> Add</button>
                             <button onClick={(ev) => this.handleLike(ev, user)}> Remove</button>
                         </li>
+                    }
                 });
             } else if (list.type === "chat"){
                 return array.map((user, index) => {
@@ -95,7 +97,9 @@ export default class User extends React.Component {
 
         return (
             <div className={"User"}>
-                <p>Welcome {this.props.user.login} </p> <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/>
+                <h3>Welcome {this.props.user.login} </h3>
+                <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br />
+                <UserPannel /><br />
                 <button onClick={this.disconnectUser}>Disconnect</button>
                 <h2>All Users</h2>
                 <ul>{list}</ul>

@@ -34,7 +34,7 @@ class User {
                             console.log(err);
 
                         update.refreshUser(db, sess, socket)
-                            .then(() =>this.updateUsers(sess, allUsers))
+                            .then(() => this.updateUsers(sess, allUsers))
                             .then(() => io.emit('allUsers', allUsers));
                         // socket.emit('user', sess.data, () => {
                         //     this.updateUsers(sess, allUsers)

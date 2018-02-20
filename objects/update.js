@@ -4,10 +4,10 @@ class Update {
             await Update.getMatch(db, sess);
             await Update.getNotif(db, sess);
             await Update.getAllChatLog(db, sess, socket);
-            socket.emit('user', sess.data, () => console.log("REFRESH"));
         } catch (e) {
             console.log(e);
         }
+        socket.emit('user', sess.data);
     }
 
     static getMatch(db, sess){
@@ -34,7 +34,7 @@ class Update {
     static  getNotif(db, sess){
         return (new Promise(async (resolve, reject) => {
             try {
-                let sql = "SELECT type, `from` FROM notif WHERE login = ?";
+                let sql = "SELECT id, type, `from` FROM notif WHERE login = ?";
                 let [rows] = await db.execute(sql, [sess.data.login]);
 
                 sess.data.notif = rows;
@@ -93,9 +93,19 @@ class Update {
         }
     }
 
+    static async deleteNotif(db, sess, socket, data){
+        if (sess.data.notif){
+            let sql = "DELETE FROM notif WHERE id = ?";
+
+            await db.execute(sql, [data]);
+            sess.data.notif = sess.data.notif.filter((elem) => elem.id !== Number(data));
+            socket.emit('user', sess.data);
+        }
+    }
+
     static openChat(db, data, sess, socket){
         Update.getChatLog(db, data, sess, socket);
-         Update.updateNotif(db, data, sess);
+        Update.updateNotif(db, data, sess);
     }
 }
 

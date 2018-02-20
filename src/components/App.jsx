@@ -34,8 +34,6 @@ export default class App extends React.Component {
         });
         socket.on("error", (err) => console.log(err));
         socket.on('user', (user, fn) => {
-            console.log("user");
-            console.log(user);
             this.userLogin(user);
             if (fn)
                 fn();

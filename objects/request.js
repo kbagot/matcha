@@ -30,6 +30,7 @@ class Controller {
         socket.on('like', (data) => this.user.likes.handleLikes(data, socket, this.db, sess, allUsers));
         socket.on('login', (res) => this.user.dologin(res, this.db, sess, io, socket, allUsers, io));
         socket.on('locUp', (res) => this.user.update_coords(res, this.db, sess, socket)); // not sure of the place
+        socket.on('notif', (data) => update.deleteNotif(this.db, sess, socket, data));
         socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, allUsers));
         socket.on('Register', (data, fn) => this.register.registerHandling(data, socket, fn));
         // socket.on('getTags', async (fct) => {
