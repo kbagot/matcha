@@ -2,7 +2,7 @@ import React from 'react';
 import Chat from './Chat.jsx';
 import Notif from './Notif.jsx';
 import Research from './Research.jsx';
-import UserPannel from './UserPannel.jsx';
+import UserSettings from './User.Settings.jsx';
 
 export default class User extends React.Component {
     constructor(props) {
@@ -99,7 +99,7 @@ export default class User extends React.Component {
             <div className={"User"}>
                 <h3>Welcome {this.props.user.login} </h3>
                 <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br />
-                <UserPannel /><br />
+                <UserSettings socket={this.props.socket} user={this.props.user}/><br />
                 <button onClick={this.disconnectUser}>Disconnect</button>
                 <h2>All Users</h2>
                 <ul>{list}</ul>

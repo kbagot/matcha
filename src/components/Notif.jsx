@@ -5,7 +5,7 @@ export default class Notif extends React.Component{
         super(props);
         this.state = {
             dropDown: false
-        }
+        };
         this.deleteNotif = this.deleteNotif.bind(this);
     }
 
@@ -17,22 +17,35 @@ export default class Notif extends React.Component{
 
     componentDidMount(){
         document.body.addEventListener('click', (ev) => {
-            console.log(ev.target.parentElement);
-            if (this.state.dropDown && ['notifButton', 'notif'].indexOf(ev.target.name) === -1) {
+            if (this.state.dropDown && this.checkClickZone(ev)) {
                 this.setState({dropDown: false})
             }
         });
     }
 
+    checkClickZone(ev){
+        console.log(ev.target.attributes);
+        const array = ['notifButton', 'notif'];
+        let found = false;
+
+        if (ev.target.children){
+            for (let elem of ev.target.children){
+                if (elem.name && array.indexOf(elem.name === -1)){
+                    found = true;
+                }
+            }
+        }
+        return found ? false : (array.indexOf(ev.target.name) === -1);
+    }
 
     renderNotif(list, msg){
         if (list){
             let array = list.map((elem, index) => {
                 if (elem.type !== 'message'){
-                    return <li title={"notif"} key={index} >{msg(elem)} <button name={"notif"} value={elem.id} onClick={this.deleteNotif}>x</button></li>
+                    return <li name={"test"} key={index} >{msg(elem)} <button name={"notif"} value={elem.id} onClick={this.deleteNotif}>x</button></li>
                 }
             });
-            return <ul>{array}</ul>
+            return <ul name={"notif"}>{array}</ul>
         }
     }
 
