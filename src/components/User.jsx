@@ -99,7 +99,7 @@ export default class User extends React.Component {
             <div className={"User"}>
                 <h3>Welcome {this.props.user.login} </h3>
                 <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br />
-                <UserSettings socket={this.props.socket} user={this.props.user}/><br />
+                <UserSettings user={this.props.user} socket={this.props.socket} /><br />
                 <button onClick={this.disconnectUser}>Disconnect</button>
                 <h2>All Users</h2>
                 <ul>{list}</ul>

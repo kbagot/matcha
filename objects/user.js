@@ -28,6 +28,7 @@ class User {
                 if (succ) {
                     for (let i in this.data)
                         this.data[i] = results[0][i];
+                    delete results[0].password;
                     sess.data = results[0];
                     sess.save((err) => {
                         if (err)

@@ -4,19 +4,32 @@ export default class UserSettings extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            login: '',
-            email: '',
+            login: null,
+            email: null,
             password: '',
             display: false,
             editLogin: false,
-            editMail: false,
-            editPassword: false
+            editEmail: false,
+            editPassword: false,
+            error: {
+                globalError: '',
+                loginError: '',
+                mailError: '',
+                passwordError: ''
+            }
         };
         this.handleButton = this.handleButton.bind(this);
-        this.renderPannel = this.renderPannel.bind(this);
-        this.renderLogin = this.renderLogin.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    componentDidMount(){
+        this.props.socket.on('registerError', data => {this.handleError(data)});
+    }
+
+    componentWillUnmount(){
+        this.props.socket.removeListener('registerError');
     }
 
     handleButton(ev){
@@ -24,46 +37,82 @@ export default class UserSettings extends React.Component {
     }
 
     handleSubmit(ev){
-        console.log(ev.target.name);
+        let array = ['login', 'email', 'password'].filter(elem => ev.target.name.toLowerCase().includes(elem) === true);
+
+        if (array[0] && this.state[array[0]] && this.state[array[0]] !== this.props.user[array[0]]){
+               console.log("SUBMIT!");
+        }
         ev.preventDefault();
+
     }
 
+    handleError(data){
+        let error = Object.assign({}, this.state.error);
+
+        error[data.type + 'Error'] = data.error;
+        this.setState({
+            ['error']: error
+        });
+    }
 
     handleChange(ev){
-        this.setState({[ev.target.name]: ev.target.value});
+        let name = ev.target.name.trim();
+        let value = ev.target.value.trim();
+
+        this.setState({[name]: value});
+        if (value !== this.props.user[name]) {
+            this.props.socket.emit('Register', {type: 'change', value: [{[name]: value}, name]});
+        }
     }
 
     handleEdit(ev){
-        const obj = {login: '', email: '', password: '', editLogin: false, editMail: false, editPassword: false};
+        const obj = {login: null, email: null, password: '', editLogin: false, editEmail: false, editPassword: false};
 
         obj[ev.target.name] = true;
         this.setState(obj);
     }
 
     renderEmail(edit){
+        const email = ((typeof this.state.email === typeof null) ? this.props.user.email : this.state.email);
+
         return (
             <div>
                 Email:  { edit ?
-                <form name="editMail" onSubmit={this.handleSubmit}>
-                    <input type={"text"} name={"email"} value={this.state.email} onChange={this.handleChange}/>
-                    <input type={"submit"} />
+                <form name="editEmail" onSubmit={this.handleSubmit}>
+                    <input type={"text"} name={"email"} autoComplete={"off"} value={email} onChange={this.handleChange}/>
+                    <input type={"submit"} /> {this.state.error.emailError}
                 </form>
-                : <span> {this.props.user.email} <button name="editMail" onClick={this.handleEdit}>Modifier</button></span>
+                : <span> {this.props.user.email} <button name="editEmail" onClick={this.handleEdit}>Modifier</button></span>
             }
             </div>
         )
     }
 
     renderLogin(edit){
+        const login = ((typeof this.state.login === typeof null) ? this.props.user.login : this.state.login );
+
         return (
             <div>
-                Login: { edit ?
+                <span>Login:</span> { edit ?
                 <form name="editLogin" onSubmit={this.handleSubmit}>
-                    <input type={"text"} name={"login"} value={this.state.login} onChange={this.handleChange}/>
-                    <input type={"submit"} />
+                    <input type={"text"} name={"login"} value={login} onChange={this.handleChange}/>
+                    <input type={"submit"} /> {this.state.error.loginError}
                 </form>
                 : <span> {this.props.user.login} <button name="editLogin" onClick={this.handleEdit}>Modifier</button></span>
             }
+            </div>
+        )
+    }
+
+    renderPassword(edit){
+        return (
+            <div>
+                {edit ?
+                <form name={"editPassword"} onSubmit={this.handleSubmit}>
+                    <input type={"password"} autoComplete={"password"} name={"password"} value={this.state.password} onChange={this.handleChange} />
+                    <input type={"submit"} /> {this.state.error.passwordError}
+                </form>
+                : <button name={"editPassword"} onClick={this.handleEdit}>Changer Password</button>}
             </div>
         )
     }
@@ -73,7 +122,8 @@ export default class UserSettings extends React.Component {
             return (
                 <div className={"userSettings"}>
                     {this.renderLogin(this.state.editLogin)}
-                    {this.renderEmail(this.state.editMail)}
+                    {this.renderEmail(this.state.editEmail)}
+                    {this.renderPassword(this.state.editPassword)}
                 </div>
             )
         }

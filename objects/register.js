@@ -2,6 +2,7 @@ let bcrypt = require('bcrypt');
 
 class Register {
     registerHandling(data, socket, fn){
+        console.log(data);
         if (data.type === 'change'){
             this.registerErrorHandling(data.value, socket);
         } else if (data.type === 'submit'){
