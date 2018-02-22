@@ -7,13 +7,12 @@ export default class User extends React.Component {
         super(props);
         this.state = {
             allUsers: [],
-            history: []
+            history: [],
+            researchview: false,
+            matchview: false
         };
         this.disconnectUser = this.disconnectUser.bind(this);
         this.seekUser = this.seekUser.bind(this);
-        this.state = {
-            view: false
-        };
         this.listUsers = this.listUsers.bind(this);
     }
 
@@ -37,8 +36,8 @@ export default class User extends React.Component {
         this.props.socket.emit("userDisconnect", {});
     }
 
-    seekUser() {
-        this.setState({['view']: true})
+    seekUser(view) {
+        this.setState({[view]: true})
     }
 
   handleLike(ev, user){
@@ -86,12 +85,19 @@ export default class User extends React.Component {
 
     render() {
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
-       let view = null;
-       
-      if (this.state.view) {
-            view = <Research socket={this.props.socket}/>
+       let researchview = null;
+        let matchview = null;
+
+      if (this.state.researchview) {
+            researchview = <Research socket={this.props.socket} match={''}/>
         }else{
-            view = <button onClick={this.seekUser}>Research</button>
+            researchview = <button onClick={() => this.seekUser('researchview')}>Research</button>
+        }
+
+        if (this.state.matchview) {
+            matchview = <Research socket={this.props.socket} match={'match'}/>
+        }else {
+            matchview = <button onClick={() => this.seekUser('matchview')}>Match ME motherfucker</button>
         }
 
       return (
@@ -101,7 +107,8 @@ export default class User extends React.Component {
                 <h2>All Users</h2>
                 <ul>{list}</ul>
                 <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket} listUsers={this.listUsers}/>{}
-                {view}
+                {researchview}
+                {matchview}
             </div>
         );
     }
