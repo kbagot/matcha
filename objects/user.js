@@ -141,7 +141,7 @@ class User {
         return new Promise((resolve, reject) => {
             this.alreadyExists(sess.data.login, allUsers)
                 .then(() => {
-                    allUsers.push(sess.data.login);
+                    allUsers.push({login: sess.data.login, id: sess.data.id});
                     resolve()
                 })
                 .catch(() => {
@@ -154,7 +154,7 @@ class User {
         return new Promise((resolve, reject) =>{
             if (allUsers) {
                 for (let elem of allUsers) {
-                    if (elem === login) {
+                    if (elem.login === login) {
                         reject("Login already exists");
                     }
                 }

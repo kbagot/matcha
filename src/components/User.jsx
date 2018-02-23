@@ -51,8 +51,8 @@ export default class User extends React.Component {
         if (array) {
             if (list.type === "all") {
                 return array.map((user, index) => {
-                    if (user !== this.props.user.login) {
-                        return <li key={index}>{user}
+                    if (user.login !== this.props.user.login) {
+                        return <li key={index}>{user.login}
                             <button onClick={(ev) => this.handleLike(ev, user)}> Add</button>
                             <button onClick={(ev) => this.handleLike(ev, user)}> Remove</button>
                         </li>
@@ -60,7 +60,7 @@ export default class User extends React.Component {
                 });
             } else if (list.type === "chat"){
                 return array.map((user, index) => {
-                    if (user !== this.props.user.login) {
+                    if (user.login !== this.props.user.login) {
                         let notif = this.getMessagesNotif(user, this.props.user.notif);
 
                         return <li key={index}>
@@ -68,7 +68,7 @@ export default class User extends React.Component {
                                 type: 'chatList',
                                 login: ev.target.innerHTML,
                                 history: list.history['user']
-                            })}>{user}</button> {notif}
+                            })}>{user.login}</button> {notif}
                         </li>
                     }
                 });

@@ -36,15 +36,16 @@ export default class Chat extends React.Component{
     }
 
     newMessage(data){
-        if (this.props.user.chat.indexOf(data.login) === -1){
+        if (this.props.user.chat.indexOf(data.login.login) === -1){
             this.props.socket.emit('chat', {type: 'unreadMsg', msg: data.msg, from: data.login});
         } else {
-            this.addMsg(data.msg, data.login, data.login);
+            this.addMsg(data.msg, data.login.id, data.login.id);
             this.props.socket.emit('chat', {type: 'readMsg', msg: data.msg, from: data.login});
         }
     }
 
     handleSubmit(ev){
+        ev.preventDefault();
         let inputMsg = this.state.input[ev.target.name + "Input"].trim();
         if (inputMsg) {
             let input = Object.assign({}, this.state.input, {[ev.target.name + "Input"]: ""});
@@ -52,13 +53,12 @@ export default class Chat extends React.Component{
             this.setState({['input']: input});
             this.props.socket.emit("chat", {
                 type: 'newMsg',
-                from: this.props.user.login,
-                login: ev.target.name,
+                from: {login: this.props.user.login, id: this.props.user.id},
+                to: this.props.user.match.filter(elem => elem.login === ev.target.name)[0],
                 msg: inputMsg
             });
-            this.addMsg(inputMsg, ev.target.name, this.props.user.login);
+            this.addMsg(inputMsg, this.props.user.match.filter(elem => elem.login === ev.target.name)[0].id, this.props.user.id);
         }
-        ev.preventDefault();
     }
 
     addMsg(msg, loginTo, loginFrom){
@@ -83,12 +83,15 @@ export default class Chat extends React.Component{
     renderChat(){
         if (this.props.user.chat) {
             return this.props.user.chat.map(user => {
+                console.log(user);
+                console.log(this.state.input);
                 let value = this.state.input[user + "Input"] ? this.state.input[user + "Input"] : "";
 
-                if (user) {
+                if (user && this.props.user.match.findIndex(elem => elem.login === user) !== -1) {
+                    let id = this.props.user.match.filter(elem => elem.login === user)[0].id;
                     return <div className={"chatWindow"} key={user}>
                         <h3>{user}</h3>
-                        <ChatWindow msg={this.state.history[user]} socket={this.props.socket}/>
+                        <ChatWindow msg={this.state.history[id]} socket={this.props.socket}/>
                         <form name={user} onSubmit={this.handleSubmit}>
                             <input type={"text"} name={user + "Input"} value={value} onChange={this.handleChange}/>
                             <input type={"submit"} name={"submit"} value={String.fromCodePoint(0x2934)}/>

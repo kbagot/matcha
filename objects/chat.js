@@ -20,11 +20,11 @@ class Chat {
     }
 
     static handleNewMsg(data, socket, db, sess, allUsers){
-        if (allUsers && allUsers.indexOf(data.login) !== -1){
-            like.findSocket(db, data.login)
+        if (allUsers && allUsers.findIndex(elem => elem.login === data.to.login) !== -1){
+            like.findSocket(db, data.to.id)
                 .then(res => {
                     res.forEach((id) => {
-                        socket.to(id).emit("chat", {type: 'newMsg', login: sess.data.login, msg: data.msg});
+                        socket.to(id).emit("chat", {type: 'newMsg', login: {login: sess.data.login, id: sess.data.id}, msg: data.msg});
                     })
                 });
         } else {
@@ -34,11 +34,11 @@ class Chat {
 
     static addMsg(data, db, sess){
         return new Promise((resolve, reject) => {
-            let login = data.from;
-            let login2 = data.login ? data.login : sess.data.login;
+            let sendId = data.from.id;
+            let selfId = data.to ? data.to.id : sess.data.id;
             let sql = "UPDATE chat SET history = JSON_MERGE((SELECT history FROM (SELECT history FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) as lol), ?) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
 
-            db.execute(sql, [login, login2, login2, login, JSON.stringify([{from: login, msg: data.msg}]), login, login2, login2, login])
+            db.execute(sql, [sendId, selfId, selfId, sendId, JSON.stringify([{from: sendId, msg: data.msg}]), sendId, selfId, selfId, sendId])
                 .then(resolve())
                 .catch(e => reject(e));
         });
@@ -46,11 +46,11 @@ class Chat {
 
     static unreadMsg(data, socket, db, sess, online){
         let sql = "INSERT INTO notif (login, type, `from`) VALUES (?, ?, ?);";
-        let login  = online ? sess.data.login : data.login;
-        let login2 = data.from;
+        let selfId  = online ? sess.data.id : data.to.id;
+        let sendId = data.from.id;
 
         Chat.addMsg(data, db, sess)
-            .then(() => db.execute(sql, [login, 'message', login2]))
+            .then(() => db.execute(sql, [selfId, 'message', sendId]))
             .then(() => {
             if (online){
                 update.getNotif(db, sess)
