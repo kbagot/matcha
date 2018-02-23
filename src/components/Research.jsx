@@ -22,11 +22,14 @@ export default class Research extends React.Component {
                 age: '',
             },
             result: [],
-            match: ''
+            resultLength: 0,
+            dofirstmatch: '',
+            matchtag: ''
         };
         this.getTags = this.getTags.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.refresh = this.refresh.bind(this);
+        this.handleScroll = this.handleScroll.bind(this);
     }
 
     // componentWillUpdate(nextProps, nextState)  //TODO refresh animation  maybe  on this
@@ -39,56 +42,92 @@ export default class Research extends React.Component {
     //
     // }
 
-    async componentDidMount () {
-        if (this.props.match){
-            await this.setState({['match']: 'match'});
-            this.refresh('mount');
-            console.log(this.state);
-        }
+    componentWillMount() {
+        if (this.props.match)
+            this.setState({['dofirstmatch']: 'match'});
     }
 
-    refresh(mount) {
-        this.props.socket.emit('ResearchUsers', this.state, (users) => {
-            console.log(users);
+    componentDidMount () {
+        if (this.state.dofirstmatch)
+            this.refresh();
+        window.addEventListener("scroll", this.handleScroll);
+    }
 
+    componentWillUnmount() {
+        window.removeEventListener("scroll", this.handleScroll);
+    }
+
+    handleScroll() {
+        const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
+        const body = document.body;
+        const html = document.documentElement;
+        const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight,  html.scrollHeight, html.offsetHeight);
+        const windowBottom = windowHeight + window.pageYOffset;
+        if (windowBottom >= docHeight) {
+            this.setState({['resultLength']: this.state.result.length}, this.refresh('scroll'));
+        }
+    }
+//TODO     FIRST SCROLL   ERROR  BECAUSE    LENGHT  =0
+    refresh(from) {
+        window.removeEventListener("scroll", this.handleScroll);
+            this.props.socket.emit('ResearchUsers', this.state, (users) => {
+                console.log(users.result);
             let login = [];
-            users.results.forEach(users => {
+            users.result.forEach(users => {
                 login.push(users.login);
             });
-            if (mount) {
-                delete users.opt.match;
-                this.setState(users.opt);
+            if (this.state.dofirstmatch) {
+                users.dofirstmatch = '';
+                users.result = login;
+                users.matchtag = users.tags;
+                this.setState(users, () =>{
+                    console.log(this.state);
+                    window.addEventListener("scroll", this.handleScroll);
+                });
             }
-            this.setState({
-                // result: [users.login]
-                result: [login]
-                // result: [...this.state.result, users.login]
-            });
-            console.log(this.state);
-            // console.log(this.state.result);
+            else {
+                console.log(this.state.result.length);
+                if (this.state.resultLength > 0 && from === 'scroll') {
+                    this.setState({
+                        // result: [login]
+                        result: [...this.state.result, ...login]
+                    }, () => {
+                        console.log(this.state);
+                        window.addEventListener("scroll", this.handleScroll);
+                    })
+                } else {
+                    this.setState({
+                        result: login
+                        // result: [...this.state.result, ...login]
+                    }, () => {
+                        console.log(this.state);
+                        window.addEventListener("scroll", this.handleScroll);
+                    });
+                }
+            }
         });
     }
 
-    async getTags(tags) {
+    getTags(tags) {
         let ptags = tags.map(val => val.value);
-        await this.setState({['tags']: ptags});
-        console.log('ssalut');
-        console.log(this.state);
-        this.refresh();
+        if (!this.props.match)
+            this.setState({['tags']: ptags}, ()=> {this.refresh()});
+        else
+            this.setState({['tags']: [...ptags, ...this.state.matchtag]}, ()=> {this.refresh()});
     }
 
-    async handleChange(ev) {
+    handleChange(ev) {
         let t = ev.target;
 
         if (ev.target.type === 'checkbox') {
-            this.state[ev.target.name] === '' ? await this.setState({[ev.target.name]: ev.target.name}) : await this.setState({[ev.target.name]: ''});
+            this.state[ev.target.name] === '' ? this.setState({[ev.target.name]: ev.target.name}, () => {this.refresh()}) : this.setState({[ev.target.name]: ''}, () =>{this.refresh()});
         } else if (ev.target.name.split(' ')[0] !== 'sort') {
             // if ((t.name === 'min' || t.name === 'max') && (t.value < 18 || t.value > 99)){
             //     if (t.name === 'min')
             //        await this.setState({[ev.target.name]: '18'});
             //     return;
             // }
-            await this.setState({[ev.target.name]: ev.target.value});
+            this.setState({[ev.target.name]: ev.target.value}, ()=>{this.refresh()});
         }
         else {
             let val = this.state.order[ev.target.name.split(' ')[1]];
@@ -101,11 +140,10 @@ export default class Research extends React.Component {
                 else
                     order[i] = '';
             }
-            await this.setState(
-                {order}
+            this.setState(
+                {order}, ()=> {this.refresh()}
             );
         }
-        this.refresh();
         // console.log(this.state);
         // this.refresh();
     }
@@ -180,8 +218,8 @@ export default class Research extends React.Component {
 
     render() {
         let sort = this.sortbox();
-        let gender = !this.state.match ? this.genderbox() : '';
-        let attraction = !this.state.match ? this.attractionbox() : '';
+        let gender = !this.props.match ? this.genderbox() : '';
+        let attraction = !this.props.match ? this.attractionbox() : '';
         let age = this.agebox();
         let distance = this.distancebox();
         let tags = this.tagsbox();
