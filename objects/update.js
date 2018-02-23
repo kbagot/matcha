@@ -17,6 +17,7 @@ class Update {
 
             db.execute(sql, [login, login, login])
                 .then(([rows]) => {
+                console.log(rows);
                     rows.forEach((elem) => {
                         if (!sess.data.match){
                             sess.data.match = [elem.user];

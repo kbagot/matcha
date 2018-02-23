@@ -39,7 +39,8 @@ class Likes{
                 } else if (!res.matcha && res.user1 !== login2 ){
                     Likes.addNotif(db, sess, 'match', login, login2);
                     sql = "INSERT INTO chat(user1, user2, history) SELECT ?, ? , '[]' WHERE NOT EXISTS (SELECT user1 FROM chat WHERE (user1= ? AND user2=?) OR (user1=? AND user2=?)) LIMIT 1";
-                    db.execute(sql, [login, login2, login, login2, login2, login]).catch(e => console.log(e));
+                    db.execute(sql, [login, login2, login, login2, login2, login])
+                        .catch(e => console.log(e));
                     sql = "UPDATE likes SET matcha=true WHERE (user1=? AND user2=?) OR (user1=? AND user2=?); " ;
                     db.execute(sql, [login, login2, login2, login])
                         .then(() => Likes.addMatchList(socket, db, sess, login, true))

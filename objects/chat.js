@@ -77,8 +77,6 @@ class Chat {
         sess.save();
         socket.emit('user', sess.data);
     }
-
-
 }
 
 module.exports = Chat;

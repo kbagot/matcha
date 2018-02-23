@@ -13,9 +13,9 @@ export default class UserSettings extends React.Component {
             editPassword: false,
             error: {
                 globalError: '',
-                loginError: '',
-                mailError: '',
-                passwordError: ''
+                loginError: null,
+                emailError: null,
+                passwordError: null
             }
         };
         this.handleButton = this.handleButton.bind(this);
@@ -40,10 +40,9 @@ export default class UserSettings extends React.Component {
         let array = ['login', 'email', 'password'].filter(elem => ev.target.name.toLowerCase().includes(elem) === true);
 
         if (array[0] && this.state[array[0]] && this.state[array[0]] !== this.props.user[array[0]]){
-               console.log("SUBMIT!");
+            this.props.socket.emit('Register', {type: 'edit', value: [this.state[array[0]], array[0], this.props.user.login]})
         }
         ev.preventDefault();
-
     }
 
     handleError(data){
@@ -74,13 +73,14 @@ export default class UserSettings extends React.Component {
 
     renderEmail(edit){
         const email = ((typeof this.state.email === typeof null) ? this.props.user.email : this.state.email);
+        const valid = (!this.state.error.emailError && this.state.email);
 
         return (
-            <div>
+            <div name={"userSettings"}>
                 Email:  { edit ?
                 <form name="editEmail" onSubmit={this.handleSubmit}>
                     <input type={"text"} name={"email"} autoComplete={"off"} value={email} onChange={this.handleChange}/>
-                    <input type={"submit"} /> {this.state.error.emailError}
+                    <input type={"submit"} disabled={!valid} /> {this.state.error.emailError}
                 </form>
                 : <span> {this.props.user.email} <button name="editEmail" onClick={this.handleEdit}>Modifier</button></span>
             }
@@ -90,13 +90,14 @@ export default class UserSettings extends React.Component {
 
     renderLogin(edit){
         const login = ((typeof this.state.login === typeof null) ? this.props.user.login : this.state.login );
+        const valid =  (!this.state.error.loginError && this.state.login);
 
         return (
-            <div>
+            <div name={"userSettings"}>
                 <span>Login:</span> { edit ?
                 <form name="editLogin" onSubmit={this.handleSubmit}>
                     <input type={"text"} name={"login"} value={login} onChange={this.handleChange}/>
-                    <input type={"submit"} /> {this.state.error.loginError}
+                    <input type={"submit"} disabled={!valid}/> {this.state.error.loginError}
                 </form>
                 : <span> {this.props.user.login} <button name="editLogin" onClick={this.handleEdit}>Modifier</button></span>
             }
@@ -105,12 +106,14 @@ export default class UserSettings extends React.Component {
     }
 
     renderPassword(edit){
+        const valid = !this.state.error.passwordError && this.state.password.length >= 6;
+
         return (
-            <div>
+            <div name={"userSettings"}>
                 {edit ?
                 <form name={"editPassword"} onSubmit={this.handleSubmit}>
                     <input type={"password"} autoComplete={"password"} name={"password"} value={this.state.password} onChange={this.handleChange} />
-                    <input type={"submit"} /> {this.state.error.passwordError}
+                    <input type={"submit"} disabled={!valid}/> {this.state.error.passwordError}
                 </form>
                 : <button name={"editPassword"} onClick={this.handleEdit}>Changer Password</button>}
             </div>
@@ -120,7 +123,8 @@ export default class UserSettings extends React.Component {
     renderPannel(){
         if (this.state.display){
             return (
-                <div className={"userSettings"}>
+                <div className={"userSettings"} name={"userSettings"}>
+                    {this.state.error.globalError}
                     {this.renderLogin(this.state.editLogin)}
                     {this.renderEmail(this.state.editEmail)}
                     {this.renderPassword(this.state.editPassword)}
@@ -133,7 +137,7 @@ export default class UserSettings extends React.Component {
         let userSettings = this.renderPannel();
 
         return (
-            <div>
+            <div name={"userSettings"}>
                 <button onClick={this.handleButton}>Mon Compte</button>
                 {userSettings}
             </div>)

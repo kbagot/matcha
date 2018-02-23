@@ -33,7 +33,6 @@ class User {
                     sess.save((err) => {
                         if (err)
                             console.log(err);
-
                         update.refreshUser(db, sess, socket)
                             .then(() => this.updateUsers(sess, allUsers))
                             .then(() => io.emit('allUsers', allUsers));

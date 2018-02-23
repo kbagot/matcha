@@ -41,7 +41,7 @@ export default class User extends React.Component {
         this.setState({['view']: true})
     }
 
-  handleLike(ev, user){
+    handleLike(ev, user){
         this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
     }
 
@@ -91,7 +91,7 @@ export default class User extends React.Component {
 
         if (this.state.view) {
             view = <Research socket={this.props.socket}/>
-        }else{
+        } else {
             view = <button onClick={this.seekUser}>Research</button>
         }
 
