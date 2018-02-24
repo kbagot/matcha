@@ -36,7 +36,9 @@ class Chat {
         return new Promise((resolve, reject) => {
             let sendId = data.from.id;
             let selfId = data.to ? data.to.id : sess.data.id;
-            let sql = "UPDATE chat SET history = JSON_MERGE((SELECT history FROM (SELECT history FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) as lol), ?) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
+            let sql = "UPDATE chat SET history = JSON_MERGE((SELECT history FROM (SELECT history FROM chat " +
+                "WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) as lol), ?) " +
+                "WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
 
             db.execute(sql, [sendId, selfId, selfId, sendId, JSON.stringify([{from: sendId, msg: data.msg}]), sendId, selfId, selfId, sendId])
                 .then(resolve())
@@ -65,7 +67,7 @@ class Chat {
 
             update.openChat(db, data, sess, socket);
         } else {
-            let index = sess.data.chat.indexOf(data.login);
+            let index = sess.data.chat.findIndex(elem => elem.login === data.login.login);
 
             if (index === -1) {
                 sess.data.chat.push(data.login);

@@ -12,17 +12,18 @@ class Update {
 
     static getMatch(db, sess){
         return (new Promise((resolve, reject) => {
-            let sql = "SELECT  (CASE u1 WHEN ? THEN u2 ELSE u1 END) AS user FROM (SELECT user1 AS u1, user2 AS u2 FROM likes WHERE (user1=? OR user2=?) AND matcha=true) AS results";
-            let login = sess.data.login;
+            let sql = "SELECT  (SELECT login FROM users WHERE id = (CASE u1 WHEN ? THEN u2 ELSE u1 END)) AS login, " +
+                "(CASE u1 WHEN ? THEN u2 ELSE u1 END) AS id " +
+                "FROM (SELECT user1 AS u1, user2 AS u2 FROM likes WHERE (user1=? OR user2=?) AND matcha=true) AS results";
+            let id = sess.data.id;
 
-            db.execute(sql, [login, login, login])
+            db.execute(sql, [id, id, id, id])
                 .then(([rows]) => {
-                console.log(rows);
                     rows.forEach((elem) => {
                         if (!sess.data.match){
-                            sess.data.match = [elem.user];
-                        } else if (sess.data.match.indexOf(elem.user) === -1) {
-                            sess.data.match.push(elem.user);
+                            sess.data.match = [elem];
+                        } else if (sess.data.match.findIndex(node => node.login === elem.login) === -1) {
+                            sess.data.match.push(elem);
                         }
                         sess.save();
                     });
@@ -35,8 +36,8 @@ class Update {
     static  getNotif(db, sess){
         return (new Promise(async (resolve, reject) => {
             try {
-                let sql = "SELECT id, type, `from` FROM notif WHERE login = ?";
-                let [rows] = await db.execute(sql, [sess.data.login]);
+                let sql = "SELECT notif.id, type, `from`, users.login AS login FROM notif INNER JOIN users ON notif.from = users.id WHERE notif.login = ?";
+                let [rows] = await db.execute(sql, [sess.data.id]);
 
                 sess.data.notif = rows;
                 sess.save(() => resolve());
@@ -48,8 +49,8 @@ class Update {
 
     static getAllChatLog(db, sess, socket){
         return new Promise(async (resolve, reject) => {
-            let sql = "SELECT history, CASE WHEN user1=? THEN user2 ELSE user1 END AS login FROM chat WHERE user1 = ? OR user2 = ?";
-            let login = sess.data.login;
+            let sql = "SELECT history, CASE WHEN user1=? THEN user2 ELSE user1 END AS id FROM chat WHERE user1 = ? OR user2 = ?";
+            let login = sess.data.id;
 
             try {
                 let [rows] = await db.execute(sql, [login, login, login]);
@@ -58,7 +59,7 @@ class Update {
                 rows.forEach(elem => {
                     let history = JSON.parse(elem.history);
                     if (history) {
-                        obj = Object.assign({}, obj, {[elem.login]: history});
+                        obj = Object.assign({}, obj, {[elem.id]: history});
                     }
                 });
                 socket.emit('chat', {type: 'allChatLog', log: obj});
@@ -72,13 +73,13 @@ class Update {
     static getChatLog(db, data, sess, socket){
         if (data.history === undefined) {
             let sql = "SELECT history FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
-            let login = data.login;
-            let login2 = sess.data.login;
+            let login = data.login.id;
+            let login2 = sess.data.id;
 
             db.execute(sql, [login, login2, login2, login])
                 .then(([rows]) => {
                     if (rows[0]) {
-                        socket.emit("chat", {type: 'chatLog', login: login, log: rows[0].history});
+                        socket.emit("chat", {type: 'chatLog', id: login, log: rows[0].history});
                     }
                 });
         }
@@ -86,11 +87,11 @@ class Update {
 
     static updateNotif(db, data, sess){
         if (sess.data.notif){
-            sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && elem.from !== data.login) || elem.type !== 'message'));
+            sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && elem.from !== data.login.id) || elem.type !== 'message'));
             sess.save();
             let sql = "DELETE FROM notif WHERE login = ? AND type = ? AND `from` = ?";
 
-            db.execute(sql, [sess.data.login, 'message', data.login]);
+            db.execute(sql, [sess.data.id, 'message', data.login.id]);
         }
     }
 

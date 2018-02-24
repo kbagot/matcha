@@ -24,7 +24,6 @@ export default class Notif extends React.Component{
     }
 
     checkClickZone(ev){
-        console.log(ev.target.attributes);
         const array = ['notifButton', 'notif'];
         let found = false;
 
@@ -64,16 +63,16 @@ export default class Notif extends React.Component{
         switch (notif.type){
             case 'like':
             case 'unlike':
-                return notif.from + " vous a " + notif.type + ".";
+                return notif.login + " vous a " + notif.type + ".";
                 break ;
             case 'match':
-                return "Vous avez un nouveau match avec " + notif.from + ".";
+                return "Vous avez un nouveau match avec " + notif.login + ".";
                 break ;
             case 'unmatch':
-                return "Vous avez perdu votre match avec " + notif.from + ".";
+                return "Vous avez perdu votre match avec " + notif.login + ".";
                 break ;
             case 'visit':
-                return notif.from + "a visite votre profil.";
+                return notif.login + "a visite votre profil.";
                 break ;
         }
     }

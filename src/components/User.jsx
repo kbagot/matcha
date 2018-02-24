@@ -25,12 +25,17 @@ export default class User extends React.Component {
         this.props.socket.on('allUsers', (data) => {
             this.setState({['allUsers']: data});
         });
+
+        this.props.socket.on('refresh', data =>{
+            this.props.socket.emit('Register', data);
+            this.setState({['allUsers']: data.allUsers});
+        });
     }
 
     componentWillUnmount(){
         this.props.socket.removeListener('allUsers');
         this.props.socket.removeListener('match');
-
+        this.props.socket.removeListener('refresh');
     }
 
     disconnectUser() {
@@ -66,7 +71,7 @@ export default class User extends React.Component {
                         return <li key={index}>
                             <button onClick={ev => this.props.socket.emit('chat', {
                                 type: 'chatList',
-                                login: ev.target.innerHTML,
+                                login: user,
                                 history: list.history['user']
                             })}>{user.login}</button> {notif}
                         </li>
@@ -76,11 +81,11 @@ export default class User extends React.Component {
         }
     }
 
-    getMessagesNotif(login, list){
+    getMessagesNotif(user, list){
         let notif;
 
         if (list && typeof list === typeof []){
-            notif = list.filter(elem => elem.type === 'message' && elem.from === login);
+            notif = list.filter(elem => elem.type === 'message' && elem.from === user.id);
         }
         return notif ? notif.length : null;
     }

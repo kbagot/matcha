@@ -6,6 +6,7 @@ class Register {
             change: this.registerErrorHandling.bind(this),
             submit: this.registerCheck.bind(this),
             edit: this.editSubmit.bind(this),
+            loginEdit: Register.changeLogin.bind(this),
             resetChange: () => {
                 let error = null;
 
@@ -17,7 +18,9 @@ class Register {
                 }
             }
         };
-        conditional[data.type](data.value, socket, allUsers, io, sess);
+        if (conditional[data.type]) {
+            conditional[data.type](data.value, socket, sess, allUsers, io);
+        }
     }
 
     async   registerErrorHandling(data, socket){
@@ -101,7 +104,7 @@ class Register {
         }
     }
 
-    async editSubmit(data, socket, allUsers, io, sess){
+    async editSubmit(data, socket, sess, allUsers, io){
         const functions = {
             login: Register.checkLogin,
             email: Register.checkEmail,
@@ -120,13 +123,11 @@ class Register {
 
                 await this.db.execute(sql , [data[1] === 'password'? password : data[0], data[2]]);
                  if (data[1] !== 'password'){
-                    console.log(sess);
-                    console.log(data[2]);
                     sess.data[data[1]] = data[0];
                     sess.save();
                     if (data[1] === 'login') {
-                        allUsers[allUsers.indexOf(data[2])] = data[0];
-                        io.emit('allUsers', allUsers);
+                        allUsers[allUsers.findIndex(elem => elem.login === data[2])].login = data[0];
+                        io.emit("refresh", {type: "loginEdit", value: {new: data[0], old: data[2]}, allUsers: allUsers});
                     }
                     socket.emit('user', sess.data);
                 }
@@ -156,6 +157,25 @@ class Register {
             return rows[0];
         } catch (err) {
             console.log(err);
+        }
+    }
+
+    static changeLogin(data, socket, sess){
+        if (sess.data.login !== data.new){
+            const array = ['match', 'notif', 'chat'];
+
+            for (let elem of array){
+                if (sess.data[elem]) {
+                    sess.data[elem].forEach((node, index) => {
+
+                        if (node.login === data.old) {
+                            sess.data[elem][index].login = data.new;
+                        }
+                    });
+                }
+            }
+            sess.save();
+            socket.emit('user', sess.data);
         }
     }
 
