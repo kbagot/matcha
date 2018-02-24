@@ -85,7 +85,7 @@ export default class User extends React.Component {
         let notif;
 
         if (list && typeof list === typeof []){
-            notif = list.filter(elem => elem.type === 'message' && elem.from === user.id);
+            notif = list.filter(elem => elem.type === 'message' && Number(elem.from) === Number(user.id));
         }
         return notif ? notif.length : null;
     }
