@@ -1,6 +1,8 @@
 import React from 'react';
 import Chat from './Chat.jsx';
+import Notif from './Notif.jsx';
 import Research from './Research.jsx';
+import UserSettings from './User.Settings.jsx';
 
 export default class User extends React.Component {
     constructor(props) {
@@ -8,6 +10,7 @@ export default class User extends React.Component {
         this.state = {
             allUsers: [],
             history: [],
+            view: false
             researchview: false,
             matchview: false
         };
@@ -24,12 +27,17 @@ export default class User extends React.Component {
         this.props.socket.on('allUsers', (data) => {
             this.setState({['allUsers']: data});
         });
+
+        this.props.socket.on('refresh', data =>{
+            this.props.socket.emit('Register', data);
+            this.setState({['allUsers']: data.allUsers});
+        });
     }
 
     componentWillUnmount(){
         this.props.socket.removeListener('allUsers');
         this.props.socket.removeListener('match');
-
+        this.props.socket.removeListener('refresh');
     }
 
     disconnectUser() {
@@ -40,7 +48,7 @@ export default class User extends React.Component {
         this.setState({[view]: true})
     }
 
-  handleLike(ev, user){
+    handleLike(ev, user){
         this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
     }
 
@@ -50,23 +58,24 @@ export default class User extends React.Component {
         if (array) {
             if (list.type === "all") {
                 return array.map((user, index) => {
-                    if (user !== this.props.user.login)
-                        return <li key={index}>{user}
+                    if (user.login !== this.props.user.login) {
+                        return <li key={index}>{user.login}
                             <button onClick={(ev) => this.handleLike(ev, user)}> Add</button>
                             <button onClick={(ev) => this.handleLike(ev, user)}> Remove</button>
                         </li>
+                    }
                 });
             } else if (list.type === "chat"){
                 return array.map((user, index) => {
-                    if (user !== this.props.user.login) {
+                    if (user.login !== this.props.user.login) {
                         let notif = this.getMessagesNotif(user, this.props.user.notif);
 
                         return <li key={index}>
                             <button onClick={ev => this.props.socket.emit('chat', {
                                 type: 'chatList',
-                                login: ev.target.innerHTML,
+                                login: user,
                                 history: list.history['user']
-                            })}>{user}</button> {notif}
+                            })}>{user.login}</button> {notif}
                         </li>
                     }
                 });
@@ -74,19 +83,25 @@ export default class User extends React.Component {
         }
     }
 
-    getMessagesNotif(login, list){
+    getMessagesNotif(user, list){
         let notif;
 
         if (list && typeof list === typeof []){
-            notif = list.filter(elem => elem.type === 'message' && elem.from === login);
+            notif = list.filter(elem => elem.type === 'message' && Number(elem.from) === Number(user.id));
         }
         return notif ? notif.length : null;
     }
 
     render() {
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
-       let researchview = null;
+          let researchview = null;
         let matchview = null;
+        let view = null;
+
+        if (this.state.view) {
+            view = <Research socket={this.props.socket}/>
+        } else {
+            view = <button onClick={this.seekUser}>Research</button>
 
       if (this.state.researchview) {
             researchview = <Research socket={this.props.socket} match={''}/>
@@ -100,9 +115,11 @@ export default class User extends React.Component {
             matchview = <button onClick={() => this.seekUser('matchview')}>Match ME motherfucker</button>
         }
 
-      return (
+        return (
             <div className={"User"}>
-                <p>Welcome {this.props.user.login}</p>
+                <h3>Welcome {this.props.user.login} </h3>
+                <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br />
+                <UserSettings user={this.props.user} socket={this.props.socket} /><br />
                 <button onClick={this.disconnectUser}>Disconnect</button>
                 <h2>All Users</h2>
                 <ul>{list}</ul>

@@ -28,18 +28,22 @@ class User {
                 if (succ) {
                     for (let i in this.data)
                         this.data[i] = results[0][i];
+                    delete results[0].password;
                     sess.data = results[0];
                     sess.save((err) => {
                         if (err)
                             console.log(err);
-                        socket.emit('user', sess.data, () => {
-                            this.updateUsers(sess, allUsers)
-                                .then(() => {
-                                    io.emit('allUsers', allUsers);
-                                    update.refreshUser(db, sess, socket);
-                                })
-                                .catch((e) => console.log(e));
-                        });
+                        update.refreshUser(db, sess, socket)
+                            .then(() => this.updateUsers(sess, allUsers))
+                            .then(() => io.emit('allUsers', allUsers));
+                        // socket.emit('user', sess.data, () => {
+                        //     this.updateUsers(sess, allUsers)
+                        //         .then(() => {
+                        //             io.emit('allUsers', allUsers);
+                        //             update.refreshUser(db, sess, socket);
+                        //         })
+                        //         .catch((e) => console.log(e));
+                        // });
                          socket.emit('doloc');
                     });
                 }
@@ -137,7 +141,7 @@ class User {
         return new Promise((resolve, reject) => {
             this.alreadyExists(sess.data.login, allUsers)
                 .then(() => {
-                    allUsers.push(sess.data.login);
+                    allUsers.push({login: sess.data.login, id: sess.data.id});
                     resolve()
                 })
                 .catch(() => {
@@ -150,7 +154,7 @@ class User {
         return new Promise((resolve, reject) =>{
             if (allUsers) {
                 for (let elem of allUsers) {
-                    if (elem === login) {
+                    if (elem.login === login) {
                         reject("Login already exists");
                     }
                 }
