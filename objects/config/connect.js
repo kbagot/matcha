@@ -47,11 +47,13 @@ class ConDb {
                         "sexe enum('M', 'F', 'T') not null," +
                         "bio varchar(255)," +
                         "orientation ENUM('gay','hetero','bi', 'trans') default 'bi'," +
-                        "tags JSON" +
+                        "tags JSON," +
+                        "spop INT," +
+                        "date DATE" +
                         ");" +
                         "CREATE TABLE location(" +
                         "ID int not NULL auto_increment primary key," +
-                        "login varchar(255) NOT NULL," +
+                        "logid INT NOT NULL," +
                         "lat decimal(15, 10) NOT NULL," +
                         "lon decimal(15, 10) NOT NULL," +
                         "city varchar(255) not null," +
@@ -83,9 +85,9 @@ class ConDb {
                         "user2 varchar(255) not null," +
                         "history text," +
                         "messages text," +
-                        "`from` varchar(255)"+
+                        "`from` varchar(255)" +
                         ");";
-              
+
                     db.query(sql).then(() => resolve(db))
                         .catch((err) => reject(err));
                 });
@@ -108,16 +110,25 @@ class ConDb {
         fakeloc.push(['51.5074', '0.1278', 'London', 'England']);
         let tags = ['fake'];
 
-        for (const [i, elem] of data.entries()) {
-            let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, age, orientation, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            let login = elem.name.last + elem.name.first + i;
-            let password = await bcrypt.hash("test", 10);
+        try {
+            let date = new Date();
+            date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            console.log(date);
+            for (const [i, elem] of data.entries()) {
+                let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, age, orientation, tags, spop, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                let login = elem.name.last + elem.name.first + i;
+                let password = await bcrypt.hash("test", 10);
 
-            await this.con.execute(req, [login, elem.name.last, elem.name.first, password, elem.email, elem.gender === 'female' ? 'F' : 'M', 'Je suis moche', Math.floor(Math.random()* 80) + 18, ConDb.randomOrientation(), JSON.stringify(tags)]);
-            console.log("db success => " + i);
+                let ret = await this.con.execute(req, [login, elem.name.last, elem.name.first, password, elem.email,
+                    elem.gender === 'female' ? 'F' : 'M', 'Fake User', Math.floor(Math.random() * 80) + 18,
+                    ConDb.randomOrientation(), JSON.stringify(tags), Math.floor(Math.random() * 1000), date]);
+                console.log("db success => " + i);
 
-            req = "INSERT INTO location(login, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            await this.con.execute(req, [login, ...fakeloc[Math.floor(Math.random()*fakeloc.length)], 'null', '1']);
+                req = "INSERT INTO location(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                await this.con.execute(req, [ret[0].insertId, ...fakeloc[Math.floor(Math.random() * fakeloc.length)], 'null', '1']);
+            }
+        } catch (e) {
+            console.log(e);
         }
     }
 
