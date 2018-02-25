@@ -2,6 +2,7 @@ let database = require('./config/connect.js'),
     register = require('./register'),
     user = require('./user.js'),
     chat = require('./chat.js'),
+    research = require('./research.js'),
     update = require('./update');
 let os = require('os');
 let allUsers = [];
@@ -12,6 +13,7 @@ class Controller {
         this.chat = new chat();
         this.user = new user();
         this.register = new register();
+        this.research = new research();
         database.createConnection('matcha').then((res) => {
             this.db = res;
             this.register.db = res;
@@ -32,26 +34,13 @@ class Controller {
         socket.on('locUp', (res) => this.user.update_coords(res, this.db, sess, socket)); // not sure of the place
         socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, allUsers));
         socket.on('Register', (data, fn) => this.register.registerHandling(data, socket, fn));
-        socket.on('getTags', async (fct) => {
-            let [results, fields] = await this.db.query("SELECT tag_name FROM tags");
-            fct(results);
-        });
-        socket.on('ResearchUsers', async (opt, fct) => {
-            try {
-                console.log(opt);
-                let [req, lol] = await this.db.query("SELECT * FROM location WHERE login = ?", [sess.data.login]);
-                // console.log(opt, req);
-                let [results, fields] = await this.db.execute("SELECT * from users INNER JOIN location ON location.login = users.login  " +
-                    "WHERE users.orientation IN (?, ?, ?) " +
-                    "AND (st_distance_sphere(POINT(location.lon, location.lat), POINT(?, ?)) / 1000) < ? AND " +
-                    "users.sexe IN (?, ?, ?, ?) AND JSON_CONTAINS(users.tags, json_array(?)) AND (users.age >= ? AND users.age <= ?);",
-                    [opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, req[0].lon, req[0].lat, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max]);
-                console.log(results);
-                fct(results);
-            } catch (e) {
-                console.log(e);
-            }
-        });
+        socket.on('getTags', (fct) => this.getTags(fct));
+        socket.on('ResearchUsers', async (opt, fct) => await this.research.request(opt, fct, this.db, sess));
+    }
+
+    async getTags(fct) {
+        let [results, fields] = await this.db.query("SELECT tag_name FROM tags");
+        fct(results);
     }
 
     getServerIp() {
