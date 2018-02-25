@@ -36,7 +36,7 @@ export default class Chat extends React.Component{
     }
 
     newMessage(data){
-        if (this.props.user.chat.findIndex(elem => elem.login === data.login.login) === -1){
+        if (!this.props.user.chat || this.props.user.chat.findIndex(elem => elem.login === data.login.login) === -1){
             this.props.socket.emit('chat', {type: 'unreadMsg', msg: data.msg, from: data.login});
         } else {
             this.addMsg(data.msg, data.login.id, data.login.id);

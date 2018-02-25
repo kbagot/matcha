@@ -87,7 +87,7 @@ class Update {
 
     static updateNotif(db, data, sess){
         if (sess.data.notif){
-            sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && Number(elem.from) !== Number(data.login.id)) || elem.type !== 'message'));
+            sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && Number(elem.from) !== Number(data.login.id))  || elem.type !== 'message'));
             sess.save();
             let sql = "DELETE FROM notif WHERE login = ? AND type = ? AND `from` = ?";
 

@@ -113,6 +113,7 @@ class Register {
             email: {login: '', email: data[0]},
             password: {login: '', email: ''}
         };
+        let res;
 
         if (data[1] && functions[data[1]](data[0]) && await this.uniqueInput(values[data[1]])){
             try {
@@ -129,14 +130,14 @@ class Register {
                     }
                     socket.emit('user', sess.data);
                 }
+                res = {msg: data[1] + " modifie avec succes.", type: 'success'};
             } catch (e) {
                 console.log(e);
             }
         } else {
-            let str = "Desole une erreure est survenue lors de la modification, veuillez reessayer.";
-
-            socket.emit('registerError', {error: str, type: "global"});
+            res = {error: "Desole une erreure est survenue lors de la modification, veuillez reessayer.", type:'global'};
         }
+        socket.emit('registerError', res);
     }
 
     async uniqueInput(data) {

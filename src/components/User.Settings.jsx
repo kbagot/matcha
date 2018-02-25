@@ -11,6 +11,7 @@ export default class UserSettings extends React.Component {
             editLogin: false,
             editEmail: false,
             editPassword: false,
+            success: '',
             error: {
                 globalError: '',
                 loginError: null,
@@ -26,6 +27,9 @@ export default class UserSettings extends React.Component {
 
     componentDidMount(){
         this.props.socket.on('registerError', data => {this.handleError(data)});
+        document.body.addEventListener('click', ev =>{
+            console.log(ev.target);
+        });
     }
 
     componentWillUnmount(){
@@ -38,8 +42,10 @@ export default class UserSettings extends React.Component {
 
     handleSubmit(ev){
         let array = ['login', 'email', 'password'].filter(elem => ev.target.name.toLowerCase().includes(elem) === true);
+        const obj = {login: null, email: null, password: '', editLogin: false, editEmail: false, editPassword: false};
 
         if (array[0] && this.state[array[0]] && this.state[array[0]] !== this.props.user[array[0]]){
+            this.setState(obj);
             this.props.socket.emit('Register', {type: 'edit', value: [this.state[array[0]], array[0], this.props.user.login]})
         }
         ev.preventDefault();
@@ -48,10 +54,16 @@ export default class UserSettings extends React.Component {
     handleError(data){
         let error = Object.assign({}, this.state.error);
 
-        error[data.type + 'Error'] = data.error;
-        this.setState({
-            ['error']: error
-        });
+        console.log(data);
+        if (data.type !== 'success') {
+            error[data.type + 'Error'] = data.error;
+            console.log(error);
+            this.setState({
+                ['error']: error
+            });
+        } else {
+            this.setState({success: data.msg});
+        }
     }
 
     handleChange(ev){
@@ -125,6 +137,7 @@ export default class UserSettings extends React.Component {
             return (
                 <div className={"userSettings"} name={"userSettings"}>
                     {this.state.error.globalError}
+                    {this.state.success}
                     {this.renderLogin(this.state.editLogin)}
                     {this.renderEmail(this.state.editEmail)}
                     {this.renderPassword(this.state.editPassword)}
