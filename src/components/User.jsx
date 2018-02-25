@@ -10,7 +10,7 @@ export default class User extends React.Component {
         this.state = {
             allUsers: [],
             history: [],
-            view: false
+            view: false,
             researchview: false,
             matchview: false
         };
@@ -102,7 +102,7 @@ export default class User extends React.Component {
             view = <Research socket={this.props.socket}/>
         } else {
             view = <button onClick={this.seekUser}>Research</button>
-
+        }
       if (this.state.researchview) {
             researchview = <Research socket={this.props.socket} match={''}/>
         }else{
