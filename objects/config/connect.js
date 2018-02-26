@@ -48,11 +48,11 @@ class ConDb {
                         "bio varchar(255)," +
                         "orientation ENUM('gay','hetero','bi', 'trans') default 'bi'," +
                         "tags JSON," +
-                        "spop INT," +
+                        "spop INT default 0," +
                         "date DATE" +
                         ");" +
                         "CREATE TABLE location(" +
-                        "ID int not NULL auto_increment primary key," +
+                        "lolilol int not NULL auto_increment primary key," +
                         "logid INT NOT NULL," +
                         "lat decimal(15, 10) NOT NULL," +
                         "lon decimal(15, 10) NOT NULL," +
@@ -72,7 +72,7 @@ class ConDb {
                         ");" +
                         "INSERT INTO tags " +
                         "(tag_name)" +
-                        "VALUES ('fake'), ('notag')" +
+                        "VALUES ('fake')" + // TODO ADD TES IDEE DE TAGS
                         ";" +
                         "CREATE TABLE notif(" +
                         "id int auto_increment  primary key," +
@@ -113,7 +113,7 @@ class ConDb {
         try {
             let date = new Date();
             date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-            console.log(date);
+
             for (const [i, elem] of data.entries()) {
                 let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, age, orientation, tags, spop, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 let login = elem.name.last + elem.name.first + i;
