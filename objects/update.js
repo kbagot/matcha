@@ -36,7 +36,7 @@ class Update {
     static  getNotif(db, sess){
         return (new Promise(async (resolve, reject) => {
             try {
-                let sql = "SELECT notif.id, type, `from`, users.login AS login FROM notif INNER JOIN users ON notif.from = users.id WHERE notif.login = ?";
+                let sql = "SELECT notif.id, type, `from`, `read`, users.login AS login FROM notif INNER JOIN users ON notif.from = users.id WHERE notif.login = ?";
                 let [rows] = await db.execute(sql, [sess.data.id]);
 
                 sess.data.notif = rows;
@@ -95,13 +95,30 @@ class Update {
         }
     }
 
+    static async handleNotif(db, sess, socket, data){
+        const type = {
+            delete: Update.deleteNotif.bind(this),
+            read: Update.readNotif.bind(this)
+        };
+
+        await type[data.type](db, sess, socket, data.data);
+        socket.emit('user', sess.data);
+    }
+
+    static async readNotif(db, sess, socket, data){
+        let sql = "UPDATE notif INNER JOIN users ON users.id = notif.login SET notif.read = true WHERE users.login =  ?";
+
+        sess.data.notif.map(elem => elem.read = true);
+        await db.execute(sql, [sess.data.login]);
+    }
+
     static async deleteNotif(db, sess, socket, data){
         if (sess.data.notif){
             let sql = "DELETE FROM notif WHERE id = ?";
 
             await db.execute(sql, [data]);
             sess.data.notif = sess.data.notif.filter((elem) => elem.id !== Number(data));
-            socket.emit('user', sess.data);
+            sess.save();
         }
     }
 
