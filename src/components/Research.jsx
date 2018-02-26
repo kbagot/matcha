@@ -64,14 +64,13 @@ export default class Research extends React.Component {
         const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight,  html.scrollHeight, html.offsetHeight);
         const windowBottom = windowHeight + window.pageYOffset;
         if (windowBottom >= docHeight) {
-            this.setState({['resultLength']: this.state.result.length}, this.refresh('scroll'));
+            this.setState({['resultLength']: this.state.result.length}, () => this.refresh('scroll'));
         }
     }
-//TODO     FIRST SCROLL   ERROR  BECAUSE    LENGHT  =0
+
     refresh(from) {
         window.removeEventListener("scroll", this.handleScroll);
             this.props.socket.emit('ResearchUsers', this.state, (users) => {
-                console.log(users.result);
             let login = [];
             users.result.forEach(users => {
                 login.push(users.login);
@@ -120,14 +119,14 @@ export default class Research extends React.Component {
         let t = ev.target;
 
         if (ev.target.type === 'checkbox') {
-            this.state[ev.target.name] === '' ? this.setState({[ev.target.name]: ev.target.name}, () => {this.refresh()}) : this.setState({[ev.target.name]: ''}, () =>{this.refresh()});
+            this.state[ev.target.name] === '' ? this.setState({[ev.target.name]: ev.target.name}, () => this.refresh()) : this.setState({[ev.target.name]: ''}, () =>this.refresh());
         } else if (ev.target.name.split(' ')[0] !== 'sort') {
             // if ((t.name === 'min' || t.name === 'max') && (t.value < 18 || t.value > 99)){
             //     if (t.name === 'min')
             //        await this.setState({[ev.target.name]: '18'});
             //     return;
             // }
-            this.setState({[ev.target.name]: ev.target.value}, ()=>{this.refresh()});
+            this.setState({[ev.target.name]: ev.target.value}, ()=>this.refresh());
         }
         else {
             let val = this.state.order[ev.target.name.split(' ')[1]];
@@ -141,7 +140,7 @@ export default class Research extends React.Component {
                     order[i] = '';
             }
             this.setState(
-                {order}, ()=> {this.refresh()}
+                {order}, ()=> this.refresh()
             );
         }
         // console.log(this.state);

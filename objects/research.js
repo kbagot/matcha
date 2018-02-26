@@ -1,7 +1,7 @@
 class Research {
     async request(opt, fct, db, sess) {
         try {
-            let [req] = await db.query("SELECT * FROM users INNER JOIN location ON location.login = users.login WHERE users.login = ?", [sess.data.login]);
+            let [req] = await db.query("SELECT * FROM users INNER JOIN location ON location.logid = users.id WHERE users.id = ?", [sess.data.id]);
             let usertag = '';
             let ordertag = '';
             let results = [];
@@ -33,7 +33,7 @@ class Research {
     }
 
     async doRequest(opt, db, req, usertag, ordertag) {
-            try {
+        try {
                 let order = '';
                 let cnt = 0;
                 for (let i in opt.order) {
@@ -75,7 +75,7 @@ class Research {
                 }
                 let sql = "SELECT *, (st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " +
                     usertag +
-                    "from users INNER JOIN location ON location.login = users.login  " +
+                    "from users INNER JOIN location ON location.id = users.id  " +
                     "HAVING orientation IN (?, ?, ?, ?)" +
                     "AND distance < ? AND " +
                     "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +

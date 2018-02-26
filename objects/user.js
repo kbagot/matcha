@@ -113,15 +113,15 @@ class User {
         }
 
         try {
-            let req = "SELECT login FROM location WHERE login=?";
-            let [results, fields] = await db.execute(req, [sess.data.login]);
+            let req = "SELECT logid FROM location WHERE logid=?";
+            let [results, fields] = await db.execute(req, [sess.data.id]);
 
             if (results[0]) {
-                req = "DELETE FROM location WHERE login=?";
-                [results, fields] = await db.execute(req, [sess.data.login]);
+                req = "DELETE FROM location WHERE logid=?";
+                [results, fields] = await db.execute(req, [sess.data.id]);
             }
-            req = "INSERT INTO location(login, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            [results, fields] = await db.execute(req, [sess.data.login, res.latitude, res.longitude, res.city, ...entry]);
+            req = "INSERT INTO location(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            [results, fields] = await db.execute(req, [sess.data.id, res.latitude, res.longitude, res.city, ...entry]);
         } catch (e) {
             console.log(e);
         }
