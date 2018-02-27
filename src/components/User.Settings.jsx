@@ -27,9 +27,9 @@ export default class UserSettings extends React.Component {
 
     componentDidMount(){
         this.props.socket.on('registerError', data => {this.handleError(data)});
-        document.body.addEventListener('click', ev =>{
-            console.log(ev.target);
-        });
+        // document.body.addEventListener('click', ev =>{
+        //     console.log(ev.target);
+        // });
     }
 
     componentWillUnmount(){
