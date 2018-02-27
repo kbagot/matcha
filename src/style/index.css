@@ -9,3 +9,14 @@ h1 {
 .error_input{
     border-color: red;
 }
+
+
+
+/*******************
+      RESEARCH
+*******************/
+
+.resForm input{
+    border: solid;
+    outline: none;
+}

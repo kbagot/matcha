@@ -1,5 +1,6 @@
 import React from 'react';
 import SelectTags from './SelectTags.jsx';
+import Ripple from 'react-ripples';
 
 export default class Research extends React.Component {
     constructor(props) {
@@ -20,6 +21,7 @@ export default class Research extends React.Component {
                 tags: '',
                 distance: '',
                 age: '',
+                spop: ''
             },
             result: [],
             resultLength: 0,
@@ -158,12 +160,22 @@ export default class Research extends React.Component {
         return (
             <div>
                 <br/>TRIE<br/>
-                <input type="button" name="sort age" value={"age " + this.state.order.age}
-                       onClick={this.handleChange}/>
-                <input type="button" name="sort distance" value={"distance " + this.state.order.distance}
-                       onClick={this.handleChange}/>
-                <input type="button" name="sort tags" value={"tags " + this.state.order.tags}
-                       onClick={this.handleChange}/>
+                <Ripple>
+                    <input type="button" name="sort age" value={"age " + this.state.order.age}
+                           onClick={this.handleChange}/>
+                </Ripple>
+                <Ripple>
+                    <input type="button" name="sort distance" value={"distance " + this.state.order.distance}
+                           onClick={this.handleChange}/>
+                </Ripple>
+                <Ripple>
+                    <input type="button" name="sort tags" value={"tags " + this.state.order.tags}
+                           onClick={this.handleChange}/>
+                </Ripple>
+                <Ripple>
+                    <input type="button" name="sort spop" value={"spop " + this.state.order.spop}
+                           onClick={this.handleChange}/>
+                </Ripple>
             </div>
         )
     }
@@ -230,16 +242,46 @@ export default class Research extends React.Component {
         let distance = this.distancebox();
         let tags = this.tagsbox();
 
+        let restyle = {
+            display: 'flex',
+        };
+
+        let formstyle = {
+            backgroundColor: 'blue',
+            position: 'fixed',
+            width: '19%',
+            marginBottom: '8%',
+            bottom: '0'
+
+        };
+
+        let uliststyle = {
+            marginLeft: '20%',
+            height: '100%', width: '79%',
+            display: 'inline-block'
+        };
+
+        let userstyle = {
+            backgroundColor: 'pink',
+            width: '20%',
+            height: '200px',
+            display: 'inline-block'
+        };
+
         return (
-            <form>
-                {sort}
-                {gender}
-                {attraction}
-                {age}
-                {distance}
-                {tags}
-                <span>{this.state.result}</span>
-            </form>
+            <div style={restyle}>
+                <form className={'resForm'} style={formstyle}>
+                    {sort}
+                    {gender}
+                    {attraction}
+                    {age}
+                    {distance}
+                    {tags}
+                </form>
+                <div style={uliststyle}>
+                    {this.state.result.map((node, key) => <p style={userstyle} key={key}>{node}</p>)}
+                </div>
+            </div>
         );
     }
 }

@@ -103,23 +103,9 @@ export default class User extends React.Component {
         let matchview = null;
         let view = null;
 
-        if (this.state.view) {
-            view = <Research socket={this.props.socket}/>
-        } else {
-            view = <button onClick={this.seekUser}>Research</button>
-        }
+            // researchview = <Research socket={this.props.socket} match={''}/>;
 
-      if (this.state.researchview) {
-            researchview = <Research socket={this.props.socket} match={''}/>
-        }else{
-            researchview = <button onClick={() => this.seekUser('researchview')}>Research</button>
-        }
-
-        if (this.state.matchview) {
-            matchview = <Research socket={this.props.socket} match={'match'}/>
-        }else {
-            matchview = <button onClick={() => this.seekUser('matchview')}>Match ME motherfucker</button>
-        }
+            matchview = <Research socket={this.props.socket} match={'match'}/>;
 
         return (
             <div className={"User"}>
