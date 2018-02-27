@@ -79,7 +79,7 @@ class ConDb {
                         "login varchar(255) not null," +
                         "type ENUM('like', 'unlike', 'visit', 'message', 'match', 'unmatch') not null," +
                         "`from` varchar(255) not null," +
-                        "read boolean default false);" +
+                        "`read` boolean default false);" +
                         "CREATE TABLE chat(" +
                         "id int auto_increment primary key," +
                         "user1 varchar(255) not null," +

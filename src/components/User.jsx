@@ -49,7 +49,12 @@ export default class User extends React.Component {
     }
 
     handleLike(ev, user){
+        let index;
+
         this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
+        if (this.props.user.chat && (index = this.props.user.chat.findIndex(elem => elem.login === user) !== -1)){
+            this.props.user.chat.splice(index, 1);
+        }
     }
 
     listUsers(list){
@@ -103,6 +108,7 @@ export default class User extends React.Component {
         } else {
             view = <button onClick={this.seekUser}>Research</button>
         }
+
       if (this.state.researchview) {
             researchview = <Research socket={this.props.socket} match={''}/>
         }else{

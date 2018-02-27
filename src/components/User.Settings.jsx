@@ -45,14 +45,15 @@ export default class UserSettings extends React.Component {
         const obj = {login: null, email: null, password: '', editLogin: false, editEmail: false, editPassword: false};
 
         if (this.state.display && array.indexOf('userSettings') === -1 && !edit[0]){
-            this.handleButton(ev, obj);
+            this.handleButton(ev);
         } else if (edit[0] && !ev.target.type){
             this.setState(obj);
         }
     }
 
-    handleButton(ev, obj){
+    handleButton(ev){
         let error = this.state.error;
+        const obj = {login: null, email: null, password: '', editLogin: false, editEmail: false, editPassword: false};
 
         Object.keys(error).map(elem => error[elem] = null);
         this.setState(prevState => (Object.assign({}, {display: !prevState.display, error: error}, obj)));

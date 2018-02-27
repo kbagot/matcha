@@ -145,11 +145,15 @@ class Likes{
     static deleteMatchList(socket, db, sess, user, refresh){
         let index;
 
+        if (sess.data.chat && (index = sess.data.chat.findIndex(elem => elem.login === user.login) !== -1)){
+            sess.data.chat.splice(index, 1);
+        }
+
         if (sess.data.match && (index = sess.data.match.findIndex(elem => elem.login === user.login)) !== -1){
             sess.data.match.splice(index, 1);
             sess.save(() => {
                 socket.emit('user', sess.data);
-                if (refresh) {}{
+                if (refresh) {
                     Likes.findSocket(db, user.id).then((res) => {
                         for (let elem of res) {
                             socket.to(elem).emit('match', {type: 'delMatch', login: {login: sess.data.login, id: sess.data.id}});
