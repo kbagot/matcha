@@ -87,7 +87,12 @@ class ConDb {
                         "history text," +
                         "messages text," +
                         "`from` varchar(255)" +
-                        ");";
+                        ");" +
+                        "CREATE TABLE img (" +
+                        "id int auto_increment primary key," +
+                        "userid int not null," +
+                        "imgid int not null," +
+                        "profil boolean default false);";
 
                     db.query(sql).then(() => resolve(db))
                         .catch((err) => reject(err));
