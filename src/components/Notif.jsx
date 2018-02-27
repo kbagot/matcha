@@ -11,7 +11,7 @@ export default class Notif extends React.Component{
 
     getNotif(list){
         if (list){
-            return list.filter(elem => elem.type !== 'message').length;
+            return list.filter(elem => elem.type !== 'message' && !elem.read).length;
         }
     }
 
@@ -38,22 +38,34 @@ export default class Notif extends React.Component{
     }
 
     renderNotif(list, msg){
-        if (list){
+        if (this.props.user.notif[0]) {
+            let unread = false;
             let array = list.map((elem, index) => {
-                if (elem.type !== 'message'){
-                    return <li name={"test"} key={index} >{msg(elem)} <button name={"notif"} value={elem.id} onClick={this.deleteNotif}>x</button></li>
+                if (elem.type !== 'message') {
+                    if (!elem.read) {
+                        unread = true;
+                    }
+                    return <li name={"test"} key={index}>{msg(elem)}
+                        <button name={"notif"} value={elem.id} onClick={this.deleteNotif}>x</button>
+                    </li>
                 }
             });
+            if (unread) {
+                this.props.socket.emit('notif', {type: 'read', data: list});
+            }
             return <ul name={"notif"}>{array}</ul>
         }
     }
 
     deleteNotif(ev){
-        this.props.socket.emit('notif', ev.target.value);
+        if (!this.props.user.notif.filter(elem => Number(elem.id) !== Number(ev.target.value)).length){
+            this.handleClick(ev, this);
+        }
+        this.props.socket.emit('notif', {type: 'delete', data: ev.target.value});
         ev.preventDefault();
     }
 
-    handleClick(ev, obj){
+    handleClick(ev, obj, list){
             obj.setState(prevState => ({
                 dropDown: !prevState.dropDown
             }));
@@ -81,11 +93,11 @@ export default class Notif extends React.Component{
         let notif = this.getNotif(this.props.user.notif);
         let list = this.state.dropDown ? this.renderNotif(this.props.user.notif, this.renderNotifMsg) : null;
 
-
-
-        return <div><button name="notifButton" onClick={(ev) => this.handleClick(ev, this)}> Notifications {notif}</button>
-                {list}
+        return (
+        <div>
+            <button name="notifButton" onClick={(ev) => this.handleClick(ev, this, list)}> Notifications {notif}</button>
+            {list}
         </div>
-
+        )
     }
 }

@@ -23,21 +23,40 @@ export default class UserSettings extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
-    componentDidMount(){
-        this.props.socket.on('registerError', data => {this.handleError(data)});
-        // document.body.addEventListener('click', ev =>{
-        //     console.log(ev.target);
-        // });
+    componentDidMount() {
+        this.props.socket.on('registerError', data => {
+            this.handleError(data)
+        });
+        document.body.addEventListener('click', ev => this.handleClick(ev));
     }
+
+
 
     componentWillUnmount(){
         this.props.socket.removeListener('registerError');
     }
 
+    handleClick(ev){
+        const array = [ev.target.name, ev.target.className, ev.target.parentNode.name, ev.target.parentNode.className];
+        let edit = array.filter(elem => elem ? elem.search('edit') >= 0 : false);
+        const obj = {login: null, email: null, password: '', editLogin: false, editEmail: false, editPassword: false};
+
+        if (this.state.display && array.indexOf('userSettings') === -1 && !edit[0]){
+            this.handleButton(ev);
+        } else if (edit[0] && !ev.target.type){
+            this.setState(obj);
+        }
+    }
+
     handleButton(ev){
-        this.setState(prevState => ({display: !prevState.display}));
+        let error = this.state.error;
+        const obj = {login: null, email: null, password: '', editLogin: false, editEmail: false, editPassword: false};
+
+        Object.keys(error).map(elem => error[elem] = null);
+        this.setState(prevState => (Object.assign({}, {display: !prevState.display, error: error}, obj)));
     }
 
     handleSubmit(ev){
@@ -54,15 +73,15 @@ export default class UserSettings extends React.Component {
     handleError(data){
         let error = Object.assign({}, this.state.error);
 
-        console.log(data);
         if (data.type !== 'success') {
             error[data.type + 'Error'] = data.error;
-            console.log(error);
             this.setState({
                 ['error']: error
             });
         } else {
-            this.setState({success: data.msg});
+            this.setState({success: data.msg}, () =>{
+                setTimeout(() => this.setState({success: null}), 3000);
+            });
         }
     }
 
@@ -78,7 +97,10 @@ export default class UserSettings extends React.Component {
 
     handleEdit(ev){
         const obj = {login: null, email: null, password: '', editLogin: false, editEmail: false, editPassword: false};
+        let error = this.state.error;
 
+        Object.keys(error).map(elem => error[elem] = null);
+        obj.error = error;
         obj[ev.target.name] = true;
         this.setState(obj);
     }
@@ -88,7 +110,7 @@ export default class UserSettings extends React.Component {
         const valid = (!this.state.error.emailError && this.state.email);
 
         return (
-            <div name={"userSettings"}>
+            <div className={"editEmail"}>
                 Email:  { edit ?
                 <form name="editEmail" onSubmit={this.handleSubmit}>
                     <input type={"text"} name={"email"} autoComplete={"off"} value={email} onChange={this.handleChange}/>
@@ -105,7 +127,7 @@ export default class UserSettings extends React.Component {
         const valid =  (!this.state.error.loginError && this.state.login);
 
         return (
-            <div name={"userSettings"}>
+            <div className={"editLogin"}>
                 <span>Login:</span> { edit ?
                 <form name="editLogin" onSubmit={this.handleSubmit}>
                     <input type={"text"} name={"login"} value={login} onChange={this.handleChange}/>
@@ -121,7 +143,7 @@ export default class UserSettings extends React.Component {
         const valid = !this.state.error.passwordError && this.state.password.length >= 6;
 
         return (
-            <div name={"userSettings"}>
+            <div className={"editPassword"}>
                 {edit ?
                 <form name={"editPassword"} onSubmit={this.handleSubmit}>
                     <input type={"password"} autoComplete={"password"} name={"password"} value={this.state.password} onChange={this.handleChange} />
@@ -135,7 +157,7 @@ export default class UserSettings extends React.Component {
     renderPannel(){
         if (this.state.display){
             return (
-                <div className={"userSettings"} name={"userSettings"}>
+                <div className={"userSettings"}>
                     {this.state.error.globalError}
                     {this.state.success}
                     {this.renderLogin(this.state.editLogin)}
@@ -150,8 +172,8 @@ export default class UserSettings extends React.Component {
         let userSettings = this.renderPannel();
 
         return (
-            <div name={"userSettings"}>
-                <button onClick={this.handleButton}>Mon Compte</button>
+            <div className={"userSettings"}>
+                <button onClick={this.handleButton} name={"userSettings"}>Mon Compte</button>
                 {userSettings}
             </div>)
     }
