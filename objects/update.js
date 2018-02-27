@@ -1,5 +1,5 @@
 class Update {
-    static async refreshUser(db, sess, socket){
+    static async refreshUser(db, sess, socket) {
         try {
             await Update.getMatch(db, sess);
             await Update.getNotif(db, sess);
@@ -10,7 +10,7 @@ class Update {
         socket.emit('user', sess.data);
     }
 
-    static getMatch(db, sess){
+    static getMatch(db, sess) {
         return (new Promise((resolve, reject) => {
             let sql = "SELECT  (SELECT login FROM users WHERE id = (CASE u1 WHEN ? THEN u2 ELSE u1 END)) AS login, " +
                 "(CASE u1 WHEN ? THEN u2 ELSE u1 END) AS id " +
@@ -20,7 +20,7 @@ class Update {
             db.execute(sql, [id, id, id, id])
                 .then(([rows]) => {
                     rows.forEach((elem) => {
-                        if (!sess.data.match){
+                        if (!sess.data.match) {
                             sess.data.match = [elem];
                         } else if (sess.data.match.findIndex(node => node.login === elem.login) === -1) {
                             sess.data.match.push(elem);
@@ -33,7 +33,7 @@ class Update {
         }));
     }
 
-    static  getNotif(db, sess){
+    static getNotif(db, sess) {
         return (new Promise(async (resolve, reject) => {
             try {
                 let sql = "SELECT notif.id, type, `from`, `read`, users.login AS login FROM notif INNER JOIN users ON notif.from = users.id WHERE notif.login = ?";
@@ -47,7 +47,7 @@ class Update {
         }));
     }
 
-    static getAllChatLog(db, sess, socket){
+    static getAllChatLog(db, sess, socket) {
         return new Promise(async (resolve, reject) => {
             let sql = "SELECT history, CASE WHEN user1=? THEN user2 ELSE user1 END AS id FROM chat WHERE user1 = ? OR user2 = ?";
             let login = sess.data.id;
@@ -70,7 +70,7 @@ class Update {
         });
     }
 
-    static getChatLog(db, data, sess, socket){
+    static getChatLog(db, data, sess, socket) {
         if (data.history === undefined) {
             let sql = "SELECT history FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
             let login = data.login.id;
@@ -85,9 +85,9 @@ class Update {
         }
     }
 
-    static updateNotif(db, data, sess){
-        if (sess.data.notif){
-            sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && Number(elem.from) !== Number(data.login.id))  || elem.type !== 'message'));
+    static updateNotif(db, data, sess) {
+        if (sess.data.notif) {
+            sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && Number(elem.from) !== Number(data.login.id)) || elem.type !== 'message'));
             sess.save();
             let sql = "DELETE FROM notif WHERE login = ? AND type = ? AND `from` = ?";
 
@@ -122,9 +122,18 @@ class Update {
         }
     }
 
-    static openChat(db, data, sess, socket){
+    static openChat(db, data, sess, socket) {
         Update.getChatLog(db, data, sess, socket);
         Update.updateNotif(db, data, sess);
+    }
+
+    add_score_pop(db, sess, type) {
+        const val = {
+            like: 20,
+            match: 80
+        };
+        let sql = "UPDATE users SET spop = spop + ???? WHERE id = ?";
+        db.execute(sql, [val[type], sess.data.id]);
     }
 }
 

@@ -82,13 +82,16 @@ class Register {
                 data = Register.changeOrientation(data);
                 try {
                     let password = await bcrypt.hash(data.password, 10);  //TODO    add  validation account  for avoid issue if no location dbentry for register user
-                    let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags, age) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags, age, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                     let tags = data.tags.map(val => {
                         if (val.className)
                             this.addTags(val.value);
                             return val.value;
                     });
-                    await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio, data.orientation, JSON.stringify(tags), data.age]);
+                    let date = new Date();
+                    date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                    await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio,
+                        data.orientation, JSON.stringify(tags), data.age, date]);
                 } catch (e) {
                     console.log(e);
                 }
