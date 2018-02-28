@@ -4,10 +4,28 @@ class Update {
             await Update.getMatch(db, sess);
             await Update.getNotif(db, sess);
             await Update.getAllChatLog(db, sess, socket);
+            await Update.getImages(db, sess);
         } catch (e) {
             console.log(e);
         }
         socket.emit('user', sess.data);
+    }
+
+    static async getImages(db, sess){
+        const sql = "SELECT imgid, profil FROM img WHERE userid = ? ORDER BY profil DESC";
+
+        try {
+            const [rows] = await db.execute(sql, [sess.data.id]);
+
+            if (rows[0]) {
+                sess.data.img = rows;
+            } else {
+                sess.data.img = [{imgid: `nopic${sess.data.sexe}.jpg`, profil: 1}];
+            }
+            sess.save();
+        } catch (e){
+            console.log(e);
+        }
     }
 
     static getMatch(db, sess){

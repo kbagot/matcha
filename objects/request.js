@@ -3,6 +3,7 @@ let database = require('./config/connect.js'),
     user = require('./user.js'),
     chat = require('./chat.js'),
     research = require('./research.js'),
+    profil = require('./profil.js'),
     update = require('./update');
 let os = require('os');
 let allUsers = [];
@@ -34,6 +35,7 @@ class Controller {
         socket.on('locUp', (res) => this.user.update_coords(res, this.db, sess, socket)); // not sure of the place
         socket.on('notif', (data) => update.handleNotif(this.db, sess, socket, data));
         socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, allUsers));
+        socket.on('profil', (data) => profil.mainHandler(this.db, sess, socket, data));
         socket.on('Register', (data, fn) => this.register.registerHandling(data, socket, fn, allUsers, io, sess));
         socket.on('getTags', (fct) => this.getTags(fct));
         socket.on('ResearchUsers', async (opt, fct) => await this.research.request(opt, fct, this.db, sess));

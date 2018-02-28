@@ -5,39 +5,77 @@ export default class UploadForm extends React.Component{
         super(props);
         this.state = {
             file: null
-        }
+        };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange(ev){
-        console.log(ev.target.value);
-        let input = document.querySelector("#file").files[0];
-        let reader = new FileReader();
+        if (this.props.user.img.length < 5) {
+            const reader = new FileReader();
+            const file = ev.target.files[0];
+            const extension = ['jpg', 'jpeg', 'png'].indexOf(file.name.split('.').pop());
+            const type = ['image/jpg', 'image/jpeg', 'image/png'].indexOf(file.type) !== -1;
 
+            reader.addEventListener('load', () => {
+                let obj = {
+                    type: 'upload',
+                    ext: ['jpg', 'jpeg', 'png'][extension],
+                    img: reader.result.replace(/^data:image\/(jpeg|jpg|png);base64,/, "")
+                };
+                this.props.socket.emit('img', obj);
+            });
 
-        console.log(input);
-        reader.readAsDataURL(input);
-        // console.log(reader.result);
-        // this.setState({file: ev.target.value});
-    }
-
-    handleSubmit(ev){
-        // console.log(this.state.file);
-        // console.log(ev.target);
-        ev.preventDefault();
+            if (type && Number(file.size) <= 1000000 && extension !== -1) {
+                reader.readAsDataURL(ev.target.files[0]);
+            }
+        }
     }
 
     render() {
         return (
-            <div className={"uploadFormContainer"}>
-                <form name={"uploadForm"} className={"uploadForm"} onSubmit={this.handleSubmit}>
-                    <label htmlFor="file" className="file">Upload</label>
-                    <input type={"file"} id={"file"} onChange={this.handleChange}/>
-                    <input type={"submit"} value={"Upload"}/>
-                </form>
+            <div style={uploadContainer} className={"uploadFormContainer"}>
+                    <button style={addPicture}> +
+                    </button>
+                <input style={inputFile} type={"file"} id={"file"} onChange={this.handleChange} accept={".png, .jpg,.jpeg"}/>
             </div>
         )
     }
 }
+
+const inputFile = {
+    position: 'absolute',
+    opacity: '0',
+    top: '0',
+    borderRadius: '10vh',
+    cursor: 'pointer',
+    fontSize: '7vmin',
+    width: '10vmin',
+    height: '10vmin',
+};
+
+const uploadContainer = {
+    position: 'relative',
+    cursor: 'pointer',
+    fontSize: '7vmin',
+    width: '10vmin',
+    height: '10vmin',
+};
+
+const addPicture = {
+    position: 'absolute',
+    outline: 'none',
+    display: 'flex',
+    alignItems: 'baseline',
+    justifyContent: 'center',
+    lineHeight: '3vmin',
+    padding: '0px',
+    border: '1px solid gray',
+    borderRadius: '10vh',
+    cursor: 'pointer',
+    fontSize: '7vmin',
+    width: '10vmin',
+    height: '10vmin',
+    background: 'rgb(196, 205, 223)',
+    color: 'white',
+};

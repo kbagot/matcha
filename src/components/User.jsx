@@ -67,7 +67,7 @@ export default class User extends React.Component {
             if (list.type === "all") {
                 return array.map((user, index) => {
                     if (user.login !== this.props.user.login) {
-                        return <li key={index}>{user.login}
+                        return <li key={index}><a href={""} value={user.id} onClick={this.handleClick}>{user.login}</a>
                             <button onClick={(ev) => this.handleLike(ev, user)}> Add</button>
                             <button onClick={(ev) => this.handleLike(ev, user)}> Remove</button>
                         </li>
@@ -101,7 +101,8 @@ export default class User extends React.Component {
     }
 
     handleClick(ev){
-        this.setState({profil: ev.target.innerHTML});
+        const id = Number(ev.target.getAttribute('value'));
+        this.setState({profil: id});
         ev.preventDefault();
     }
 
@@ -110,7 +111,7 @@ export default class User extends React.Component {
         let researchview = null;
         let matchview = null;
         let view = null;
-        let profil = this.state.profil ? <Profil user={this.props.user} profil={this.props.user.id} socket={this.props.socket}/> : null;
+        let profil = this.state.profil ? <Profil user={this.props.user} profil={this.state.profil} socket={this.props.socket}/> : null;
         // if (this.state.view) {
         //     view = <Research socket={this.props.socket}/>
         // } else {
@@ -132,7 +133,7 @@ export default class User extends React.Component {
 
         return (
             <div className={"User"}>
-                <h3>Welcome <a href={""} onClick={this.handleClick}>{this.props.user.login}</a></h3>
+                <h3>Welcome <a href={""} value={this.props.user.id} onClick={this.handleClick}>{this.props.user.login}</a></h3>
                 <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br />
                 <UserSettings user={this.props.user} socket={this.props.socket} /><br />
                 <button onClick={this.disconnectUser}>Disconnect</button>
