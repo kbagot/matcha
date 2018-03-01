@@ -23,9 +23,11 @@ class User {
         const [results, fields] = await db.execute(
             "SELECT * FROM `users` WHERE login=?",
             [res.login]);
+
         if (results[0]) {
             bcrypt.compare(res.password, results[0].password, (err, succ) => {
                 if (succ) {
+                    User.update_date(db, res.login);
                     for (let i in this.data)
                         this.data[i] = results[0][i];
                     delete results[0].password;
@@ -36,15 +38,7 @@ class User {
                         update.refreshUser(db, sess, socket)
                             .then(() => this.updateUsers(sess, allUsers))
                             .then(() => io.emit('allUsers', allUsers));
-                        // socket.emit('user', sess.data, () => {
-                        //     this.updateUsers(sess, allUsers)
-                        //         .then(() => {
-                        //             io.emit('allUsers', allUsers);
-                        //             update.refreshUser(db, sess, socket);
-                        //         })
-                        //         .catch((e) => console.log(e));
-                        // });
-                         socket.emit('doloc');
+                        socket.emit('doloc');
                     });
                 }
                 else
@@ -55,6 +49,14 @@ class User {
             io.sockets.emit('loglog');
     }
 
+    static update_date(db, login) {
+        let date = new Date();
+        date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+
+        let sql = "UPDATE users SET date = ? WHERE login = ?";
+        db.execute(sql, [date, login]);
+    }
+
     update_coords(res, db, sess) {
         let options = {
             provider: 'google',
@@ -63,20 +65,6 @@ class User {
             formatter: null
         };
         let geocoder = NodeGeocoder(options);
-
-        // let geodist = require('geodist');
-        //
-        // let dist = geodist({lat: res.lat, lon: res.lon}, {lat: 33.7489, lon: -84.3881}, {unit: 'km'});  // opt limit   $(USER INPUT DISTANCE)
-        // console.log(dist);
-
-        // Select login from location WHERE (st_distance_sphere(POINT(location.lon, location.lat), POINT(2.3292, 48.8628)) / 1000) < 11;
-        // REQUEST FOR GET users list from a distance input
-
-
-        // SELECT * from users INNER JOIN location ON location.login = users.login  WHERE users.orientation IN ('hetero', 'bi', 'gay')  AND (st_distance_sphere(POINT(location.lon, location.lat), POINT(2.3522, 48.8566)) / 1000) < 1 AND users.sexe IN ('M', 'F');
-        // select * from users WHERE JSON_CONTAINS(tags, json_array('test', 'lol'));
-
-        // SELECT * from users INNER JOIN location ON location.login = users.login  WHERE users.orientation IN ('hetero', 'bi', 'gay')  AND (st_distance_sphere(POINT(location.lon, location.lat), POINT(2.3522, 48.8566)) / 1000) < 1 AND users.sexe IN ('M', 'F') AND JSON_CONTAINS(users.tags, json_array('lol', 'test'));
         geocoder.reverse({'lat': res.lat, 'lon': res.lon})
             .then(res => {
                 User.update_coords_db(res[0], db, sess);
@@ -130,7 +118,7 @@ class User {
 
     userDisconnect(io, sess, socket, allUsers) {
         let index = allUsers.indexOf(sess.data.login);
-      
+
         allUsers.splice(index, 1);
         sess.destroy();
         socket.emit("userDisconnect", "");
@@ -150,8 +138,8 @@ class User {
         });
     }
 
-    alreadyExists(login, allUsers){
-        return new Promise((resolve, reject) =>{
+    alreadyExists(login, allUsers) {
+        return new Promise((resolve, reject) => {
             if (allUsers) {
                 for (let elem of allUsers) {
                     if (elem.login === login) {

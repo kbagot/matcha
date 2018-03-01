@@ -24,7 +24,8 @@ export default class Research extends React.Component {
             result: [],
             resultLength: 0,
             dofirstmatch: '',
-            matchtag: ''
+            matchtag: '',
+            match: ''
         };
         this.getTags = this.getTags.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -37,17 +38,15 @@ export default class Research extends React.Component {
     // componentDidUpdate(prevProps, prevState) {
     // }
 
-    // refresh() {
-    //
-    //
-    // }
-
     componentWillMount() {
         if (this.props.match)
-            this.setState({['dofirstmatch']: 'match'});
+            this.setState({
+                ['dofirstmatch']: 'match',
+                ['match']: 'match'
+            });
     }
 
-    componentDidMount () {
+    componentDidMount() {
         if (this.state.dofirstmatch)
             this.refresh();
         window.addEventListener("scroll", this.handleScroll);
@@ -61,7 +60,7 @@ export default class Research extends React.Component {
         const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
         const body = document.body;
         const html = document.documentElement;
-        const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight,  html.scrollHeight, html.offsetHeight);
+        const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
         const windowBottom = windowHeight + window.pageYOffset;
         if (windowBottom >= docHeight) {
             this.setState({['resultLength']: this.state.result.length}, () => this.refresh('scroll'));
@@ -70,7 +69,7 @@ export default class Research extends React.Component {
 
     refresh(from) {
         window.removeEventListener("scroll", this.handleScroll);
-            this.props.socket.emit('ResearchUsers', this.state, (users) => {
+        this.props.socket.emit('ResearchUsers', this.state, (users) => {
             let login = [];
             users.result.forEach(users => {
                 login.push(users.login);
@@ -79,7 +78,7 @@ export default class Research extends React.Component {
                 users.dofirstmatch = '';
                 users.result = login;
                 users.matchtag = users.tags;
-                this.setState(users, () =>{
+                this.setState(users, () => {
                     console.log(this.state);
                     window.addEventListener("scroll", this.handleScroll);
                 });
@@ -110,23 +109,29 @@ export default class Research extends React.Component {
     getTags(tags) {
         let ptags = tags.map(val => val.value);
         if (!this.props.match)
-            this.setState({['tags']: ptags}, ()=> {this.refresh()});
+            this.setState({['tags']: ptags}, () => {
+                this.refresh()
+            });
         else
-            this.setState({['tags']: [...ptags, ...this.state.matchtag]}, ()=> {this.refresh()});
+            this.setState({['tags']: [...ptags, ...this.state.matchtag]}, () => {
+                this.refresh()
+            });
     }
 
     handleChange(ev) {
         let t = ev.target;
 
         if (ev.target.type === 'checkbox') {
-            this.state[ev.target.name] === '' ? this.setState({[ev.target.name]: ev.target.name}, () => this.refresh()) : this.setState({[ev.target.name]: ''}, () =>this.refresh());
+            this.state[ev.target.name] === '' ? this.setState({[ev.target.name]: ev.target.name}, () => this.refresh()) : this.setState({[ev.target.name]: ''}, () => this.refresh());
         } else if (ev.target.name.split(' ')[0] !== 'sort') {
             // if ((t.name === 'min' || t.name === 'max') && (t.value < 18 || t.value > 99)){
             //     if (t.name === 'min')
             //        await this.setState({[ev.target.name]: '18'});
             //     return;
             // }
-            this.setState({[ev.target.name]: ev.target.value}, ()=>this.refresh());
+            this.setState({
+                [ev.target.name]: ev.target.value,
+            }, () => this.refresh());
         }
         else {
             let val = this.state.order[ev.target.name.split(' ')[1]];
@@ -139,12 +144,14 @@ export default class Research extends React.Component {
                 else
                     order[i] = '';
             }
-            this.setState(
-                {order}, ()=> this.refresh()
+            order.resultLength = 0;
+            this.setState({
+                    order,
+                    ['resultLength']: 0
+                },
+                () => this.refresh()
             );
         }
-        // console.log(this.state);
-        // this.refresh();
     }
 
     sortbox() {
@@ -201,7 +208,7 @@ export default class Research extends React.Component {
             <div>
                 <br/>Distance:<br/>
                 max distance en km :<input type="number" name="distance" min="0" max="20000"
-                           onChange={this.handleChange}/>
+                                           onChange={this.handleChange}/>
             </div>
         )
     }
