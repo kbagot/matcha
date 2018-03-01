@@ -35,7 +35,7 @@ class Controller {
         socket.on('locUp', (res) => this.user.update_coords(res, this.db, sess, socket)); // not sure of the place
         socket.on('notif', (data) => update.handleNotif(this.db, sess, socket, data));
         socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, allUsers));
-        socket.on('profil', (data, setState) => profil.mainHandler(this.db, sess, socket, data, setState));
+        socket.on('profil', (data, setState) => profil.mainHandler(this.db, sess, socket, data, io, setState));
         socket.on('Register', (data, fn) => this.register.registerHandling(data, socket, fn, allUsers, io, sess));
         socket.on('getTags', (fct) => this.getTags(fct));
         socket.on('ResearchUsers', async (opt, fct) => await this.research.request(opt, fct, this.db, sess));

@@ -100,21 +100,31 @@ export default class User extends React.Component {
         return notif ? notif.length : null;
     }
 
-    handleClick(ev){
-        const id = Number(ev.target.getAttribute('value'));
+    handleClick(ev, node){
 
-        this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.setState({profil: data}));
-        ev.preventDefault();
+        if (!node) {
+            const id = Number(ev.target.getAttribute('value'));
+            this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.handleClick(null, data));
+        }
+
+        if (node){
+            this.setState({profil: node});
+        }
+
+        if (ev){
+            ev.preventDefault();
+        }
     }
 
     render() {
+        console.log(this.props.user.img);
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
         let researchview = null;
         let matchview = null;
         let view = null;
         let profil = this.state.profil ? <Profil user={this.props.user} profil={this.state.profil} socket={this.props.socket}/> : null;
 
-            researchview = <Research socket={this.props.socket} match={''}/>;
+            researchview = <Research socket={this.props.socket} match={''} handleClick={this.handleClick}/>;
 
             // matchview = <Research socket={this.props.socket} match={'match'}/>;
 

@@ -290,12 +290,12 @@ export default class Research extends React.Component {
                 <div style={uliststyle}>
                     {this.state.result.map((node, key) => {
                         // let = img,
-
-                    return (<div key={key} style={userstyle} >
+                    
+                    return (<div key={key} style={userstyle} onClick={(ev) => this.props.handleClick(ev, node)}>
                         <img src={node.img} width={'100%'} height={'100%'}/>
                         <p>{node.login}</p>
                     </div>)}
-                    )}
+
                 </div>
             </div>
         );
