@@ -15,7 +15,7 @@ export default class Images extends React.Component{
 
                 return <img key={i} style={imgStyle} src={`img/${elem.imgid}`} />
             });
-        } else {
+        } else if (this.props.profil){
             this.props.socket.emit("profil", {type:'getImages', profil: this.props.profil});
         }
     }
