@@ -2,7 +2,7 @@ const fs = require('mz/fs');
 const uniqid = require('uniqid');
 
 class Profil {
-    static mainHandler(db, sess, socket, data){
+    static mainHandler(db, sess, socket, data, setState){
         const menu = {
             upload: Profil.handleUpload,
             getImages: Profil.sendImages,
@@ -10,12 +10,19 @@ class Profil {
         };
 
         if (menu[data.type]){
-            menu[data.type](db, sess, socket, data);
+            menu[data.type](db, sess, socket, data, setState);
         }
     }
 
-    static async sendProfil(db, sess, socket, data){
-        const sql = "SELECT id, login, last, first, age, sexe, bio, orientation, tags, date FROM users  WHERE id = ?";
+    static async sendProfil(db, sess, socket, data, setState){
+        const sql = "SELECT users.id, users.login, users.last, users.first, users.age, users.sexe, users.bio, users.orientation, users.tags, users.date, location.city, location.country, location.zipcode, " +
+            "(SELECT st_distance_sphere((SELECT POINT(lon, lat) FROM location WHERE logid = ?), (SELECT POINT(lon, lat) FROM location WHERE logid = ?))) AS distance " +
+            "FROM users INNER JOIN location ON location.logid = users.id  WHERE users.id = ?";
+        const [rows] = await db.execute(sql, [data.id, sess.data.id, data.id]);
+
+        if (rows[0]){
+            setState(rows[0]);
+        }
     }
 
     static async handleUpload(db, sess, socket, data){
@@ -32,12 +39,12 @@ class Profil {
 
     static async sendImages(db, sess, socket, data){
         const sql = "SELECT imgid, profil FROM img WHERE userid= ? ORDER BY profil DESC";
-        const [rows] = await db.execute(sql, [data.profil]);
+        const [rows] = await db.execute(sql, [data.profil.id]);
 
         if (rows[0]){
             socket.emit('img', rows);
         } else {
-            // socket.emit('img', {imgid:})
+            socket.emit('img', {imgid: `nopic${data.profil.sexe}.jpg`, profil: 1})
         }
         console.log(rows);
     }

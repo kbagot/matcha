@@ -4,13 +4,6 @@ import Images from './Images.jsx';
 export default class Profil extends React.Component{
     constructor(props){
         super(props);
-        this.state = {
-            profil: null
-        }
-    }
-
-    componentWillMount(){
-        this.props.socket.emit('profil', {type: 'getProfil', id: this.props.profil});
     }
 
     render(){

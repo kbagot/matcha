@@ -102,7 +102,8 @@ export default class User extends React.Component {
 
     handleClick(ev){
         const id = Number(ev.target.getAttribute('value'));
-        this.setState({profil: id});
+
+        this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.setState({profil: data}));
         ev.preventDefault();
     }
 

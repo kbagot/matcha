@@ -7,9 +7,7 @@ export default class Images extends React.Component{
     }
 
     getImg(){
-        console.log(this.props.user.id);
-        console.log(this.props.profil);
-        if (this.props.user.id === this.props.profil){
+        if (this.props.user.id === this.props.profil.id){
             let index = this.props.user.img.findIndex(elem => elem.profil === 1);
 
             return this.props.user.img.map((elem, i) => {
@@ -23,7 +21,7 @@ export default class Images extends React.Component{
     }
 
     renderUpload(){
-        if (this.props.user.id === this.props.profil && this.props.user.img.length < 5){
+        if (this.props.user.id === this.props.profil.id && this.props.user.img.length < 5){
             return <UploadForm user={this.props.user} socket={this.props.socket}/>
         }
     }
