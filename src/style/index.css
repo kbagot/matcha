@@ -17,6 +17,15 @@ h1 {
 *******************/
 
 .resForm input{
-    border: solid;
-    outline: none;
+    /*text-align: center;*/
+    font-size: 13px;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid dimgrey;
+    /*margin: 15px;*/
+    width: 50%;
+
+
+    /*border: 1px solid grey;*/
+    /*outline: none;*/
 }

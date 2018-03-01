@@ -103,9 +103,9 @@ export default class User extends React.Component {
         let matchview = null;
         let view = null;
 
-            // researchview = <Research socket={this.props.socket} match={''}/>;
+            researchview = <Research socket={this.props.socket} match={''}/>;
 
-            matchview = <Research socket={this.props.socket} match={'match'}/>;
+            // matchview = <Research socket={this.props.socket} match={'match'}/>;
 
         return (
             <div className={"User"}>

@@ -247,10 +247,12 @@ export default class Research extends React.Component {
         };
 
         let formstyle = {
+            borderRadius: '5px',
             backgroundColor: 'blue',
             position: 'fixed',
             width: '19%',
-            marginBottom: '8%',
+            marginBottom: '10%',
+            height: '60%',
             bottom: '0'
 
         };
