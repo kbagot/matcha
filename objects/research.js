@@ -22,14 +22,14 @@ class Research {
                 opt[req[0].orientation] = req[0].orientation;
                 opt.distance = '50';
                 opt.tags = req[0].tags; // TODO reducteur de tags pour match
-                // opt.spop = req[0].spop;
-                while (results.length <= 10 && i < 3) {
+                opt.spop = req[0].spop;
+                while (results.length <= 25 && i < 3) {
                     opt[j[i]] = '';
-                    results = await this.doRequest(opt, db, req, usertag, ordertag, matchorder);
+                    results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
                     i++;
                 }
             } else
-                results = await this.doRequest(opt, db, req, usertag, ordertag, matchorder);
+                results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
             opt.result = results;
             fct(opt);
         } catch (e) {
@@ -58,7 +58,7 @@ class Research {
             if (opt.match)
                 order = [matchorder, matchorder = order][0];
             if (!opt.distance)
-                opt.distance = '50';
+                opt.distance = '20000';
             if (!opt.min)
                 opt.min = '18';
             if (!opt.max)
@@ -76,13 +76,13 @@ class Research {
                 opt.F = 'F';
                 opt.T = 'T';
             }
-            let sql = "SELECT * FROM (SELECT *, (st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " +
+            let sql = "SELECT login FROM (SELECT *, (st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
                 " from users INNER JOIN location ON location.logid = users.id  " +
                 "HAVING orientation IN (?, ?, ?, ?)" +
                 "AND distance < ? AND " +
                 "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
-                "AND (age >= ? AND age <= ?) " + order + " LIMIT " + opt.resultLength + " , 10) AS res " + matchorder;
+                "AND (age >= ? AND age <= ?) " + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
             let inserts = [req[0].lon, req[0].lat, opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
             let [results] = await db.query(sql);
