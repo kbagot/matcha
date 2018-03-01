@@ -76,14 +76,19 @@ class Research {
                 opt.F = 'F';
                 opt.T = 'T';
             }
-            let sql = "SELECT * FROM (SELECT *, (st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
+            let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
+
+            let sql = "SELECT * FROM (SELECT users.login, users.age, users.sexe, users.bio, users.orientation, " +
+                "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, img.imgid, likes.*,  " +
+                "(st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
-                " from users INNER JOIN location ON location.logid = users.id  " +
+                " from users INNER JOIN location ON location.logid = users.id LEFT JOIN img ON img.userid = users.id AND (img.profil = 1) " +
+                "LEFT JOIN likes ON likes.user1 = users.id OR likes.user2 = users.id " +
                 "HAVING orientation IN (?, ?, ?, ?)" +
                 "AND distance < ? AND " +
                 "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
                 "AND (age >= ? AND age <= ?) " + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
-            let inserts = [req[0].lon, req[0].lat, opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
+            let inserts = [maxspop[0].maxspop / 10, req[0].lon, req[0].lat, opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
             let [results] = await db.query(sql);
             return (results);

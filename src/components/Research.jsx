@@ -260,7 +260,9 @@ export default class Research extends React.Component {
         };
 
         let uliststyle = {
-            marginLeft: '20%',
+            backgroundColor: 'red',
+            // marginLeft: '20%',
+            margin: 'auto',
             // position: 'fixed',
             height: '100%',
             width: '79%',
@@ -286,7 +288,14 @@ export default class Research extends React.Component {
                     {tags}
                 </form>
                 <div style={uliststyle}>
-                    {this.state.result.map((node, key) => <p style={userstyle} key={key}>{node.login}</p>)}
+                    {this.state.result.map((node, key) => {
+                        // let = img,
+
+                    return (<div key={key} style={userstyle} >
+                        <img src={node.img} width={'100%'} height={'100%'}/>
+                        <p>{node.login}</p>
+                    </div>)}
+                    )}
                 </div>
             </div>
         );

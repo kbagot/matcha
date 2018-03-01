@@ -89,7 +89,7 @@ class ConDb {
                         "`from` varchar(255)" +
                         ");" +
                         "CREATE TABLE img (" +
-                        "id int auto_increment primary key," +
+                        "index int auto_increment primary key," +
                         "userid int not null," +
                         "imgid varchar(255) not null," +
                         "profil boolean default false);";

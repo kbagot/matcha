@@ -18,6 +18,7 @@ export default class Profil extends React.Component{
 }
 
 const container = {
+    zIndex: '10',
     background:  'rgba(0, 0, 0, 0.8)',
     position: 'absolute',
     top: '0',
