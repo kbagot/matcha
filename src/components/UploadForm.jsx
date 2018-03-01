@@ -23,7 +23,7 @@ export default class UploadForm extends React.Component{
                     ext: ['jpg', 'jpeg', 'png'][extension],
                     img: reader.result.replace(/^data:image\/(jpeg|jpg|png);base64,/, "")
                 };
-                this.props.socket.emit('img', obj);
+                this.props.socket.emit('profil', obj);
             });
 
             if (type && Number(file.size) <= 1000000 && extension !== -1) {

@@ -33,7 +33,6 @@ class Profil {
 
             await fs.writeFile(`img/${id}`, data.img, 'base64');
             await db.execute(sql, [sess.data.id, id, profil]);
-
         }
     }
 
@@ -46,7 +45,7 @@ class Profil {
         } else {
             socket.emit('img', {imgid: `nopic${data.profil.sexe}.jpg`, profil: 1})
         }
-        console.log(rows);
+        // console.log(rows);
     }
 }
 
