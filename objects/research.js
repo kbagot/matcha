@@ -78,8 +78,8 @@ class Research {
             }
             let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
 
-            let sql = "SELECT * FROM (SELECT users.login, users.age, users.sexe, users.bio, users.orientation, " +
-                "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, img.imgid, likes.*,  " +
+            let sql = "SELECT * FROM (SELECT users.id, users.login, users.age, users.sexe, users.bio, users.orientation, " +
+                "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, img.imgid, likes.user1,  " +
                 "(st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
                 " from users INNER JOIN location ON location.logid = users.id LEFT JOIN img ON img.userid = users.id AND (img.profil = 1) " +

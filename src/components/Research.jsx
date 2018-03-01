@@ -81,18 +81,15 @@ export default class Research extends React.Component {
                 users.result = data;
                 users.matchtag = users.tags;
                 this.setState(users, () => {
-                    console.log(this.state);
                     window.addEventListener("scroll", this.handleScroll);
                 });
             }
             else {
-                console.log(this.state.result.length);
                 if (this.state.resultLength > 0 && from === 'scroll') {
                     this.setState({
                         // result: [login]
                         result: [...this.state.result, ...data]
                     }, () => {
-                        console.log(this.state);
                         window.addEventListener("scroll", this.handleScroll);
                     })
                 } else {
@@ -289,13 +286,12 @@ export default class Research extends React.Component {
                 </form>
                 <div style={uliststyle}>
                     {this.state.result.map((node, key) => {
-                        // let = img,
-                    
-                    return (<div key={key} style={userstyle} onClick={(ev) => this.props.handleClick(ev, node)}>
-                        <img src={node.img} width={'100%'} height={'100%'}/>
-                        <p>{node.login}</p>
-                    </div>)}
-
+                        return (
+                            <div key={key} style={userstyle} onClick={(ev) => this.props.handleClick(ev, node)}>
+                                <img src={node.img} width={'100%'} height={'100%'}/>
+                                <p>{node.login}</p>
+                            </div>)
+                    })}
                 </div>
             </div>
         );
