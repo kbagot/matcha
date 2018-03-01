@@ -286,7 +286,7 @@ export default class Research extends React.Component {
                     {tags}
                 </form>
                 <div style={uliststyle}>
-                    {this.state.result.map((node, key) => <p style={userstyle} key={key}>{node.login}</p>)}
+                    {this.state.result.map((node, key) => <div key={key} onClick={(ev) => this.props.handleClick(ev, node)}><p style={userstyle} key={key}>{node.login}</p></div>)}
                 </div>
             </div>
         );

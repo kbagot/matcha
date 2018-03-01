@@ -7,6 +7,7 @@ export default class Profil extends React.Component{
     }
 
     render(){
+        console.log(this.props.profil);
         return (
             <div style={container} className={"profilContainer"}>
                 <div style={profil} className={"profil"}>
@@ -30,7 +31,6 @@ const container = {
 const profil = {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
     margin: '2vh',
     borderRadius: '2vh',
     width: '80%',

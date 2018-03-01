@@ -4,19 +4,28 @@ import UploadForm from './UploadForm.jsx';
 export default class Images extends React.Component{
     constructor(props){
         super(props);
+        this.state = {
+            images : null,
+            style: null,
+        };
+        this.handleClickIn = this.handleClickIn.bind(this);
     }
 
-    getImg(){
-        if (this.props.user.id === this.props.profil.id){
-            let index = this.props.user.img.findIndex(elem => elem.profil === 1);
+    renderImg(){
+        const images = this.state.images ? this.state.images : this.props.user.img;
+        let index = images.findIndex(elem => elem.profil === true);
 
-            return this.props.user.img.map((elem, i) => {
-                let imgStyle = i === index ? profilImg : img;
+        return images.map((elem, i) => {
+            let imgStyle = i === index ? profilImg : img;
 
-                return <img key={i} style={imgStyle} src={`img/${elem.imgid}`} />
-            });
-        } else if (this.props.profil){
-            this.props.socket.emit("profil", {type:'getImages', profil: this.props.profil});
+            return <a href={""} key={i} onClick={this.handleClickIn}><img style={imgStyle} src={`img/${elem.imgid}`} /></a>
+        });
+    }
+
+    componentDidMount(){
+        this.props.socket.on(this.props.profil.login, (data) => this.setState({images: data}));
+        if (this.props.profil && this.props.profil.id !== this.props.user.id){
+            this.props.socket.emit("profil", {type:'getImages', profil: this.props.profil}, (images) => this.setState({images: images}));
         }
     }
 
@@ -26,37 +35,43 @@ export default class Images extends React.Component{
         }
     }
 
+    handleClickIn(ev){
+        ev.preventDefault();
+    }
+
     render(){
-        let images = this.getImg();
+        let images = this.renderImg();
         let upload = this.renderUpload();
 
         return (
-        <div style={profilImgContainer} className={"profilImgContainer"}>
-            {images}
-            {upload}
-        </div>
+            <div >
+                <div style={profilImgContainer} className={"profilImgContainer"}>
+                    {images}
+                    {upload}
+                </div>
+            </div>
         )
     }
 }
 
 const profilImg = {
-    margin: '1vh',
+    marginTop: '1vh',
     border: '1px solid gray',
-    borderRadius: '10vh',
+    borderRadius: '100%',
     width: '19vmin',
     height: '19vmin',
 };
 
 const profilImgContainer = {
+    backgroundColor: 'gray',
     display: 'inline-flex',
-    justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-evenly'
 };
 
 const img = {
-    marginRight: '1vw',
     border: '1px solid gray',
-    borderRadius: '10vh',
+    borderRadius: '100%',
     width: '10vmin',
     height: '10vmin',
 };
