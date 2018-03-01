@@ -76,7 +76,7 @@ class Research {
                 opt.F = 'F';
                 opt.T = 'T';
             }
-            let sql = "SELECT login FROM (SELECT *, (st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
+            let sql = "SELECT * FROM (SELECT *, (st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
                 " from users INNER JOIN location ON location.logid = users.id  " +
                 "HAVING orientation IN (?, ?, ?, ?)" +

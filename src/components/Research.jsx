@@ -72,13 +72,13 @@ export default class Research extends React.Component {
     refresh(from) {
         window.removeEventListener("scroll", this.handleScroll);
         this.props.socket.emit('ResearchUsers', this.state, (users) => {
-            let login = [];
+            let data = [];
             users.result.forEach(users => {
-                login.push(users.login);
+                data.push(users);
             });
             if (this.state.dofirstmatch) {
                 users.dofirstmatch = '';
-                users.result = login;
+                users.result = data;
                 users.matchtag = users.tags;
                 this.setState(users, () => {
                     console.log(this.state);
@@ -90,14 +90,14 @@ export default class Research extends React.Component {
                 if (this.state.resultLength > 0 && from === 'scroll') {
                     this.setState({
                         // result: [login]
-                        result: [...this.state.result, ...login]
+                        result: [...this.state.result, ...data]
                     }, () => {
                         console.log(this.state);
                         window.addEventListener("scroll", this.handleScroll);
                     })
                 } else {
                     this.setState({
-                        result: login
+                        result: data
                         // result: [...this.state.result, ...login]
                     }, () => {
                         console.log(this.state);
@@ -105,6 +105,7 @@ export default class Research extends React.Component {
                     });
                 }
             }
+
         });
     }
 
@@ -247,10 +248,11 @@ export default class Research extends React.Component {
         };
 
         let formstyle = {
-            borderRadius: '5px',
-            backgroundColor: 'blue',
+            borderRadius: '15px',
+            backgroundColor: 'teal',
             position: 'fixed',
             width: '19%',
+            minWidth: '300px',
             marginBottom: '10%',
             height: '60%',
             bottom: '0'
@@ -259,13 +261,16 @@ export default class Research extends React.Component {
 
         let uliststyle = {
             marginLeft: '20%',
-            height: '100%', width: '79%',
+            // position: 'fixed',
+            height: '100%',
+            width: '79%',
             display: 'inline-block'
         };
 
         let userstyle = {
             backgroundColor: 'pink',
             width: '20%',
+            minWidth: '250px',
             height: '200px',
             display: 'inline-block'
         };
@@ -281,7 +286,7 @@ export default class Research extends React.Component {
                     {tags}
                 </form>
                 <div style={uliststyle}>
-                    {this.state.result.map((node, key) => <p style={userstyle} key={key}>{node}</p>)}
+                    {this.state.result.map((node, key) => <p style={userstyle} key={key}>{node.login}</p>)}
                 </div>
             </div>
         );
