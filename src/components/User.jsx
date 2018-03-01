@@ -1,6 +1,7 @@
 import React from 'react';
 import Chat from './Chat.jsx';
 import Notif from './Notif.jsx';
+import Profil from './Profil.jsx';
 import Research from './Research.jsx';
 import UserSettings from './User.Settings.jsx';
 
@@ -10,6 +11,7 @@ export default class User extends React.Component {
         this.state = {
             allUsers: [],
             history: [],
+            profil: false,
             view: false,
             researchview: false,
             matchview: false
@@ -17,6 +19,7 @@ export default class User extends React.Component {
         this.disconnectUser = this.disconnectUser.bind(this);
         this.seekUser = this.seekUser.bind(this);
         this.listUsers = this.listUsers.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     componentDidMount(){
@@ -64,7 +67,7 @@ export default class User extends React.Component {
             if (list.type === "all") {
                 return array.map((user, index) => {
                     if (user.login !== this.props.user.login) {
-                        return <li key={index}>{user.login}
+                        return <li key={index}><a href={""} value={user.id} onClick={this.handleClick}>{user.login}</a>
                             <button onClick={(ev) => this.handleLike(ev, user)}> Add</button>
                             <button onClick={(ev) => this.handleLike(ev, user)}> Remove</button>
                         </li>
@@ -97,11 +100,36 @@ export default class User extends React.Component {
         return notif ? notif.length : null;
     }
 
+    handleClick(ev){
+        const id = Number(ev.target.getAttribute('value'));
+
+        this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.setState({profil: data}));
+        ev.preventDefault();
+    }
+
     render() {
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
-          let researchview = null;
+        let researchview = null;
         let matchview = null;
         let view = null;
+        let profil = this.state.profil ? <Profil user={this.props.user} profil={this.state.profil} socket={this.props.socket}/> : null;
+        // if (this.state.view) {
+        //     view = <Research socket={this.props.socket}/>
+        // } else {
+        //     view = <button onClick={this.seekUser}>Research</button>
+        // }
+      //
+      // if (this.state.researchview) {
+      //       researchview = <Research socket={this.props.socket} match={''}/>
+      //   }else{
+      //       researchview = <button onClick={() => this.seekUser('researchview')}>Research</button>
+      //   }
+      //
+      //   if (this.state.matchview) {
+      //       matchview = <Research socket={this.props.socket} match={'match'}/>
+      //   }else {
+      //       matchview = <button onClick={() => this.seekUser('matchview')}>Match ME motherfucker</button>
+      //   }
 
             researchview = <Research socket={this.props.socket} match={''}/>;
 
@@ -109,15 +137,16 @@ export default class User extends React.Component {
 
         return (
             <div className={"User"}>
-                <h3>Welcome {this.props.user.login} </h3>
+                <h3>Welcome <a href={""} value={this.props.user.id} onClick={this.handleClick}>{this.props.user.login}</a></h3>
                 <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br />
                 <UserSettings user={this.props.user} socket={this.props.socket} /><br />
                 <button onClick={this.disconnectUser}>Disconnect</button>
-                <h2>All Users</h2>
-                <ul>{list}</ul>
-                <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket} listUsers={this.listUsers}/>{}
+                {profil}
                 {researchview}
                 {matchview}
+                <h2>All Users</h2>
+                <ul>{list}</ul>
+                <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket} listUsers={this.listUsers}/>
             </div>
         );
     }

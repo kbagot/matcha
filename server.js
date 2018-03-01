@@ -19,7 +19,7 @@ let     req = require('./objects/request');
 let     controller = new req();
 let     setup = require('./objects/config/connect.js');
 let     MySQLStore = require('express-mysql-session')(session);
-
+let     path = require('path');
 let     expressSession = session({
     secret : 'w3ll3w',
     name : 'Session',
@@ -35,24 +35,25 @@ let     expressSession = session({
     })
 });
 
+console.log(path.join(__dirname, 'img'));
 app.use(expressSession)
-        .use(cookieParser())
-        .use(express.static('./src/style'))
-        .use(express.static('./objects'))
-        .use(bodyParser.json())
-        .use(bodyParser.urlencoded({
-            extended: true
-        }))
+    .use(cookieParser())
+    .use('/img', express.static(path.join(__dirname, 'img')))
+    .use(express.static('./src/style'))
+    .use(express.static('./objects'))
+    .use(bodyParser.json())
+    .use(bodyParser.urlencoded({
+        extended: true
+    }))
         // .enable('trust proxy')
-        .get("/setup", async (req, res, next) => {
+    .get("/setup", async (req, res, next) => {
             let     set = new setup(await setup.createConnection());
 
             set.seedUsers();
             res.redirect("/");
             res.end();
         })
-
-  .get("/", async function (req, res, next){
+    .get("/", async function (req, res, next){
             let ip = await controller.getServerIp();
 
             if (req.secure) {
