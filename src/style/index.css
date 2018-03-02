@@ -16,14 +16,37 @@ h1 {
       RESEARCH
 *******************/
 
-.resForm input{
+.ASC{
+    width: 0px;
+    height: 0px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+
+    border-bottom: 8px solid black;
+}
+
+.DESC{
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+
+    border-top: 8px solid black;
+}
+
+.sortbutton{
+
+
+}
+
+/*.resForm input{*/
     /*text-align: center;*/
-    font-size: 13px;
-    border-radius: 5px;
-    padding: 10px;
-    border: 1px solid dimgrey;
+    /*font-size: 13px;*/
+    /*border-radius: 5px;*/
+    /*padding: 10px;*/
+    /*border: 1px solid dimgrey;*/
     /*margin: 15px;*/
-    width: 50%;
+    /*width: 50%;*/
     /*border: 1px solid grey;*/
     /*outline: none;*/
-}
+/*}*/
