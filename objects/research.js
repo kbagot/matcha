@@ -79,15 +79,17 @@ class Research {
             let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
 
             let sql = "SELECT * FROM (SELECT users.login, users.age, users.sexe, users.bio, users.orientation, " +
-                "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, img.imgid, likes.*,  " +
+                "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, " +
                 "(st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
                 " from users INNER JOIN location ON location.logid = users.id LEFT JOIN img ON img.userid = users.id AND (img.profil = 1) " +
-                "LEFT JOIN likes ON likes.user1 = users.id OR likes.user2 = users.id " +
-                "HAVING orientation IN (?, ?, ?, ?)" +
+                "LEFT JOIN likes ON ((likes.user2 = " + req[0].id + " AND likes.user1 = users.id) OR (likes.user1 = " + req[0].id + " AND likes.user2 = users.id))" +
+                //"(user1=? AND user2=?) OR (user1=? AND user2=?)" +
+                " HAVING orientation IN (?, ?, ?, ?)" +
                 "AND distance < ? AND " +
                 "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
                 "AND (age >= ? AND age <= ?) " + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
+            // " (SELECT likes.user1, likes.user2, likes.matcha FROM likes, users WHERE (likes.user1 = users.id OR likes.user2 = users.id) AND users.id = " + req[0].id + ") "
             let inserts = [maxspop[0].maxspop / 10, req[0].lon, req[0].lat, opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
             let [results] = await db.query(sql);

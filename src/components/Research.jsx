@@ -27,7 +27,7 @@ export default class Research extends React.Component {
             resultLength: 0,
             dofirstmatch: '',
             matchtag: '',
-            match: ''
+            match: '',
         };
         this.getTags = this.getTags.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -127,11 +127,6 @@ export default class Research extends React.Component {
         if (ev.target.type === 'checkbox') {
             this.state[ev.target.name] === '' ? this.setState({[ev.target.name]: ev.target.name}, () => this.refresh()) : this.setState({[ev.target.name]: ''}, () => this.refresh());
         } else if (ev.target.name.split(' ')[0] !== 'sort') {
-            // if ((t.name === 'min' || t.name === 'max') && (t.value < 18 || t.value > 99)){
-            //     if (t.name === 'min')
-            //        await this.setState({[ev.target.name]: '18'});
-            //     return;
-            // }
             this.setState({
                 [ev.target.name]: ev.target.value,
             }, () => this.refresh());
@@ -161,22 +156,16 @@ export default class Research extends React.Component {
         return (
             <div>
                 <br/>TRIE<br/>
-                <Ripple>
-                    <input type="button" name="sort age" value={"age " + this.state.order.age}
+                  <div> <input type="button" name="sort age" value={"Age"} className={'sortbutton'}
+                             onClick={this.handleChange}/>
+                      <div className={this.state.order.age}></div>
+                  </div>
+                    <input type="button" name="sort distance" value={"Distance"} className={this.state.order.distance}
                            onClick={this.handleChange}/>
-                </Ripple>
-                <Ripple>
-                    <input type="button" name="sort distance" value={"distance " + this.state.order.distance}
+                    <input type="button" name="sort tags" value={"Tags"} className={this.state.order.tags}
                            onClick={this.handleChange}/>
-                </Ripple>
-                <Ripple>
-                    <input type="button" name="sort tags" value={"tags " + this.state.order.tags}
+                    <input type="button" name="sort spop" value={"Popularite"} className={this.state.order.spop}
                            onClick={this.handleChange}/>
-                </Ripple>
-                <Ripple>
-                    <input type="button" name="sort spop" value={"spop " + this.state.order.spop}
-                           onClick={this.handleChange}/>
-                </Ripple>
             </div>
         )
     }
@@ -289,10 +278,14 @@ export default class Research extends React.Component {
                 </form>
                 <div style={uliststyle}>
                     {this.state.result.map((node, key) => {
-                        // let = img,
+                        let img = node.img;
 
+                        if (!img && node.sexe === 'F')
+                            img = '../../img/nopicF.jpg';
+                        else if (!img && node.sexe === 'M')
+                            img = '../../img/nopicM.jpg';
                     return (<div key={key} style={userstyle} >
-                        <img src={node.img} width={'100%'} height={'100%'}/>
+                        <img src={img} width={'100%'} height={'100%'}/>
                         <p>{node.login}</p>
                     </div>)}
                     )}
