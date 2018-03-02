@@ -7,6 +7,17 @@ export default class Images extends React.Component{
         this.state = {
             images : null,
         };
+        this.renderOnline = this.renderOnline.bind(this);
+    }
+
+    renderOnline(){
+        const connected = this.props.allUsers.findIndex(elem => elem.id === this.props.profil.id);
+        const title = connected !== -1 ? "Online" : "Derniere connexion le " + this.props.profil.date;
+
+        return (
+            <div title={title} style={connected === -1 ? online : Object.assign({}, online, {backgroundColor: 'rgb(51, 204, 51)'})}>
+            </div>
+        )
     }
 
     renderImg(type){
@@ -39,8 +50,9 @@ export default class Images extends React.Component{
 
         return (
             <div>
-                {/*{this.renderImg('profil')}*/}
+                {this.renderImg('profil')}
                 <div style={profilImgContainer} className={"profilImgContainer"}>
+                    {this.renderOnline()}
                     {this.renderImg('all')}
                     {upload}
                 </div>
@@ -49,29 +61,42 @@ export default class Images extends React.Component{
         )
     }
 }
+const online = {
+    position: 'absolute',
+    marginTop: '7.5vmin',
+    zIndex: '12',
+    backgroundColor: 'gray',
+    color: 'red',
+    width: '3vmin',
+    height: '3vmin',
+    boxShadow: '0px 0px 6px black',
+    borderRadius: '100%'
+};
 
 const profilImg = {
+    position: 'absolute',
+    margin: '-5vmin',
     filter: 'brightness(1)',
-    // border: '1x solid white',
+    border: '2px solid white',
+    boxShadow: '0px 0px 6px black',
     borderRadius: '100%',
-    width: '24vmin',
-    height: '24vmin',
+    width: '23vmin',
+    height: '23vmin',
     zIndex: '11'
 };
 
 const profilImgContainer = {
-    marginLeft: '14vw',
-    // backgroundColor: 'gray',
+    // border: '2px solid white',
+    boxShadow: '0px 0px 10px black',
+    marginLeft: '14vmin',
+    height: '14.4vmin',
     display: 'inline-flex',
     alignItems: 'center',
 };
 
 const img = {
     filter: 'brightness(0.60)',
-    // borderBottom: '1px soslid white',
-    // borderTop: '1px solid white',
-    // border: '1px solid gray',
-    // borderRadius: '100%',
     width: '15vmin',
     height: '15vmin',
+    marginTop: '-0.3vh'
 };

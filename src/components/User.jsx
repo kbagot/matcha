@@ -122,7 +122,7 @@ export default class User extends React.Component {
         let researchview = null;
         let matchview = null;
         let view = null;
-        let profil = this.state.profil ? <Profil user={this.props.user} profil={this.state.profil} socket={this.props.socket}/> : null;
+        let profil = this.state.profil ? <Profil allUsers={this.state.allUsers} user={this.props.user} profil={this.state.profil} socket={this.props.socket}/> : null;
 
             researchview = <Research socket={this.props.socket} match={''} handleClick={this.handleClick}/>;
 
