@@ -4,19 +4,27 @@ import UploadForm from './UploadForm.jsx';
 export default class Images extends React.Component{
     constructor(props){
         super(props);
+        this.state = {
+            images : null,
+        };
     }
 
-    getImg(){
-        if (this.props.user.id === this.props.profil.id){
-            let index = this.props.user.img.findIndex(elem => elem.profil === 1);
+    renderImg(type){
+        const images = this.state.images ? this.state.images : this.props.user.img;
 
-            return this.props.user.img.map((elem, i) => {
-                let imgStyle = i === index ? profilImg : img;
+        return images.map((elem, i) => {
+            if (type === 'all' && !elem.profil) {
+                return <a href={""} key={i} onClick={this.handleClickIn}><img style={img} src={`img/${elem.imgid}`}/></a>
+            } else if (type === 'profil' && elem.profil){
+                return <img key={i} style={profilImg} src={`img/${elem.imgid}`}/>
+            }
+        });
+    }
 
-                return <img key={i} style={imgStyle} src={`img/${elem.imgid}`} />
-            });
-        } else if (this.props.profil){
-            this.props.socket.emit("profil", {type:'getImages', profil: this.props.profil});
+    componentDidMount(){
+        this.props.socket.on(this.props.profil.login, (data) => this.setState({images: data}));
+        if (this.props.profil && this.props.profil.id !== this.props.user.id){
+            this.props.socket.emit("profil", {type:'getImages', profil: this.props.profil}, (images) => this.setState({images: images}));
         }
     }
 
@@ -27,36 +35,43 @@ export default class Images extends React.Component{
     }
 
     render(){
-        let images = this.getImg();
         let upload = this.renderUpload();
 
         return (
-        <div style={profilImgContainer} className={"profilImgContainer"}>
-            {images}
-            {upload}
-        </div>
+            <div>
+                {/*{this.renderImg('profil')}*/}
+                <div style={profilImgContainer} className={"profilImgContainer"}>
+                    {this.renderImg('all')}
+                    {upload}
+                </div>
+
+            </div>
         )
     }
 }
 
 const profilImg = {
-    margin: '1vh',
-    border: '1px solid gray',
-    borderRadius: '10vh',
-    width: '19vmin',
-    height: '19vmin',
+    filter: 'brightness(1)',
+    // border: '1x solid white',
+    borderRadius: '100%',
+    width: '24vmin',
+    height: '24vmin',
+    zIndex: '11'
 };
 
 const profilImgContainer = {
+    marginLeft: '14vw',
+    // backgroundColor: 'gray',
     display: 'inline-flex',
-    justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
 };
 
 const img = {
-    marginRight: '1vw',
-    border: '1px solid gray',
-    borderRadius: '10vh',
-    width: '10vmin',
-    height: '10vmin',
+    filter: 'brightness(0.60)',
+    // borderBottom: '1px soslid white',
+    // borderTop: '1px solid white',
+    // border: '1px solid gray',
+    // borderRadius: '100%',
+    width: '15vmin',
+    height: '15vmin',
 };

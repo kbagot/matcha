@@ -17,10 +17,11 @@ class Update {
         try {
             const [rows] = await db.execute(sql, [sess.data.id]);
 
+            rows.forEach(elem => elem.profil = elem.profil === 1);
             if (rows[0]) {
                 sess.data.img = rows;
             } else {
-                sess.data.img = [{imgid: `nopic${sess.data.sexe}.jpg`, profil: 1}];
+                sess.data.img = [{imgid: `nopic${sess.data.sexe}.jpg`, profil: true}];
             }
             sess.save();
         } catch (e){
