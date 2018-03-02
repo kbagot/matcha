@@ -6,7 +6,7 @@ class Research {
             let ordertag = '';
             let results = [];
 
-            if (req[0].tags.length !== 0)
+            if (req[0].tags && req[0].tags.length !== 0)
                 req[0].tags.forEach((elem) => {
                     usertag += ', JSON_CONTAINS(tags, \'[\"' + elem + '\"]\') AS ' + elem + ' ';
                     ordertag += elem + '+';
@@ -78,7 +78,7 @@ class Research {
             }
             let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
 
-            let sql = "SELECT * FROM (SELECT users.login, users.age, users.sexe, users.bio, users.orientation, " +
+            let sql = "SELECT * FROM (SELECT users.login, users.first, users.age, users.sexe, users.bio, users.orientation, " +
                 "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, " +
                 "(st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +

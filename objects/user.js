@@ -51,8 +51,8 @@ class User {
 
     static update_date(db, login) {
         let date = new Date();
-        date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-
+        date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+        // TODO UPDATE DATE ON ACTIVITY / LOGOUT
         let sql = "UPDATE users SET date = ? WHERE login = ?";
         db.execute(sql, [date, login]);
     }

@@ -80,7 +80,6 @@ class Register {
         if (Register.checkAge(data.age) && Register.checkEmail(data.email) && Register.checkLogin(data.login) && Register.checkPassword(data.password) && await this.uniqueInput(data)){
             try {
                 data = Register.changeOrientation(data);
-                try {
                     let password = await bcrypt.hash(data.password, 10);  //TODO    add  validation account  for avoid issue if no location dbentry for register user
                     let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags, age, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                     let tags = data.tags.map(val => {
@@ -89,12 +88,9 @@ class Register {
                             return val.value;
                     });
                     let date = new Date();
-                    date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                    date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
                     await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio,
                         data.orientation, JSON.stringify(tags), data.age, date]);
-                } catch (e) {
-                    console.log(e);
-                }
             } catch (e) {
                 console.log(e);
             }
