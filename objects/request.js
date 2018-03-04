@@ -30,7 +30,7 @@ class Controller {
             this.triggerRefresh(io, socket, sess)
         }
         socket.on('chat', (data) => this.chat.handleChat(data, socket, this.db, sess, allUsers));
-        socket.on('like', (data) => this.user.likes.handleLikes(data, socket, this.db, sess, allUsers));
+        socket.on('like', (data, refresh) => this.user.likes.handleLikes(data, socket, this.db, sess, allUsers, refresh));
         socket.on('login', (res) => this.user.dologin(res, this.db, sess, io, socket, allUsers, io));
         socket.on('locUp', (res) => this.user.update_coords(res, this.db, sess, socket)); // not sure of the place
         socket.on('notif', (data) => update.handleNotif(this.db, sess, socket, data));

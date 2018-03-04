@@ -39,6 +39,10 @@ export default class Images extends React.Component{
         }
     }
 
+    componentWillUnmount(){
+        this.props.socket.removeListener(this.props.profil.login);
+    }
+
     renderUpload(){
         if (this.props.user.id === this.props.profil.id && this.props.user.img.length < 5){
             return <UploadForm user={this.props.user} socket={this.props.socket}/>

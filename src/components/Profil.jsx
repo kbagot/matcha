@@ -9,13 +9,12 @@ export default class Profil extends React.Component{
     }
 
     render(){
-        console.log(this.props.profil);
         return (
             <div style={container} className={"profilContainer"}>
                <div style={profil} className={"profil"}>
                     <Images allUsers={this.props.allUsers}  user={this.props.user} profil={this.props.profil} socket={this.props.socket} />
                    <div style={altContainer}>
-                       <RemoteProfil allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket} />
+                       <RemoteProfil allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket} profil={this.props.profil}/>
                        <About allUsers={this.props.allUsers} user={this.props.user} profil={this.props.profil} socket={this.props.socket}/>
                     </div>
                 </div>
@@ -23,18 +22,6 @@ export default class Profil extends React.Component{
         )
     }
 }
-const profilImg = {
-    margin: '3vmax',
-    position: 'absolute',
-    filter: 'brightness(1)',
-    top: '0',
-    left: '0',
-    // border: '1x solid white',
-    borderRadius: '100%',
-    width: '24vmin',
-    height: '24vmin',
-    zIndex: '11'
-};
 
 const altContainer = {
     display: 'flex',
