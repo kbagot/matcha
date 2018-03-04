@@ -95,6 +95,7 @@ const profilImgContainer = {
 };
 
 const img = {
+    // borderRight: '3px solid white',
     filter: 'brightness(0.60)',
     width: '15vmin',
     height: '15vmin',

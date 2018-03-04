@@ -117,7 +117,6 @@ export default class User extends React.Component {
     }
 
     render() {
-        console.log(this.props.user.img);
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
         let researchview = null;
         let matchview = null;
