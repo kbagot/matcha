@@ -104,5 +104,5 @@ const img = {
     filter: 'brightness(0.60)',
     width: '15vmin',
     height: '15vmin',
-    marginTop: '-0.3vh'
+    marginTop: '0.2vh'
 };

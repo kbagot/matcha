@@ -13,7 +13,7 @@ export default class RemoteProfil extends React.Component{
 
     handleLike(ev){
         ev.preventDefault();
-        if (this.props.profil.id !== this.props.user.id) {
+        if (this.props.profil.id !== this.props.user.id && this.props.profil.imgid) {
             let index;
             const user = {
                 login: this.props.profil.login,
@@ -35,19 +35,20 @@ export default class RemoteProfil extends React.Component{
 
 
     renderHeart(){
-        const index = this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1;
+        const match = this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1;
+        const self = this.props.user.id === this.props.profil.id;
+        const obj = !this.props.profil.imgid || self ? Object.assign({}, heart, {cursor: 'default'}) : heart;
 
-            if (this.props.user.id === this.props.profil.id || index) {
-                return <a href={""} onClick={this.handleLike}><img style={heart} src={"img/fullheart.png"}/></a>;
+            if (self || match) {
+                return <a href={""} onClick={this.handleLike}><img style={obj} src={"img/fullheart.png"}/></a>;
             } else if (this.props.profil.user1) {
-                return <a href={""} onClick={this.handleLike}><img style={heart} src={"img/halfheart.png"}/></a>;
+                return <a href={""} onClick={this.handleLike}><img style={obj} src={"img/halfheart.png"}/></a>;
             } else {
-                return <a href={""} onClick={this.handleLike}><img style={heart} src={"img/emptyheart.png"}/></a>;
+                return <a href={""} onClick={this.handleLike}><img style={obj} src={"img/emptyheart.png"}/></a>;
             }
     }
     renderScore(){
-        scoreContainer.background = `linear-gradient(#ecf4fe ${100 - this.props.profil.spop}%, #2b94fb ${100 - this.props.profil.spop}%)`;
-        return scoreContainer;
+        return Object.assign({}, scoreContainer, {background: `linear-gradient(#ecf4fe ${100 - this.props.profil.spop}%, #2b94fb ${100 - this.props.profil.spop}%)`});
     }
 
     render() {
@@ -65,7 +66,7 @@ export default class RemoteProfil extends React.Component{
     }
 }
 
-const scoreContainer ={
+let scoreContainer ={
     display: 'flex',
     textAlign: 'center',
     width: '9vmin',

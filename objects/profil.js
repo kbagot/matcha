@@ -15,9 +15,9 @@ class Profil {
     }
 
     static async sendProfil(db, sess, socket, data, io, setState){
-        const sql = "SELECT users.id, users.login, users.last, users.first, users.age, users.sexe, users.bio, users.orientation, users.tags, users.spop, users.date, location.city, location.country, location.zipcode, likes.user1, likes.user2, " +
+        const sql = "SELECT users.id, users.login, users.last, users.first, users.age, users.sexe, users.bio, users.orientation, users.tags, users.spop, users.date, location.city, location.country, location.zipcode, likes.user1, likes.user2, img.imgid, " +
             "(SELECT st_distance_sphere((SELECT POINT(lon, lat) FROM location WHERE logid = ?), (SELECT POINT(lon, lat) FROM location WHERE logid = ?))) AS distance " +
-            "FROM users LEFT JOIN likes ON likes.user1 = users.id OR likes.user2 = users.id INNER JOIN location ON location.logid = users.id  WHERE users.id = ?";
+            "FROM users LEFT JOIN img ON img.userid = users.id AND img.profil = '1' LEFT JOIN likes ON likes.user1 = users.id OR likes.user2 = users.id INNER JOIN location ON location.logid = users.id  WHERE users.id = ?";
         const [rows] = await db.execute(sql, [data.id, sess.data.id, data.id]);
 
         if (rows[0]){

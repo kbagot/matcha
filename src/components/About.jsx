@@ -94,7 +94,7 @@ export default class About extends React.Component{
 const topContainer = {
     color: 'rgba(43, 147, 251, 0.57)',
     padding: '2vmin',
-    background: 'linear-gradient(-0.65turn, #2b93fba8 -100% ,white 50%,  #98ccfc 150%)',
+    background: 'linear-gradient(-0.65turn, rgba(4, 127, 249, 0.49) -100%, white 50%, rgb(219, 235, 254) 150%)',
     borderRadius: '1vmin',
     boxShadow: '2px 2px 10px #8f949878',
     width: '43vmin',
@@ -104,7 +104,7 @@ const topContainer = {
 };
 
 const container = {
-    backgroundColor: 'white',
+    backgroundColor: 'transparent',
     fontFamily: 'Verdana, serif',
     borderLeft: '1px solid black',
     width: '50vmin',
@@ -134,7 +134,7 @@ const bio = {
     whiteSpace: 'pre-line',
     width: '43vmin',
     fontSize: '1.8vmin',
-    background: 'linear-gradient(-0.65turn, #2b93fba8 -100% ,white 50%,  #98ccfc 150%)',
+    background: 'linear-gradient(-0.65turn, rgba(4, 127, 249, 0.49) -100%, white 50%, rgb(219, 235, 254) 150%)',
     color: 'gray',
 };
 
