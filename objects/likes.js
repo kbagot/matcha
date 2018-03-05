@@ -23,6 +23,7 @@ class Likes{
                 update.getNotif(db, sess).then(() => socket.emit('user', sess.data));
                 break ;
         }
+
     }
 
     static addLike(user, socket, db, sess){
@@ -36,6 +37,7 @@ class Likes{
                     sql = "INSERT INTO likes(user1, user2) VALUES (?, ?)";
                     db.execute(sql, [id, user.id]);
                     Likes.addNotif(db, sess, 'like', user.id, id);
+                    socket.emit('user', sess.data);
                 } else if (!res.matcha && Number(res.user1) !== id){
                     Likes.addMatchList(socket, db, sess, user, true);
                     Likes.addNotif(db, sess, 'match', user.id, id);
@@ -65,6 +67,7 @@ class Likes{
                 db.execute(sql, [id, user.id, user.id, user.id, id, id, user.id, id, id, user.id]);
            } else {
                 Likes.addNotif(db, sess, 'unlike', user.id, id);
+                socket.emit('user', sess.data);
                 sql = "DELETE FROM likes WHERE user1=? AND user2=?";
                db.execute(sql, [id, user.id]);
            }
@@ -79,7 +82,7 @@ class Likes{
                 .then(res => {
                     res.forEach(id => {
                         socket.to(id).emit('match', {type: 'refresh'});
-                    })
+                    });
                 })
         }
     }

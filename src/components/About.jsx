@@ -68,7 +68,8 @@ export default class About extends React.Component{
 
         return (
             <div style={container} className={"aboutContainer"} >
-                <h1 style={h1}>{this.props.profil.login} {sexeLogo[this.props.profil.sexe]}</h1>
+                <div style={topContainer}>
+                <h3 style={h1}>{this.props.profil.login} {sexeLogo[this.props.profil.sexe]}</h3>
                 <p style={firstName}>
                     {this.props.profil.first}, {this.props.profil.age} <br />
                 </p>
@@ -78,16 +79,43 @@ export default class About extends React.Component{
                 <p style={firstName}>
                     {this.renderOrientation()}
                 </p>
+                </div>
                 <p style={bio}>
                     {bioMsg}
                 </p>
-                {this.renderTags()}
+                <div style={bio}>
+                    {this.renderTags()}
+                </div>
             </div>
         )
     }
 }
 
+const topContainer = {
+    color: 'rgba(43, 147, 251, 0.57)',
+    padding: '2vmin',
+    background: 'linear-gradient(-0.65turn, rgba(4, 127, 249, 0.49) -100%, white 50%, rgb(219, 235, 254) 150%)',
+    borderRadius: '1vmin',
+    boxShadow: '2px 2px 10px #8f949878',
+    width: '43vmin',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+};
+
+const container = {
+    backgroundColor: 'transparent',
+    fontFamily: 'Verdana, serif',
+    width: '50vmin',
+    height: '54vmin',
+    paddingTop: '15vmin',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+};
+
 const h1 = {
+    color: '#2b93fb',
     display: 'flex',
     margin: '0',
     padding: '0'
@@ -95,22 +123,19 @@ const h1 = {
 
 const firstName = {
     fontSize: '1.8vmin',
-    color: 'gray',
     margin: '0',
 };
 
 const bio = {
-    borderTop: '1px solid black',
+    borderRadius: '1vmin',
+    boxShadow: '2px 2px 10px #8f949878',
+    padding: '2vmin',
     overflow: 'auto',
-    // backgroundColor: 'orange',
     whiteSpace: 'pre-line',
-    width: '90%',
-    // height: '30%',
-    // margin: '5vmin',
-    // marginBottom: '0',
+    width: '43vmin',
     fontSize: '1.8vmin',
+    background: 'linear-gradient(-0.65turn, rgba(4, 127, 249, 0.49) -100%, white 50%, rgb(219, 235, 254) 150%)',
     color: 'gray',
-    paddingTop: '1vmin'
 };
 
 const list = {
@@ -137,20 +162,7 @@ const uList = {
     padding: '0 0 1vmin 0vmin',
     paddingTop: '0',
     overflow: 'auto',
-    // backgroundColor: 'orange',
     whiteSpace: 'pre-line',
     width: '90%',
-    // height: '30%',
     fontSize: '1.8vmin'
-};
-
-const container = {
-    fontFamily: 'Verdana, serif',
-    borderLeft: '1px solid black',
-    // backgroundColor: 'green',
-    width: '50vmin',
-    height: '54vmin',
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
 };
