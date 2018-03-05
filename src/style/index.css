@@ -50,7 +50,7 @@ h1 {
 }
 
 input[type=checkbox] {
-    zoom: 2.5;
+    zoom: 1.8;
 }
 
 input[type=number]{
@@ -58,7 +58,7 @@ input[type=number]{
 }
 
 h3 {
-    text-shadow: 0 0 10px white;
+    text-shadow: 0 0 10px #007eff;
     text-transform: uppercase;
 
     color: white;
@@ -93,7 +93,7 @@ h3 {
     border: 1px solid black;
     box-shadow: 3px 5px 20px black;
     border-radius: 15px;
-    background-color: #343434;
+    background-color: #04284c;
     /*// backgroundColor: white;*/
     position: fixed;
     width: 20%;
