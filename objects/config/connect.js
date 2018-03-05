@@ -49,7 +49,7 @@ class ConDb {
                         "orientation ENUM('gay','hetero','bi', 'trans') default 'bi'," +
                         "tags JSON," +
                         "spop INT default 0," +
-                        "date DATE" +
+                        "date DATETIME" +
                         ");" +
                         "CREATE TABLE location(" +
                         "lolilol int not NULL auto_increment primary key," +
@@ -110,15 +110,15 @@ class ConDb {
 
     async fillDb(data) {
         let fakeloc = [];
-        fakeloc.push(['48.8566', '2.3522', 'Paris', 'France']);
-        fakeloc.push(['50.8503', '4.3517', 'Brussels', 'Belgium']);
-        fakeloc.push(['45.7640', '4.8357', 'Lyon', 'France']);
-        fakeloc.push(['51.5074', '0.1278', 'London', 'England']);
+        fakeloc.push(['48.8566', '2.3522', 'Paris', 'France', '75000']);
+        fakeloc.push(['50.8503', '4.3517', 'Brussels', 'Belgium', '1000']);
+        fakeloc.push(['45.7640', '4.8357', 'Lyon', 'France', '69000']);
+        fakeloc.push(['51.5074', '0.1278', 'London', 'England', 'WC2N']);
         let tags = ['fake'];
 
         try {
             let date = new Date();
-            date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
             let password = await bcrypt.hash("test", 10);
             for (const [i, elem] of data.entries()) {
@@ -131,7 +131,7 @@ class ConDb {
                 console.log("db success => " + i);
 
                 req = "INSERT INTO location(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                await this.con.execute(req, [ret[0].insertId, ...fakeloc[Math.floor(Math.random() * fakeloc.length)], 'null', '1']);
+                await this.con.execute(req, [ret[0].insertId, ...fakeloc[Math.floor(Math.random() * fakeloc.length)], '1']);
             }
         } catch (e) {
             console.log(e);

@@ -16,9 +16,22 @@ h1 {
       RESEARCH
 *******************/
 
+.resContent{
+    height: 15%;
+}
+
+.resContent p{
+    width: 100%;
+    margin-bottom:auto;
+    display: inline;
+    vertical-align: middle;
+}
+
 .ASC{
-    width: 0px;
-    height: 0px;
+    margin: auto;
+    margin-right: 5px;
+    width: 0;
+    height: 0;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
 
@@ -26,6 +39,8 @@ h1 {
 }
 
 .DESC{
+    margin: auto;
+    margin-right: 5px;
     width: 0;
     height: 0;
     border-left: 8px solid transparent;
@@ -34,19 +49,73 @@ h1 {
     border-top: 8px solid black;
 }
 
-.sortbutton{
+input[type=checkbox] {
+    zoom: 2.5;
+}
 
+input[type=number]{
+    width: 20%;
+}
+
+h3 {
+    text-shadow: 0 0 10px white;
+    text-transform: uppercase;
+
+    color: white;
+    font-family: Verdana;
+    /*background-color: white;*/
+}
+
+.displaybutton {
+    width: 30px;
+    height: 30px;
+    position: fixed;
+    top: 23%;
+}
+
+.sortbutton{
+    margin-left: 5px;
+    border-radius: 5px;
+    vertical-align: middle;
+    background-color: white;
+    text-align: center;
+    display: inline-flex;
+    /*width: 20px;*/
+    /*height: 20px;*/
+}
+
+.resForm{
+    margin-left: 40px;
+    filter: brightness(0.9);
+    color: white;
+    vertical-align: middle;
+    padding: 10px;
+    border: 1px solid black;
+    box-shadow: 3px 5px 20px black;
+    border-radius: 15px;
+    background-color: #343434;
+    /*// backgroundColor: white;*/
+    position: fixed;
+    width: 20%;
+    min-width: 300px;
+    margin-bottom: 10%;
+    min-height: 60%;
+    bottom: 0;
 
 }
 
-/*.resForm input{*/
-    /*text-align: center;*/
-    /*font-size: 13px;*/
-    /*border-radius: 5px;*/
-    /*padding: 10px;*/
-    /*border: 1px solid dimgrey;*/
-    /*margin: 15px;*/
-    /*width: 50%;*/
+.resForm input{
+    margin-left: 3px;
+    background-color: white;
+    font-size: 13px;
+    border-radius: 5px;
+    padding: 10px;
+    border: none;
+    /*margin: auto;*/
     /*border: 1px solid grey;*/
-    /*outline: none;*/
-/*}*/
+    outline: none;
+}
+
+.hidden{
+    display: none;
+}

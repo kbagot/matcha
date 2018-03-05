@@ -28,6 +28,10 @@ export default class Research extends React.Component {
             dofirstmatch: '',
             matchtag: '',
             match: '',
+            display: {
+                form: 'resForm',
+                img: 'cross'
+            }
         };
         this.getTags = this.getTags.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -135,7 +139,7 @@ export default class Research extends React.Component {
 
             for (let i in order) {
                 if (i === modif)
-                    order[i] = val === '' ? 'ASC' : val === 'ASC' ? 'DESC' : '';
+                    order[i] = val === '' ? 'ASC' : val === 'ASC' ? 'DESC' : 'ASC';
                 else
                     order[i] = '';
             }
@@ -149,54 +153,97 @@ export default class Research extends React.Component {
         }
     }
 
+    displaybutton() {
+        let dform = () => {
+            let val = this.state.display.form;
+            let img = this.state.display.img;
+
+            if (img.split('/').pop() === 'cross')
+                img = 'options';
+            else
+                img = 'cross';
+            if (val === 'resForm')
+                val = 'hidden';
+            else
+                val = 'resForm';
+            this.setState({
+                ['display']: {
+                    ['form']: val,
+                    ['img']: img
+                }
+            });
+        };
+
+        return (
+            <div className="displaybutton" onClick={dform}>
+                <img style={{width: '100%', height: '100%'}} src={'../../img/icon/' + this.state.display.img + '.png'}/>
+            </div>
+        )
+    }
+
     sortbox() {
         return (
-            <div>
-                <br/>TRIE<br/>
-                  <div> <input type="button" name="sort age" value={"Age"} className={'sortbutton'}
+            <div className="resContent">
+                <h3>── Trie ───────────────</h3>
+                    <div className={'sortbutton'}>
+                    <input type="button" name="sort age" value={"Age"}
                              onClick={this.handleChange}/>
                       <div className={this.state.order.age}></div>
-                  </div>
-                    <input type="button" name="sort distance" value={"Distance"} className={this.state.order.distance}
+                    </div>
+                <div className={'sortbutton'}>
+                    <input type="button" name="sort distance" value={"Distance"}
                            onClick={this.handleChange}/>
-                    <input type="button" name="sort tags" value={"Tags"} className={this.state.order.tags}
+                    <div className={this.state.order.distance}></div>
+                </div>
+                    <div className={'sortbutton'}>
+                    <input type="button" name="sort tags" value={"Tags"}
                            onClick={this.handleChange}/>
-                    <input type="button" name="sort spop" value={"Popularite"} className={this.state.order.spop}
+                        <div className={this.state.order.tags}></div>
+                    </div>
+                        <div className={'sortbutton'}>
+                    <input type="button" name="sort spop" value={"Popularite"}
                            onClick={this.handleChange}/>
+                            <div className={this.state.order.spop}></div>
+                        </div>
             </div>
         )
     }
 
     genderbox() {
         return (
-            <div>
-                <br/>Genres :<br/>
-                M :<input type="checkbox" name="M" onChange={this.handleChange}/>
-                F :<input type="checkbox" name="F" onChange={this.handleChange}/>
-                T :<input type="checkbox" name="T" onChange={this.handleChange}/>
+            <div className="resContent">
+                <h3>── GENRES ─────────────</h3>
+                <input type="checkbox" name="M" onChange={this.handleChange}/><p>Homme</p>
+                <br/>
+                <input type="checkbox" name="F" onChange={this.handleChange}/>Femme
+                <br/>
+                <input type="checkbox" name="T" onChange={this.handleChange}/>Autres
             </div>
         )
     }
 
     attractionbox() {
         return (
-            <div>
-                <br/>Attirances :<br/>
-                Hetero :<input type="checkbox" name="hetero" onChange={this.handleChange}/>
-                Bi :<input type="checkbox" name="bi" onChange={this.handleChange}/>
-                Gay :<input type="checkbox" name="gay" onChange={this.handleChange}/>
-                Trans :<input type="checkbox" name="trans" onChange={this.handleChange}/>
+            <div className="resContent">
+                <h3>── ATTIRANCES ─────────</h3>
+                <input type="checkbox" name="hetero" onChange={this.handleChange}/>Hetero
+                <br/>
+                <input type="checkbox" name="bi" onChange={this.handleChange}/>Bi
+                <br/>
+                <input type="checkbox" name="gay" onChange={this.handleChange}/>Gay
+                <br/>
+                <input type="checkbox" name="trans" onChange={this.handleChange}/>Trans
             </div>
         )
     }
 
     agebox() {
         return (
-            <div>
-                <br/>Age:<br/>
-                minimum :<input type="number" name="min" min="18" max="99"
+            <div className="resContent">
+                <h3>── AGE ────────────────</h3>
+                <input placeholder="Min" type="number" name="min" min="18" max="99"
                                 onChange={this.handleChange}/>
-                maximum :<input type="number" name="max" min="18" max="99"
+                <input placeholder="Max" type="number" name="max" min="18" max="99"
                                 onChange={this.handleChange}/>
             </div>
         )
@@ -204,9 +251,9 @@ export default class Research extends React.Component {
 
     distancebox() {
         return (
-            <div>
-                <br/>Distance:<br/>
-                max distance en km :<input type="number" name="distance" min="0" max="20000"
+            <div className="resContent">
+                <h3>── DISTANCE ───────────</h3>
+                <input placeholder="Km" type="number" name="distance" min="0" max="20000"
                                            onChange={this.handleChange}/>
             </div>
         )
@@ -214,8 +261,8 @@ export default class Research extends React.Component {
 
     tagsbox() {
         return (
-            <div>
-                <br/>Tags:<br/>
+            <div className="resContent">
+                <h3>── TAGS ───────────────</h3>
                 <SelectTags socket={this.props.socket} sendTags={this.getTags}/>
             </div>
         )
@@ -231,18 +278,6 @@ export default class Research extends React.Component {
 
         let restyle = {
             display: 'flex',
-        };
-
-        let formstyle = {
-            borderRadius: '15px',
-            backgroundColor: 'teal',
-            position: 'fixed',
-            width: '19%',
-            minWidth: '300px',
-            marginBottom: '10%',
-            height: '60%',
-            bottom: '0'
-
         };
 
         let uliststyle = {
@@ -265,14 +300,15 @@ export default class Research extends React.Component {
 
         return (
             <div style={restyle}>
-                <form className={'resForm'} style={formstyle}>
-                    {sort}
-                    {gender}
-                    {attraction}
-                    {age}
-                    {distance}
-                    {tags}
-                </form>
+                {this.displaybutton()}
+                    <form className={this.state.display.form}>
+                        {sort}
+                        {gender}
+                        {attraction}
+                        {age}
+                        {distance}
+                        {tags}
+                    </form>
                 <div style={uliststyle}>
                     {this.state.result.map((node, key) => {
                         let img = node.img;
