@@ -50,16 +50,19 @@ const inputFile = {
     borderRadius: '10vh',
     cursor: 'pointer',
     fontSize: '7vmin',
-    width: '10vmin',
-    height: '10vmin',
+    width: '8vmin',
+    height: '8vmin',
 };
 
 const uploadContainer = {
     position: 'relative',
     cursor: 'pointer',
     fontSize: '7vmin',
-    width: '10vmin',
-    height: '10vmin',
+    width: '8vmin',
+    height: '8vmin',
+    marginTop: '6vmin',
+    borderTop: '1px dashed gray',
+    borderRight: '1px dashed gray',
 };
 
 const addPicture = {
@@ -70,12 +73,11 @@ const addPicture = {
     justifyContent: 'center',
     lineHeight: '3vmin',
     padding: '0px',
-    border: '1px solid gray',
-    borderRadius: '10vh',
+    border: 'none',
     cursor: 'pointer',
     fontSize: '7vmin',
-    width: '10vmin',
-    height: '10vmin',
-    background: 'rgb(196, 205, 223)',
-    color: 'white',
+    width: '8vmin',
+    height: '8vmin',
+    background: 'transparent',
+    color: 'gray',
 };

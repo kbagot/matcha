@@ -9,13 +9,17 @@ export default class About extends React.Component{
     }
 
     renderTags(){
-        const li = this.props.profil.tags.map((elem, id) => <li style={list} key={id}> {elem} </li>);
+        if (this.props.profil.tags.length) {
+            const li = this.props.profil.tags.map((elem, id) => <li style={list} key={id}> {elem} </li>);
 
-        return (
-            <ul style={uList}>
-                {li}
-            </ul>
-        )
+            return (
+                <div style={tags}>
+                    <ul style={uList}>
+                        {li}
+                    </ul>
+                </div>
+            )
+        }
     }
 
     renderOnline(){
@@ -69,53 +73,57 @@ export default class About extends React.Component{
         return (
             <div style={container} className={"aboutContainer"} >
                 <div style={topContainer}>
-                <h3 style={h1}>{this.props.profil.login} {sexeLogo[this.props.profil.sexe]}</h3>
-                <p style={firstName}>
-                    {this.props.profil.first}, {this.props.profil.age} <br />
-                </p>
-                <p style={firstName}>
-                    {this.renderLocation()}
-                </p>
-                <p style={firstName}>
-                    {this.renderOrientation()}
-                </p>
+                    <h3 style={h1}>{this.props.profil.login} {sexeLogo[this.props.profil.sexe]}</h3>
+                    <p style={firstName}>
+                        {this.props.profil.first}, {this.props.profil.age} <br />
+                    </p>
+                    <p style={firstName}>
+                        {this.renderLocation()}
+                        </p>
+                    <p style={firstName}>
+                        {this.renderOrientation()}
+                        </p>
                 </div>
                 <p style={bio}>
                     {bioMsg}
                 </p>
-                <div style={bio}>
-                    {this.renderTags()}
-                </div>
+                {this.renderTags()}
             </div>
         )
     }
 }
 
 const topContainer = {
-    color: 'rgba(43, 147, 251, 0.57)',
+    color: 'rgba(255, 255, 255, 0.52)',
     padding: '2vmin',
-    background: 'linear-gradient(-0.65turn, rgba(4, 127, 249, 0.49) -100%, white 50%, rgb(219, 235, 254) 150%)',
-    borderRadius: '1vmin',
+    backgroundColor: '#09466a',
+    borderRadius: '1vmin 1vmin 0vmin 0vmin',
     boxShadow: '2px 2px 10px #8f949878',
-    width: '43vmin',
+    width: '62vmin',
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
 };
 
+const tags = {
+    height: '20%',
+    width: '62vmin',
+    overflow: 'auto'
+};
+
 const container = {
-    backgroundColor: 'transparent',
     fontFamily: 'Verdana, serif',
-    width: '50vmin',
+    width: '100%',
     height: '54vmin',
-    paddingTop: '15vmin',
+    padding: '2vmin',
+    marginTop: '-2vmin',
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
 };
 
 const h1 = {
-    color: '#2b93fb',
+    color: 'white',
     display: 'flex',
     margin: '0',
     padding: '0'
@@ -127,15 +135,17 @@ const firstName = {
 };
 
 const bio = {
-    borderRadius: '1vmin',
+    borderRadius: '0 0 1vmin 1vmin',
     boxShadow: '2px 2px 10px #8f949878',
     padding: '2vmin',
+    marginTop: '0vmin',
     overflow: 'auto',
     whiteSpace: 'pre-line',
-    width: '43vmin',
+    width: '62vmin',
+    height: '35%',
     fontSize: '1.8vmin',
-    background: 'linear-gradient(-0.65turn, rgba(4, 127, 249, 0.49) -100%, white 50%, rgb(219, 235, 254) 150%)',
-    color: 'gray',
+    backgroundColor:'white',
+    color: '#0a466970',
 };
 
 const list = {

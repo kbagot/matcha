@@ -48,21 +48,25 @@ export default class RemoteProfil extends React.Component{
             }
     }
     renderScore(){
-        return Object.assign({}, scoreContainer, {background: `linear-gradient(#ecf4fe ${100 - this.props.profil.spop}%, #2b94fb ${100 - this.props.profil.spop}%)`});
+        return Object.assign({}, scoreContainer, {background: `linear-gradient(#ecf4fe ${10 - this.props.profil.spop}%, #2b94fb ${10 - this.props.profil.spop}%)`});
     }
 
     render() {
         console.log(this.props.profil);
         return (
             <div style={remoteContainer}>
+                <div style={{display: 'flex', alignItems: 'center'}}>
                 <div style={heartContainer}>
                     {this.renderHeart()}
                 </div>
                 <div style={this.renderScore()}>
                     {this.props.profil.spop}
                 </div>
+                </div>
+                <div style={{display: 'flex'}}>
                 <button style={button}>{'\u26A0'}</button>
                 <button style={button}>{'\u26D4'}</button>
+                </div>
             </div>
         )
     }
@@ -72,40 +76,40 @@ const button = {
     backgroundColor: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    padding: '0',
-    fontSize: '10vmin',
-    color: '#2b92fb57'
+    fontSize: '2vmin',
+    color: '#2b92fb57',
+    padding: '0.4vmin'
 };
 
 let scoreContainer ={
     display: 'flex',
     textAlign: 'center',
-    width: '9vmin',
-    height: '9vmin',
+    width: '2vmin',
+    height: '2vmin',
     borderRadius: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    color: 'rgba(0, 0, 0, 0.27)',
-    fontSize: '4vmin'
+    color: '',
+    padding: '1vmin',
+    fontSize: '1.5vmin'
 };
 
 const heartContainer = {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    padding: '1vmin'
 };
 
 const heart = {
-    width: '9vmin'
+    width: '4vmin'
 };
 
 const remoteContainer = {
-    backgroundColor: '#2b92fb91',
+    justifyContent: 'space-between',
     display: 'flex',
-    flexDirection: 'column',
     alignItems: 'center',
-    paddingTop: '18vmin',
+    width: '77%',
+    padding: '1vmin 1vmin 1vmin 17vmin',
     borderRadius: ' 0 0 0 1vmin ',
-    width: '24vmin',
-    justifyContent: 'space-around'
 };

@@ -51,12 +51,14 @@ export default class Images extends React.Component{
 
     render(){
         let upload = this.renderUpload();
+        const images = this.state.images ? this.state.images : this.props.user.img;
+        const obj = images.length > 1 ? profilImgContainer : Object.assign({}, profilImgContainer, {backgroundColor: '#0a4669'});
 
         return (
             <div>
                 {this.renderImg('profil')}
                 {this.renderOnline()}
-                <div style={profilImgContainer} className={"profilImgContainer"}>
+                <div style={obj} className={"profilImgContainer"}>
                     {this.renderImg('all')}
                     {upload}
                 </div>
@@ -94,18 +96,23 @@ const profilImgContainer = {
     position: 'absolute',
     zIndex: '2',
     width: '60vmin',
-    backgroundColor: '#2b93fb',
-    boxShadow: '0px 0px 10px black',
+    backgroundColor: 'transparent',
     marginLeft: '14vmin',
-    height: '14.4vmin',
+    height: '14.1vmin',
     display: 'inline-flex',
+    borderRadius: '0 1vmin 0vmin 0',
     alignItems: 'center',
 };
 
 const img = {
     // borderRight: '3px solid white',
     filter: 'brightness(0.60)',
-    width: '15vmin',
-    height: '15vmin',
-    marginTop: '0.2vh'
+    width: '14.82vmin',
+    height: '14.6vmin',
+    marginTop: '0.2vh',
+    borderTop: '1px solid white',
+    borderRight: '1px solid white',
+    borderLeft: '1px solid white'
+
+
 };

@@ -33,14 +33,17 @@ export default class Profil extends React.Component{
     }
 
     renderProfil(){
+
         if (this.state.profil){
             return (
-                <div style={profil} className={"profil"}>
+                <div style={topContainer}>
                     <Images display={this.displayImages} allUsers={this.props.allUsers}  user={this.props.user} profil={this.props.profil} socket={this.props.socket} />
+                <div style={profil} className={"profil"}>
                     <div style={altContainer}>
                         <RemoteProfil allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket} profil={this.props.profil}/>
                         <About allUsers={this.props.allUsers} user={this.props.user} profil={this.props.profil} socket={this.props.socket}/>
                     </div>
+                </div>
                 </div>
             )
         }
@@ -72,8 +75,20 @@ export default class Profil extends React.Component{
     }
 }
 
+const topContainer = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+    margin: '5vmax',
+    width: '74vmin',
+    background: 'transparent',
+};
+
 const altContainer = {
     display: 'flex',
+    width: '100%',
+    flexDirection: 'column',
+    alignItems: 'center'
 };
 
 const container = {
@@ -92,9 +107,8 @@ const container = {
 const profil = {
     display: 'flex',
     flexWrap: 'wrap',
-    // flexDirection: 'column',
-    margin: '5vmax',
-    borderRadius: '0vh 0vh 1vmin 1vmin',
+    marginTop: '14.3vmin',
+    borderRadius: '0vh 0vmin 1vmin 1vmin',
     width: '74vmin',
     height: '70vmin',
     background: 'rgba(255, 255, 255, 1)',
