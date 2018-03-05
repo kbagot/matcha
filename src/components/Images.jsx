@@ -90,7 +90,8 @@ const profilImg = {
 };
 
 const profilImgContainer = {
-    // border: '2px solid white',
+    width: '60vmin',
+    backgroundColor: '#2b93fb',
     boxShadow: '0px 0px 10px black',
     marginLeft: '14vmin',
     height: '14.4vmin',

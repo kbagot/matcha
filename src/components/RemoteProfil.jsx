@@ -8,6 +8,7 @@ export default class RemoteProfil extends React.Component{
         };
         this.renderHeart = this.renderHeart.bind(this);
         this.handleLike = this.handleLike.bind(this);
+        this.renderScore = this.renderScore.bind(this);
     }
 
     handleLike(ev){
@@ -44,6 +45,10 @@ export default class RemoteProfil extends React.Component{
                 return <a href={""} onClick={this.handleLike}><img style={heart} src={"img/emptyheart.png"}/></a>;
             }
     }
+    renderScore(){
+        scoreContainer.background = `linear-gradient(#ecf4fe ${100 - this.props.profil.spop}%, #2b94fb ${100 - this.props.profil.spop}%)`;
+        return scoreContainer;
+    }
 
     render() {
         console.log(this.props.profil);
@@ -52,8 +57,7 @@ export default class RemoteProfil extends React.Component{
                 <div style={heartContainer}>
                     {this.renderHeart()}
                 </div>
-                <div style={scoreContainer}>
-                    100
+                <div style={this.renderScore()}>
                     {this.props.profil.spop}
                 </div>
             </div>
@@ -67,7 +71,6 @@ const scoreContainer ={
     width: '9vmin',
     height: '9vmin',
     borderRadius: '100%',
-    background: 'linear-gradient(white 80%, gray 80%)',
     justifyContent: 'center',
     alignItems: 'center',
     color: 'rgba(0, 0, 0, 0.27)',
@@ -85,6 +88,7 @@ const heart = {
 };
 
 const remoteContainer = {
+    backgroundColor: '#2b93fb0d',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
