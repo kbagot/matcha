@@ -111,7 +111,7 @@ export default class User extends React.Component {
             this.props.socket.on('user', () => {
                 this.props.socket.emit('profil', {type: 'getProfil', id: node.id}, (data) => this.setState({profil: data}))
             });
-            this.props.socket.on(node.id, (profil) => this.setState({profil: profil}));
+            this.props.socket.on(node.id, (profil) => this.setState({profil: profil})); //TODO  WTF
             this.setState({profil: node});
         }
 
@@ -127,9 +127,8 @@ export default class User extends React.Component {
         let view = null;
         let profil = this.state.profil ? <Profil refresh={this.refreshProfil} allUsers={this.state.allUsers} user={this.props.user} profil={this.state.profil} socket={this.props.socket}/> : null;
 
-            researchview = <Research socket={this.props.socket} match={''} handleClick={this.handleClick}/>;
-
-            // matchview = <Research socket={this.props.socket} match={'match'}/>;
+            researchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={''} handleClick={this.handleClick}/>;
+            // matchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={'match'} handleClick={this.handleClick}/>;
 
         return (
             <div className={"User"}>
