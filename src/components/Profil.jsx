@@ -1,6 +1,7 @@
 import React from 'react';
 import Images from './Images.jsx';
 import About from './About.jsx';
+import RemoteProfil from './RemoteProfil.jsx';
 
 export default class Profil extends React.Component{
     constructor(props){
@@ -11,12 +12,11 @@ export default class Profil extends React.Component{
         console.log(this.props.profil);
         return (
             <div style={container} className={"profilContainer"}>
-                <div style={profil} className={"profil"}>
+               <div style={profil} className={"profil"}>
                     <Images allUsers={this.props.allUsers}  user={this.props.user} profil={this.props.profil} socket={this.props.socket} />
-                    <div style={altContainer}>
-                    <div style={{width: '24vmin', height: '50vmin', backgroundColor: 'blue'}}>
-                    </div>
-                    <About allUsers={this.props.allUsers} user={this.props.user} profil={this.props.profil} socket={this.props.socket}/>
+                   <div style={altContainer}>
+                       <RemoteProfil allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket} />
+                       <About allUsers={this.props.allUsers} user={this.props.user} profil={this.props.profil} socket={this.props.socket}/>
                     </div>
                 </div>
             </div>
