@@ -61,10 +61,21 @@ export default class RemoteProfil extends React.Component{
                 <div style={this.renderScore()}>
                     {this.props.profil.spop}
                 </div>
+                <button style={button}>{'\u26A0'}</button>
+                <button style={button}>{'\u26D4'}</button>
             </div>
         )
     }
 }
+
+const button = {
+    backgroundColor: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '0',
+    fontSize: '10vmin',
+    color: '#2b92fb57'
+};
 
 let scoreContainer ={
     display: 'flex',
@@ -89,10 +100,12 @@ const heart = {
 };
 
 const remoteContainer = {
-    backgroundColor: '#2b93fb0d',
+    backgroundColor: '#2b92fb91',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    paddingTop: '4vmin',
+    paddingTop: '18vmin',
+    borderRadius: ' 0 0 0 1vmin ',
     width: '24vmin',
+    justifyContent: 'space-around'
 };

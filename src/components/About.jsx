@@ -106,9 +106,9 @@ const topContainer = {
 const container = {
     backgroundColor: 'transparent',
     fontFamily: 'Verdana, serif',
-    borderLeft: '1px solid black',
     width: '50vmin',
     height: '54vmin',
+    paddingTop: '15vmin',
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
@@ -162,9 +162,7 @@ const uList = {
     padding: '0 0 1vmin 0vmin',
     paddingTop: '0',
     overflow: 'auto',
-    // backgroundColor: 'orange',
     whiteSpace: 'pre-line',
     width: '90%',
-    // height: '30%',
     fontSize: '1.8vmin'
 };

@@ -25,9 +25,9 @@ export default class Images extends React.Component{
 
         return images.map((elem, i) => {
             if (type === 'all' && !elem.profil) {
-                return <a href={""} key={i} onClick={this.handleClickIn}><img style={img} src={`img/${elem.imgid}`}/></a>
+                return <a href={""} key={i} onClick={(ev) => this.props.display(ev , images)}><img style={img} src={`img/${elem.imgid}`}/></a>
             } else if (type === 'profil' && elem.profil){
-                return <img key={i} style={profilImg} src={`img/${elem.imgid}`}/>
+                return <a href={""} key={i} onClick={(ev) => this.props.display(ev , images)}><img style={profilImg} src={`img/${elem.imgid}`}/></a>
             }
         });
     }
@@ -55,8 +55,8 @@ export default class Images extends React.Component{
         return (
             <div>
                 {this.renderImg('profil')}
+                {this.renderOnline()}
                 <div style={profilImgContainer} className={"profilImgContainer"}>
-                    {this.renderOnline()}
                     {this.renderImg('all')}
                     {upload}
                 </div>
@@ -67,8 +67,9 @@ export default class Images extends React.Component{
 }
 const online = {
     position: 'absolute',
-    marginTop: '7.5vmin',
-    zIndex: '12',
+    marginTop: '13vmin',
+    marginLeft: '14vmin',
+    zIndex: '4',
     backgroundColor: 'gray',
     color: 'red',
     width: '3vmin',
@@ -86,10 +87,12 @@ const profilImg = {
     borderRadius: '100%',
     width: '23vmin',
     height: '23vmin',
-    zIndex: '11'
+    zIndex: '3'
 };
 
 const profilImgContainer = {
+    position: 'absolute',
+    zIndex: '2',
     width: '60vmin',
     backgroundColor: '#2b93fb',
     boxShadow: '0px 0px 10px black',
