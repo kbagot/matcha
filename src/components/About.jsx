@@ -3,6 +3,9 @@ import React from 'react';
 export default class About extends React.Component{
     constructor(props){
         super(props);
+        this.state = {
+            edit: false
+        };
         this.renderOnline = this.renderOnline.bind(this);
         this.renderLocation = this.renderLocation.bind(this);
         this.renderOrientation = this.renderOrientation.bind(this);
@@ -61,6 +64,18 @@ export default class About extends React.Component{
         return orientation[this.props.profil.sexe][this.props.profil.orientation];
     }
 
+    renderEdit(){
+        if (this.props.profil.id === this.props.user.id){
+            return (
+                <div style={editContainer}>
+                <button style={edit} onClick={() => this.setState(prevState => ({edit: !prevState.edit}))}>
+                    <img style={editLogo} src={"img/edit.png"} />
+                </button>
+                </div>
+            );
+        }
+    }
+
     render (){
         const sexeLogo = {
             M: '\u2642',
@@ -73,6 +88,7 @@ export default class About extends React.Component{
         return (
             <div style={container} className={"aboutContainer"} >
                 <div style={topContainer}>
+                    {this.renderEdit()}
                     <h3 style={h1}>{this.props.profil.login} {sexeLogo[this.props.profil.sexe]}</h3>
                     <p style={firstName}>
                         {this.props.profil.first}, {this.props.profil.age} <br />
@@ -92,6 +108,29 @@ export default class About extends React.Component{
         )
     }
 }
+const editLogo = {
+    width: '2vmin'
+};
+
+const edit = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '3vmin',
+    border: 'none',
+    outline: 'none',
+    cursor: 'pointer',
+    borderRadius: '100%',
+    backgroundColor: 'rgb(9, 70, 106)',
+    boxShadow: '0px 0px 6px black',
+    height: '3vmin',
+};
+
+const editContainer = {
+    width: '100%',
+    display: 'flex',
+    justifyContent:'flex-end'
+};
 
 const topContainer = {
     color: 'rgba(255, 255, 255, 0.52)',

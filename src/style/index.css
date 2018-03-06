@@ -2,18 +2,18 @@ h1 {
     text-align: center;
 }
 
-.input{
-    margin: 20px;
-}
+/*.input{*/
+    /*margin: 20px;*/
+/*}*/
 
 .error_input{
     border-color: red;
 }
 
-html, body {
-    height: 100%;
-    margin: 0;
-}
+/*body {*/
+    /*height: 100%;*/
+    /*margin: 0;*/
+/*}*/
 
 /*******************
       RESEARCH
