@@ -10,7 +10,10 @@ h1 {
     border-color: red;
 }
 
-
+html, body {
+    height: 100%;
+    margin: 0;
+}
 
 /*******************
       RESEARCH
@@ -118,9 +121,23 @@ h3 {
     outline: none;
 }
 
-.hidden{
+.hidden {
     display: none;
 }
+
+/**/
+/*HEADER*/
+/**/
+
+.header {
+    width: 100%;
+    background-color: #0a466b;
+}
+
+/**/
+/*HOME_PAGE*/
+/**/
+
 
 /*UserResult*/
 

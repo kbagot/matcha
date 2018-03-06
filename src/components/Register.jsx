@@ -99,7 +99,7 @@ export default class Register extends React.Component {
                     {globalError}
                     Login *  <input type="text" autoComplete={"username"} value={this.state.login} name="login" onChange={this.handleChange}/> {this.state.error.loginError} <br />
                     Nom * <input type="text" autoComplete={"family-name"} value={this.state.last} name="last" onChange={this.handleChange}/> {this.state.error.lastError}<br />
-                    Prenom * <input type="text" autoComplete={"given-name"}value={this.state.first} name="first" onChange={this.handleChange}/> {this.state.error.firstError}<br />
+                    Prenom * <input type="text" autoComplete={"given-name"} value={this.state.first} name="first" onChange={this.handleChange}/> {this.state.error.firstError}<br />
                     Age * <input type={"number"} min={"18"} max={"99"} name="age" onChange={this.handleChange} value={this.state.age}/> {this.state.error.ageError} <br />
                     Password * <input type="password" autoComplete={""} value={this.state.password} name="password" onChange={this.handleChange}/> {this.state.error.passwordError}<br />
                     Email * <input type="text" autoComplete={"email"} value={this.state.email} name="email" onChange={this.handleChange}/> {this.state.error.emailError}<br />
@@ -107,7 +107,7 @@ export default class Register extends React.Component {
                     <select value={this.state.sexe} onChange={this.handleChange} name={"sexe"}>
                         <option value="M">Un Homme</option>
                         <option value="F">Une Femme</option>
-                        <option value="T">Erreur de la nature</option>
+                        <option value="T">Trans</option>
                     </select><br />
                     Bio <textarea value={this.state.bio} name="bio" onChange={this.handleChange}/><br />
                     J'aime
@@ -115,7 +115,7 @@ export default class Register extends React.Component {
                         <option value="M">Les Hommes</option>
                         <option value="F">Les Femmes</option>
                         <option value="bi">Les deux</option>
-                        <option value="trans">dégénérer sexuelle (ovni)</option>
+                        <option value="T">Trans</option>
                     </select><br />
                     Tags
                     <SelectTags socket={this.props.socket} sendTags={this.getUserTags} create/><br />
