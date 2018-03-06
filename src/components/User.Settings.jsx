@@ -33,8 +33,6 @@ export default class UserSettings extends React.Component {
         document.body.addEventListener('click', ev => this.handleClick(ev));
     }
 
-
-
     componentWillUnmount(){
         this.props.socket.removeListener('registerError');
     }
@@ -157,7 +155,7 @@ export default class UserSettings extends React.Component {
     renderPannel(){
         if (this.state.display){
             return (
-                <div className={"userSettings"}>
+                <div className={"userSettingsdisplay"}>
                     {this.state.error.globalError}
                     {this.state.success}
                     {this.renderLogin(this.state.editLogin)}
@@ -173,7 +171,7 @@ export default class UserSettings extends React.Component {
 
         return (
             <div className={"userSettings"}>
-                <button onClick={this.handleButton} name={"userSettings"}>Mon Compte</button>
+                <button className={'hburgerbut'} onClick={this.handleButton} name={"userSettings"}>Mon Compte</button>
                 {userSettings}
             </div>)
     }

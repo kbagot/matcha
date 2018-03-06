@@ -2,18 +2,18 @@ h1 {
     text-align: center;
 }
 
-/*.input{*/
-    /*margin: 20px;*/
-/*}*/
+.input{
+    margin: 20px;
+}
 
 .error_input{
     border-color: red;
 }
 
-/*body {*/
-    /*height: 100%;*/
-    /*margin: 0;*/
-/*}*/
+body {
+    margin:0;
+    padding:0;
+}
 
 /*******************
       RESEARCH
@@ -63,7 +63,7 @@ input[type=number]{
 h3 {
     text-shadow: 0 0 10px #007eff;
     text-transform: uppercase;
-
+    margin: 0;
     color: white;
     font-family: Verdana;
     /*background-color: white;*/
@@ -130,8 +130,87 @@ h3 {
 /**/
 
 .header {
+    height: 10%;
     width: 100%;
     background-color: #0a466b;
+    display: flex;
+    /*position: fixed;*/
+    justify-content: flex-end;
+    /*top: 0;*/
+    align-items: center;
+    box-shadow: 3px 5px 18px #6666;
+}
+
+.headercontent {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 40px;
+
+}
+
+.hburger{
+    width: 35px;
+    height: 5px;
+    background-color: white;
+    margin: 4px 0;
+}
+
+.hburgercontent {
+    display: flex;
+    position: absolute;
+    right: 0;
+    /*background-color: whitesmoke;*/
+    border: 1px solid #6666;
+    box-shadow: 0 2px 2px #6666;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.hburgerbut {
+    /*box-shadow: 3px 5px 18px #6666;*/
+    font-family: verdana;
+    /*width: 50%;*/
+    /*height: 80%;*/
+    background-color: #0a466b; /* Green */
+    border: 1px solid white;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.hburgerbut:hover {
+    background-color: white;
+    border-color: #0a466b;
+    color: #0a466b;
+}
+
+.hburgerbut:focus {
+    background-color: white;
+    border-color: #0a466b;
+    color: #0a466b;
+}
+
+.header img {
+    border-radius: 60px;
+    width: 60px;
+    height: 60px;
+}
+
+.userSettingsdisplay {
+    /*background-color: yellow;*/
+    /*display: flex;*/
+    position: absolute;
+    /*background-color: whitesmoke;*/
+    border: 1px solid #6666;
+    box-shadow: 0 2px 2px #6666;
+    justify-content: center;
+    cursor: pointer;
 }
 
 /**/
@@ -143,7 +222,6 @@ h3 {
 
 .resList {
     /*background-color: red;*/
-    // margin-left: 20%;
     margin: auto;
     height: 100%;
     width: 100%;
