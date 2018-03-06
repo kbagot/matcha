@@ -1,6 +1,7 @@
 import React from 'react';
 import SelectTags from './SelectTags.jsx';
 import Ripple from 'react-ripples';
+import ReactLoading from 'react-loading';
 
 export default class Research extends React.Component {
     constructor(props) {
@@ -185,26 +186,26 @@ export default class Research extends React.Component {
         return (
             <div className="resContent">
                 <h3>── Trie ───────────────</h3>
-                    <div className={'sortbutton'}>
+                <div className={'sortbutton'}>
                     <input type="button" name="sort age" value={"Age"}
-                             onClick={this.handleChange}/>
-                      <div className={this.state.order.age}></div>
-                    </div>
+                           onClick={this.handleChange}/>
+                    <div className={this.state.order.age}></div>
+                </div>
                 <div className={'sortbutton'}>
                     <input type="button" name="sort distance" value={"Distance"}
                            onClick={this.handleChange}/>
                     <div className={this.state.order.distance}></div>
                 </div>
-                    <div className={'sortbutton'}>
+                <div className={'sortbutton'}>
                     <input type="button" name="sort tags" value={"Tags"}
                            onClick={this.handleChange}/>
-                        <div className={this.state.order.tags}></div>
-                    </div>
-                        <div className={'sortbutton'}>
+                    <div className={this.state.order.tags}></div>
+                </div>
+                <div className={'sortbutton'}>
                     <input type="button" name="sort spop" value={"Popularite"}
                            onClick={this.handleChange}/>
-                            <div className={this.state.order.spop}></div>
-                        </div>
+                    <div className={this.state.order.spop}></div>
+                </div>
             </div>
         )
     }
@@ -242,9 +243,9 @@ export default class Research extends React.Component {
             <div className="resContent">
                 <h3>── AGE ────────────────</h3>
                 <input placeholder="Min" type="number" name="min" min="18" max="99"
-                                onChange={this.handleChange}/>
+                       onChange={this.handleChange}/>
                 <input placeholder="Max" type="number" name="max" min="18" max="99"
-                                onChange={this.handleChange}/>
+                       onChange={this.handleChange}/>
             </div>
         )
     }
@@ -254,7 +255,7 @@ export default class Research extends React.Component {
             <div className="resContent">
                 <h3>── DISTANCE ───────────</h3>
                 <input placeholder="Km" type="number" name="distance" min="0" max="20000"
-                                           onChange={this.handleChange}/>
+                       onChange={this.handleChange}/>
             </div>
         )
     }
@@ -280,48 +281,61 @@ export default class Research extends React.Component {
             display: 'flex',
         };
 
-        let uliststyle = {
-            backgroundColor: 'red',
-            // marginLeft: '20%',
-            margin: 'auto',
-            // position: 'fixed',
-            height: '100%',
-            width: '79%',
-            display: 'inline-block'
-        };
-
-        let userstyle = {
-            backgroundColor: 'pink',
-            width: '20%',
-            minWidth: '250px',
-            height: '200px',
-            display: 'inline-block'
-        };
-
         return (
             <div style={restyle}>
                 {this.displaybutton()}
-                    <form className={this.state.display.form}>
-                        {sort}
-                        {gender}
-                        {attraction}
-                        {age}
-                        {distance}
-                        {tags}
-                    </form>
-                <div style={uliststyle}>
+                <form className={this.state.display.form}>
+                    {sort}
+                    {gender}
+                    {attraction}
+                    {age}
+                    {distance}
+                    {tags}
+                </form>
+                <div className="resList">
                     {this.state.result.map((node, key) => {
                         let img = node.img;
+                        let like = '';
+                        let online = '';
+                        let usersexe = 'resUserInfo';
 
                         if (!img && node.sexe === 'F')
                             img = '../../img/nopicF.jpg';
                         else if (!img && node.sexe === 'M')
                             img = '../../img/nopicM.jpg';
-                    return (<div key={key} style={userstyle} onClick={(ev) => this.props.handleClick(ev, node)}>
-                        <img src={img} width={'100%'} height={'100%'}/>
-                        <p>{node.login}</p>
-                    </div>)}
-                    )}
+
+                        if (this.props.allUsers.findIndex(elem => elem.id === node.id) !== -1)
+                             online = {color: 'lawngreen'};
+                        else
+                            online = {color: 'white'};
+
+                        const match = this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1;
+                        const self = this.props.user.id === node.id;
+
+                        if (match) {
+                            like = "../../img/fullheart.png";
+                        } else if (node.user1) {
+                            like = "../../img/halfheart.png";
+                        } else {
+                            like = "";
+                        }
+                        if (node.sexe === 'M')
+                            usersexe += ' resUsermen';
+                        else if (node.sexe === 'F')
+                            usersexe += ' resUsergirl';
+
+                        return (<div key={key} className="resUser" onClick={(ev) => this.props.handleClick(ev, node)}>
+                                <img src={img} width={'100%'} height={'100%'}/>
+                                <div className={usersexe}>
+                                     <img className='like' src={like}/>
+                                    <p style={online}>{node.login}</p>
+                                </div>
+                            </div>
+                        )
+                    })}
+                    {/*<div>*/}
+                    {/*<ReactLoading type='bubbles' color='#0a466b' width='30%' height='30px'/>*/}
+                    {/*</div>*/}
                 </div>
             </div>
         );

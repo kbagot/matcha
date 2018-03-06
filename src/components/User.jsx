@@ -22,7 +22,7 @@ export default class User extends React.Component {
         this.handleClick = this.handleClick.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.props.socket.on('match', (res) => {
             this.props.socket.emit('like', {type: res.type, login: res.login});
         });
@@ -31,13 +31,13 @@ export default class User extends React.Component {
             this.setState({['allUsers']: data});
         });
 
-        this.props.socket.on('refresh', data =>{
+        this.props.socket.on('refresh', data => {
             this.props.socket.emit('Register', data);
             this.setState({['allUsers']: data.allUsers});
         });
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.props.socket.removeListener('allUsers');
         this.props.socket.removeListener('match');
         this.props.socket.removeListener('refresh');
@@ -51,16 +51,16 @@ export default class User extends React.Component {
         this.setState({[view]: true})
     }
 
-    handleLike(ev, user){
+    handleLike(ev, user) {
         let index;
 
         this.props.socket.emit("like", {type: ev.target.innerHTML.trim(), login: user});
-        if (this.props.user.chat && (index = this.props.user.chat.findIndex(elem => elem.login === user) !== -1)){
+        if (this.props.user.chat && (index = this.props.user.chat.findIndex(elem => elem.login === user) !== -1)) {
             this.props.user.chat.splice(index, 1);
         }
     }
 
-    listUsers(list){
+    listUsers(list) {
         let array = list.data;
 
         if (array) {
@@ -73,7 +73,7 @@ export default class User extends React.Component {
                         </li>
                     }
                 });
-            } else if (list.type === "chat"){
+            } else if (list.type === "chat") {
                 return array.map((user, index) => {
                     if (user.login !== this.props.user.login) {
                         let notif = this.getMessagesNotif(user, this.props.user.notif);
@@ -83,7 +83,8 @@ export default class User extends React.Component {
                                 type: 'chatList',
                                 login: user,
                                 history: list.history['user']
-                            })}>{user.login}</button> {notif}
+                            })}>{user.login}</button>
+                            {notif}
                         </li>
                     }
                 });
@@ -91,31 +92,34 @@ export default class User extends React.Component {
         }
     }
 
-    getMessagesNotif(user, list){
+    getMessagesNotif(user, list) {
         let notif;
 
-        if (list && typeof list === typeof []){
+        if (list && typeof list === typeof []) {
             notif = list.filter(elem => elem.type === 'message' && Number(elem.from) === Number(user.id));
         }
         return notif ? notif.length : null;
     }
 
-    handleClick(ev, node){
+    handleClick(ev, node) {
 
         if (!node) {
             const id = Number(ev.target.getAttribute('value'));
             this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.handleClick(null, data));
         }
 
-        if (node){
+        if (node) {
             this.props.socket.on('user', () => {
-                this.props.socket.emit('profil', {type: 'getProfil', id: node.id}, (data) => this.setState({profil: data}))
+                this.props.socket.emit('profil', {
+                    type: 'getProfil',
+                    id: node.id
+                }, (data) => this.setState({profil: data}))
             });
-            this.props.socket.on(node.id, (profil) => this.setState({profil: profil}));
+            this.props.socket.on(node.id, (profil) => this.setState({profil: profil})); //TODO  WTF
             this.setState({profil: node});
         }
 
-        if (ev){
+        if (ev) {
             ev.preventDefault();
         }
     }
@@ -125,24 +129,29 @@ export default class User extends React.Component {
         let researchview = null;
         let matchview = null;
         let view = null;
-        let profil = this.state.profil ? <Profil refresh={this.refreshProfil} allUsers={this.state.allUsers} user={this.props.user} profil={this.state.profil} socket={this.props.socket}/> : null;
+        let profil = this.state.profil ?
+            <Profil refresh={this.refreshProfil} allUsers={this.state.allUsers} user={this.props.user}
+                    profil={this.state.profil} socket={this.props.socket}/> : null;
 
-            researchview = <Research socket={this.props.socket} match={''} handleClick={this.handleClick}/>;
-
-            // matchview = <Research socket={this.props.socket} match={'match'}/>;
+        // researchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={''} handleClick={this.handleClick}/>;
+        // matchview =<Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={'match'} handleClick={this.handleClick}/>;
 
         return (
             <div className={"User"}>
-                <h3>Welcome <a href={""} value={this.props.user.id} onClick={this.handleClick}>{this.props.user.login}</a></h3>
-                <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br />
-                <UserSettings user={this.props.user} socket={this.props.socket} /><br />
-                <button onClick={this.disconnectUser}>Disconnect</button>
+                <div className={"header"}>
+                    <h3>Welcome <a href={""} value={this.props.user.id}
+                                   onClick={this.handleClick}>{this.props.user.login}</a></h3>
+                    <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br/>
+                    <UserSettings user={this.props.user} socket={this.props.socket}/><br/>
+                    <button onClick={this.disconnectUser}>Disconnect</button>
+                </div>
                 {profil}
                 {researchview}
                 {matchview}
                 <h2>All Users</h2>
                 <ul>{list}</ul>
-                <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket} listUsers={this.listUsers}/>
+                <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket}
+                      listUsers={this.listUsers}/>
             </div>
         );
     }

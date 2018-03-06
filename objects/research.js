@@ -18,12 +18,37 @@ class Research {
             if (opt.dofirstmatch) {
                 let i = 0;
                 const j = ['', 'tags', 'distance'];
-                opt[req[0].sexe] = req[0].sexe;
-                opt[req[0].orientation] = req[0].orientation;
+
+                if (req[0].orientation === 'hetero') {
+                    if (req[0].sexe === 'M') {
+                        opt[req[0].orientation] = req[0].orientation;
+                        opt['bi'] = 'bi';
+                        opt['F'] = 'F';
+                    }
+                    else if (req[0].sexe === 'F') {
+                        opt[req[0].orientation] = req[0].orientation;
+                        opt['bi'] = 'bi';
+                        opt['M'] = 'M';
+                    }
+                    else if (req[0].sexe === 'T') {
+                        opt[req[0].orientation] = req[0].orientation;
+
+                    }
+                } else if (req[0].orientation === 'bi') {
+                    opt['M'] = 'M';
+                    opt['F'] = 'F';
+                    opt[req[0].orientation] = req[0].orientation;
+                    opt['bi'] = 'bi';
+                    opt['gay'] = 'gay';
+                } else if (req[0].orientation === 'gay') {
+                    opt[req[0].sexe] = req[0].sexe;
+                    opt[req[0].orientation] = req[0].orientation;
+                    opt['bi'] = 'bi';
+                }
                 opt.distance = '50';
                 opt.tags = req[0].tags; // TODO reducteur de tags pour match
                 opt.spop = req[0].spop;
-                while (results.length <= 25 && i < 3) {
+                while (results.length < 25 && i < 3) {
                     opt[j[i]] = '';
                     results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
                     i++;
@@ -32,6 +57,7 @@ class Research {
                 results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
             opt.result = results;
             fct(opt);
+
         } catch (e) {
             console.log(e);
         }
@@ -76,10 +102,21 @@ class Research {
                 opt.F = 'F';
                 opt.T = 'T';
             }
+            let minpop = '';
+            let maxpop = '';
+            if ('spop' in opt) {
+                minpop = opt.spop - 3;
+                maxpop = opt.spop + 3;
+            }
+            else {
+                minpop = 0;
+                maxpop = 10;
+            }
+
             let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
 
             let sql = "SELECT * FROM (SELECT users.login, users.first, users.age, users.sexe, users.bio, users.orientation, " +
-                "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, " +
+                "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, location.zipcode, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, " +
                 "(st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
                 " from users INNER JOIN location ON location.logid = users.id LEFT JOIN img ON img.userid = users.id AND (img.profil = 1) " +
@@ -88,7 +125,7 @@ class Research {
                 " HAVING orientation IN (?, ?, ?, ?)" +
                 "AND distance < ? AND " +
                 "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
-                "AND (age >= ? AND age <= ?) " + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
+                "AND (age >= ? AND age <= ?) AND (spop >= " + minpop + " AND spop <= " + maxpop + ")" + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
             // " (SELECT likes.user1, likes.user2, likes.matcha FROM likes, users WHERE (likes.user1 = users.id OR likes.user2 = users.id) AND users.id = " + req[0].id + ") "
             let inserts = [maxspop[0].maxspop / 10, req[0].lon, req[0].lat, opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
