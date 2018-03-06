@@ -33,8 +33,10 @@ export default class UploadForm extends React.Component{
     }
 
     render() {
+        const obj = this.props.length > 1 ? uploadContainer : Object.assign({}, uploadContainer, {marginLeft: '3vmin'});
+
         return (
-            <div style={uploadContainer} className={"uploadFormContainer"}>
+            <div style={obj} className={"uploadFormContainer"}>
                     <button style={addPicture}> +
                     </button>
                 <input style={inputFile} type={"file"} id={"file"} onChange={this.handleChange} accept={".png, .jpg,.jpeg"}/>

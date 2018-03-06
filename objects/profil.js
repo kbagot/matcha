@@ -6,12 +6,49 @@ class Profil {
         const menu = {
             upload: Profil.handleUpload,
             getImages: Profil.sendImages,
-            getProfil: Profil.sendProfil
+            getProfil: Profil.sendProfil,
+            imgDel: Profil.deleteImage,
+            profilImg: Profil.setProfilImg
         };
 
         if (menu[data.type]){
             menu[data.type](db, sess, socket, data, io, setState);
         }
+    }
+
+    static async setProfilImg(db, sess, socket, data, io){
+        const sql = "UPDATE img SET profil = (CASE WHEN profil='1' THEN '0' WHEN profil='0' THEN '1' END) WHERE userid=? AND (imgid = ? OR profil = 1)";
+        const oldProfil = sess.data.img.findIndex(elem => elem.profil === true);
+        const newProfil = sess.data.img.findIndex(elem => elem.imgid === data.img.imgid);
+
+        await db.execute(sql, [sess.data.id, data.img.imgid]);
+
+        sess.data.img[oldProfil] = sess.data.img.splice(newProfil, newProfil, sess.data.img[oldProfil])[0];
+        sess.data.img[oldProfil].profil = true;
+        sess.data.img[newProfil].profil = false;
+        sess.save();
+        io.emit(sess.data.login, sess.data.img);
+    }
+
+    static async deleteImage(db, sess, socket, data, io){
+        const profil = data.img.profil ? " AND profil ='1'" : "";
+        let sql = "DELETE FROM img WHERE imgid = ? AND userid = ?" + profil;
+
+        await db.execute(sql, [data.img.imgid, sess.data.id]);
+        if (data.img.profil){
+            sql = "UPDATE img SET profil = 1 WHERE userid = ? LIMIT 1";
+           await db.execute(sql, [sess.data.id]);
+        }
+        if (sess.data.img.length === 1){
+            sess.data.img = [{imgid: `nopic${sess.data.sexe}.jpg`, profil: true}];
+        } else {
+            const index = sess.data.img.findIndex(elem => elem.imgid === data.img.imgid);
+
+            sess.data.img.splice(index, 1);
+            sess.data.img[0].profil = true;
+        }
+        sess.save();
+        io.emit(sess.data.login, sess.data.img);
     }
 
     static async sendProfil(db, sess, socket, data, io, setState){
@@ -51,17 +88,16 @@ class Profil {
         }
     }
 
-    static async sendImages(db, sess, socket, data, io, setState){
+    static async sendImages(db, sess, socket, data, io){
         const sql = "SELECT imgid, profil FROM img WHERE userid= ? ORDER BY profil DESC";
         const [rows] = await db.execute(sql, [data.profil.id]);
 
         rows.forEach(elem => elem.profil = elem.profil === 1);
         if (rows[0]){
-            setState(rows);
+            io.emit(data.profil.login, rows);
         } else {
-            setState([{imgid: `nopic${data.profil.sexe}.jpg`, profil: true}]);
+            io.emit(data.profil.login, [{imgid: `nopic${data.profil.sexe}.jpg`, profil: true}]);
         }
-        // console.log(rows);
     }
 }
 
