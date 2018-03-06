@@ -8,8 +8,8 @@ class Research {
 
             if (req[0].tags && req[0].tags.length !== 0)
                 req[0].tags.forEach((elem) => {
-                    usertag += ', JSON_CONTAINS(tags, \'[\"' + elem + '\"]\') AS ' + elem + ' ';
-                    ordertag += elem + '+';
+                    usertag += ', JSON_CONTAINS(tags, \'[\"' + elem + '\"]\') AS `' + elem + '` ';
+                    ordertag += '`' + elem  + '`' + '+';
                 });
 
             let matchorder = '';
