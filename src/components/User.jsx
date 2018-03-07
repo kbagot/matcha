@@ -14,7 +14,8 @@ export default class User extends React.Component {
             profil: false,
             view: false,
             researchview: false,
-            matchview: false
+            matchview: false,
+            burger: false
         };
         this.disconnectUser = this.disconnectUser.bind(this);
         this.seekUser = this.seekUser.bind(this);
@@ -34,6 +35,11 @@ export default class User extends React.Component {
         this.props.socket.on('refresh', data => {
             this.props.socket.emit('Register', data);
             this.setState({['allUsers']: data.allUsers});
+        });
+        document.body.addEventListener('click', (ev) => {
+            if (this.state.burger && this.checkClickZone(ev)) {
+                this.setState({burger: false})
+            }
         });
     }
 
@@ -125,6 +131,17 @@ export default class User extends React.Component {
         }
     }
 
+    burgercontent() {
+        if (this.state.burger) {
+            return (
+                <div className={'hburgercontent'}>
+                    <UserSettings user={this.props.user} socket={this.props.socket}/>
+                    <button className={'hburgerbut'} onClick={this.disconnectUser}>Disconnect</button>
+                </div>
+            )
+        }
+    }
+
     render() {
         let list = this.listUsers({type: 'all', data: this.state.allUsers});
         let researchview = null;
@@ -136,16 +153,32 @@ export default class User extends React.Component {
 
         // researchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={''} handleClick={this.handleClick}/>;
         // matchview =<Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={'match'} handleClick={this.handleClick}/>;
+        let profilimg;
+        if (this.props.user.img)
+            profilimg = `../../img/${this.props.user.img["0"].imgid}`;
+
+        let burgercontent = this.burgercontent();
+        let burgerdisplay;
+        if (this.state.burger)
+            burgerdisplay = false;
+        else
+            burgerdisplay = true;
+
 
         return (
             <div className={"User"}>
                 <div className={"header"}>
-                    <h3>Welcome <a href={""} value={this.props.user.id}
-                                   onClick={this.handleClick}>{this.props.user.login}</a></h3>
-                    <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br/>
-                    <UserSettings user={this.props.user} socket={this.props.socket}/><br/>
-                    <button onClick={this.disconnectUser}>Disconnect</button>
+                        <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br/>
+                    <div className={'headercontent'}>
+                        <img value={this.props.user.id} src={profilimg} onClick={this.handleClick}/>
+                    </div>
+                    <div className={'headercontent bodyclick'} onClick={() => this.setState({['burger']: burgerdisplay})}>
+                        <div className={'hburger'}></div>
+                        <div className={'hburger'}></div>
+                        <div className={'hburger'}></div>
+                    </div>
                 </div>
+                {burgercontent}
                 {profil}
                 {researchview}
                 {matchview}

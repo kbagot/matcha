@@ -45,15 +45,17 @@ export default class Notif extends React.Component{
                     if (!elem.read) {
                         unread = true;
                     }
-                    return <li name={"test"} key={index}>{msg(elem)}
-                        <button name={"notif"} value={elem.id} onClick={this.deleteNotif}>x</button>
+                    return <li className={'notifContent'} name={"test"} key={index}>{msg(elem)}
+                        <button style={{float: 'right', color: 'white', backgroundColor: 'red', borderRadius: '4px', border: 'none'}} name={"notif"} value={elem.id} onClick={this.deleteNotif}>x</button>
                     </li>
                 }
             });
             if (unread) {
                 this.props.socket.emit('notif', {type: 'read', data: list});
             }
-            return <ul name={"notif"}>{array}</ul>
+            return <div className={'notifList'}>
+                <ul name={"notif"}>{array}</ul>
+            </div>
         }
     }
 
@@ -94,8 +96,8 @@ export default class Notif extends React.Component{
         let list = this.state.dropDown ? this.renderNotif(this.props.user.notif, this.renderNotifMsg) : null;
 
         return (
-        <div>
-            <button name="notifButton" onClick={(ev) => this.handleClick(ev, this, list)}> Notifications {notif}</button>
+            <div className={'headercontent'}>
+            <button className={'notifButton'} name="notifButton" onClick={(ev) => this.handleClick(ev, this, list)}>{notif}</button>
             {list}
         </div>
         )

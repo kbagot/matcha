@@ -2,18 +2,20 @@ h1 {
     text-align: center;
 }
 
-/*.input{*/
-    /*margin: 20px;*/
-/*}*/
+.input{
+    margin: 20px;
+}
 
 .error_input{
     border-color: red;
 }
 
-/*body {*/
-    /*height: 100%;*/
-    /*margin: 0;*/
-/*}*/
+html, body {
+    margin:0;
+    padding:0;
+    height: 100%;
+    width: 100%;
+}
 
 /*******************
       RESEARCH
@@ -63,7 +65,7 @@ input[type=number]{
 h3 {
     text-shadow: 0 0 10px #007eff;
     text-transform: uppercase;
-
+    margin: 0;
     color: white;
     font-family: Verdana;
     /*background-color: white;*/
@@ -130,8 +132,139 @@ h3 {
 /**/
 
 .header {
+    height: 8%;
     width: 100%;
     background-color: #0a466b;
+    display: flex;
+    /*position: fixed;*/
+    justify-content: flex-end;
+    /*top: 0;*/
+    align-items: center;
+    box-shadow: 3px 5px 18px #6666;
+}
+
+.headercontent {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 40px;
+    text-align: center;
+}
+
+.hburger{
+    width: 35px;
+    height: 5px;
+    background-color: white;
+    margin: 4px 0;
+    box-shadow: 3px 5px 18px #6666;
+}
+
+.hburgercontent {
+    display: flex;
+    position: absolute;
+    right: 0;
+    /*background-color: whitesmoke;*/
+    border: 1px solid #6666;
+    box-shadow: 0 2px 2px #6666;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.hburgerbut {
+    /*box-shadow: 3px 5px 18px #6666;*/
+    font-family: verdana;
+    /*width: 50%;*/
+    /*height: 80%;*/
+    background-color: #0a466b; /* Green */
+    border: 1px solid white;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.hburgerbut:hover {
+    background-color: white;
+    border-color: #0a466b;
+    color: #0a466b;
+}
+
+.hburgerbut:focus {
+    background-color: white;
+    border-color: #0a466b;
+    color: #0a466b;
+}
+
+.header img {
+    border-radius: 60px;
+    width: 60px;
+    height: 60px;
+    box-shadow: 3px 5px 18px #6666;
+}
+
+.userSettingsdisplay {
+    /*background-color: yellow;*/
+    /*display: flex;*/
+    position: absolute;
+    /*background-color: whitesmoke;*/
+    border: 1px solid #6666;
+    box-shadow: 0 2px 2px #6666;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* notif */
+
+.notifButton {
+    border-radius: 60px;
+    width: 60px;
+    height: 60px;
+    box-shadow: 3px 5px 18px #6666;
+    /*background-color: #666666;*/
+}
+
+.notifList {
+    /*vertical-align: middle;*/
+    /*position: absolute;*/
+    /*box-shadow: 0 2px 2px #6666;*/
+    /*padding: 10px;*/
+    /*width: 30%;*/
+    /*display: inline-flex;*/
+    /*justify-content: space-around;*/
+
+
+    position: absolute;
+    right: 20%;
+    /*background-color: whitesmoke;*/
+    border: 1px solid #6666;
+    box-shadow: 0 2px 2px #6666;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.notifContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-family: Verdana;
+    text-transform: capitalize;
+    box-shadow: 0 2px 2px #6666;
+}
+
+.notifContent:nth-child(even) {
+    background-color:  #0a466b;
+
+}
+
+.notifContent:nth-child(odd) {
+    background-color: #6666;
+    color: white;
 }
 
 /**/
@@ -143,7 +276,6 @@ h3 {
 
 .resList {
     /*background-color: red;*/
-    // margin-left: 20%;
     margin: auto;
     height: 100%;
     width: 100%;
@@ -152,7 +284,7 @@ h3 {
 }
 
 .resUser {
-    background-color: pink;
+    background-color: red;
     width: 250px;
     /*min-width: 350px;*/
     /*max-width: 350px;*/
