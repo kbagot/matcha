@@ -10,9 +10,11 @@ h1 {
     border-color: red;
 }
 
-body {
+html, body {
     margin:0;
     padding:0;
+    height: 100%;
+    width: 100%;
 }
 
 /*******************
@@ -130,7 +132,7 @@ h3 {
 /**/
 
 .header {
-    height: 10%;
+    height: 8%;
     width: 100%;
     background-color: #0a466b;
     display: flex;
@@ -145,7 +147,7 @@ h3 {
     margin-top: 20px;
     margin-bottom: 20px;
     margin-right: 40px;
-
+    text-align: center;
 }
 
 .hburger{
@@ -153,6 +155,7 @@ h3 {
     height: 5px;
     background-color: white;
     margin: 4px 0;
+    box-shadow: 3px 5px 18px #6666;
 }
 
 .hburgercontent {
@@ -200,6 +203,7 @@ h3 {
     border-radius: 60px;
     width: 60px;
     height: 60px;
+    box-shadow: 3px 5px 18px #6666;
 }
 
 .userSettingsdisplay {
@@ -211,6 +215,56 @@ h3 {
     box-shadow: 0 2px 2px #6666;
     justify-content: center;
     cursor: pointer;
+}
+
+/* notif */
+
+.notifButton {
+    border-radius: 60px;
+    width: 60px;
+    height: 60px;
+    box-shadow: 3px 5px 18px #6666;
+    /*background-color: #666666;*/
+}
+
+.notifList {
+    /*vertical-align: middle;*/
+    /*position: absolute;*/
+    /*box-shadow: 0 2px 2px #6666;*/
+    /*padding: 10px;*/
+    /*width: 30%;*/
+    /*display: inline-flex;*/
+    /*justify-content: space-around;*/
+
+
+    position: absolute;
+    right: 20%;
+    /*background-color: whitesmoke;*/
+    border: 1px solid #6666;
+    box-shadow: 0 2px 2px #6666;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.notifContent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-family: Verdana;
+    text-transform: capitalize;
+    box-shadow: 0 2px 2px #6666;
+}
+
+.notifContent:nth-child(even) {
+    background-color:  #0a466b;
+
+}
+
+.notifContent:nth-child(odd) {
+    background-color: #6666;
+    color: white;
 }
 
 /**/
@@ -230,7 +284,7 @@ h3 {
 }
 
 .resUser {
-    background-color: pink;
+    background-color: red;
     width: 250px;
     /*min-width: 350px;*/
     /*max-width: 350px;*/

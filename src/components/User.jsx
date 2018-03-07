@@ -36,6 +36,11 @@ export default class User extends React.Component {
             this.props.socket.emit('Register', data);
             this.setState({['allUsers']: data.allUsers});
         });
+        document.body.addEventListener('click', (ev) => {
+            if (this.state.burger && this.checkClickZone(ev)) {
+                this.setState({burger: false})
+            }
+        });
     }
 
     componentWillUnmount() {
@@ -158,13 +163,15 @@ export default class User extends React.Component {
         else
             burgerdisplay = true;
 
+
         return (
             <div className={"User"}>
                 <div className={"header"}>
+                        <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br/>
                     <div className={'headercontent'}>
                         <img value={this.props.user.id} src={profilimg} onClick={this.handleClick}/>
                     </div>
-                    <div className={'headercontent'} onClick={() => this.setState({['burger']: burgerdisplay})}>
+                    <div className={'headercontent bodyclick'} onClick={() => this.setState({['burger']: burgerdisplay})}>
                         <div className={'hburger'}></div>
                         <div className={'hburger'}></div>
                         <div className={'hburger'}></div>
@@ -172,7 +179,6 @@ export default class User extends React.Component {
                 </div>
                 {burgercontent}
                 {profil}
-                <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br/>
                 {researchview}
                 {matchview}
                 <h2>All Users</h2>
