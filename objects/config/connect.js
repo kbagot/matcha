@@ -46,7 +46,7 @@ class ConDb {
                         "age TINYINT," +
                         "sexe enum('M', 'F', 'T') not null," +
                         "bio varchar(255)," +
-                        "orientation ENUM('gay','hetero','bi', 'trans') default 'bi'," +
+                        "orientation ENUM('m', 'f', 'bi', 'trans') default 'bi'," +
                         "tags JSON," +
                         "spop INT default 0," +
                         "date DATETIME" +
@@ -126,7 +126,7 @@ class ConDb {
                 let login = elem.name.last + elem.name.first + i;
 
                 let ret = await this.con.execute(req, [login, elem.name.last, elem.name.first, password, elem.email,
-                    elem.gender === 'female' ? 'F' : 'M', 'Fake User', Math.floor(Math.random() * 80) + 18,
+                    elem.gender === 'female' ? 'F' : 'M', 'Fake User', Math.floor(Math.random() * 80) + 18, /TODO GEn transsexuelle
                     ConDb.randomOrientation(), JSON.stringify(tags), Math.floor(Math.random() * 1000), date]);
                 console.log("db success => " + i);
 
@@ -139,7 +139,7 @@ class ConDb {
     }
 
     static randomOrientation() {
-        let nb = Math.floor(Math.random() * 3);
+        let nb = Math.floor(Math.random() * 4);
         switch (nb) {
             case 0:
                 return 'gay';
@@ -147,6 +147,8 @@ class ConDb {
                 return 'hetero';
             case 2:
                 return 'bi';
+            case 3:
+                return 'trans';
         }
     }
 }
