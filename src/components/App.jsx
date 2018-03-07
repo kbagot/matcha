@@ -55,6 +55,7 @@ export default class App extends React.Component {
 
     render(){
         let display = this.state.login && !this.state.error ? <User socket={socket} user={this.state.user}/> : <Guest socket={socket}/>;
+
         return (
             <div className={"app"}>
                     {display}

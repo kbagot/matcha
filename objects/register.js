@@ -77,7 +77,9 @@ class Register {
     }
 
     async registerCheck(data, socket){
-        if (Register.checkAge(data.age) && Register.checkEmail(data.email) && Register.checkLogin(data.login) && Register.checkPassword(data.password) && await this.uniqueInput(data)){
+        if (Register.checkAge(data.age) && Register.checkEmail(data.email) && Register.checkLogin(data.login) &&
+            Register.checkPassword(data.password) && Register.checkOrientation(data.orientation) &&
+            Register.checkSexe(data.sexe) && await this.uniqueInput(data)){
             try {
                 data = Register.changeOrientation(data);
                     let password = await bcrypt.hash(data.password, 10);  //TODO    add  validation account  for avoid issue if no location dbentry for register user
@@ -187,6 +189,14 @@ class Register {
         }
     }
 
+    static checkSexe(sexe){
+        return ['M', 'F', 'T'].indexOf(sexe) !== -1;
+    }
+
+    static checkOrientation(orientation){
+        return ['M', 'F', 'T', 'bi'].indexOf(orientation) !== -1;
+    }
+
     static checkAge(age){
         return age >= 18 && age <= 99;
     }
@@ -202,7 +212,6 @@ class Register {
     static checkPassword(str) {
         return str.length >= 6;
     }
-
 }
 
 module.exports = Register;

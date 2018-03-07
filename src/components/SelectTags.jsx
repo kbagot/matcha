@@ -27,6 +27,8 @@ export default class SelectTags extends React.Component {
 
     async handleChange(value) {
         const {multi} = this.state;
+
+        console.log(multi);
         if (multi) {
             await this.setState({multiValue: value});
         } else {
