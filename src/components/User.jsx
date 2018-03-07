@@ -110,6 +110,7 @@ export default class User extends React.Component {
 
         if (node) {
             this.props.socket.on('user', () => {
+                console.log("HEY");
                 this.props.socket.emit('profil', {
                     type: 'getProfil',
                     id: node.id

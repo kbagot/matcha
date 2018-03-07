@@ -65,7 +65,6 @@ export default class Images extends React.Component{
     renderImg(type){
         const images = this.state.images;
 
-        console.log(images);
         if (images) {
             return images.map((elem, i) => {
                 if (type === 'all' && !elem.profil) {

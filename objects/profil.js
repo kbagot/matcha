@@ -1,5 +1,6 @@
 const fs = require('mz/fs');
 const uniqid = require('uniqid');
+const register = require('./register.js');
 
 class Profil {
     static mainHandler(db, sess, socket, data, io, setState){
@@ -8,12 +9,47 @@ class Profil {
             getImages: Profil.sendImages,
             getProfil: Profil.sendProfil,
             imgDel: Profil.deleteImage,
-            profilImg: Profil.setProfilImg
+            profilImg: Profil.setProfilImg,
+            editProfil: Profil.editProfil
         };
 
         if (menu[data.type]){
             menu[data.type](db, sess, socket, data, io, setState);
         }
+    }
+
+    static async editProfil(db, sess, socket, data, io){
+        const profil = data.data;
+
+        console.log(profil);
+        Object.keys(profil).map(elem => {
+            if (profil[elem] === null || elem === 'edit' || (elem === 'orientation' && !register.checkOrientation(profil[elem])) || (elem === 'sexe' && !register.checkSexe(profil[elem]))){
+                console.log(profil[elem]);
+                delete profil[elem];
+            }
+        });
+
+        const empty = Object.values(profil);
+        const sql = {
+            age: profil.age  && profil.age >=18 && profil.age <= 99 && profil.age !== sess.data.age ? ' age = ? ' : null,
+            last: profil.last && profil.last !== sess.data.last? ' last = ? ' : null,
+            first: profil.first && profil.first !== sess.data.first ? ' first = ? ' : null,
+            bio: profil.bio && profil.bio !== sess.data.bio ? ' bio = ? ' : null,
+            sexe: profil.sexe && profil.sexe !== sess.data.sexe && register.checkSexe(profil.sexe)? ' sexe = ? ' : null,
+            orientation: profil.orientation  && profil.orientation !== sess.data.orientation  && register.checkOrientation(profil.orientation)? ' orientation = ? ' : null
+        };
+
+        if (empty[0]) {
+            const query = "UPDATE users SET " +Object.values(sql).filter(elem => elem ).join() + "WHERE id = ?";
+
+            console.log(query);
+            console.log(empty);
+            await db.execute(query, [...empty, sess.data.id]);
+            Object.assign(sess.data, profil);
+            sess.save();
+            socket.emit('user', sess.data);
+        }
+
     }
 
     static async setProfilImg(db, sess, socket, data, io){

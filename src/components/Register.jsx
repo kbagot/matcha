@@ -65,7 +65,7 @@ export default class Register extends React.Component {
     }
 
     handleSubmit(ev){
-        if (!this.validSubmit()){
+        if (this.validSubmit()){
             this.props.socket.emit('Register', {type:"submit" , value: this.state});
             this.props.switch();
         }
@@ -81,7 +81,9 @@ export default class Register extends React.Component {
         });
 
         ret = res.find((elem) => elem === false);
-        return !(ret === undefined && this.state.login.length > 0 && this.state.password.length > 0 && this.state.email.length > 0 && this.state.age >= 18 && this.state.age <= 99);
+        return (ret === undefined && this.state.login.length && this.state.password.length && this.state.email.length
+        && this.state.last.length && this.state.first.length
+            && this.state.age >= 18 && this.state.age <= 99);
     }
 
     getUserTags(tags) {
@@ -89,7 +91,7 @@ export default class Register extends React.Component {
     }
 
     render() {
-        const valid = this.validSubmit();
+        const valid = !this.validSubmit();
         const globalError = <p>{this.state.error.globalError}</p>;
 
         return (
