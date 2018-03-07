@@ -126,7 +126,7 @@ class ConDb {
                 let login = elem.name.last + elem.name.first + i;
 
                 let ret = await this.con.execute(req, [login, elem.name.last, elem.name.first, password, elem.email,
-                    elem.gender === 'female' ? 'F' : 'M', 'Fake User', Math.floor(Math.random() * 80) + 18, /TODO GEn transsexuelle
+                    elem.gender === 'female' ? 'F' : 'M', 'Fake User', Math.floor(Math.random() * 80) + 18, //TODO GEn transsexuelle
                     ConDb.randomOrientation(), JSON.stringify(tags), Math.floor(Math.random() * 1000), date]);
                 console.log("db success => " + i);
 
