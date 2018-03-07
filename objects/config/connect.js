@@ -142,9 +142,9 @@ class ConDb {
         let nb = Math.floor(Math.random() * 4);
         switch (nb) {
             case 0:
-                return 'gay';
+                return 'm';
             case 1:
-                return 'hetero';
+                return 'f';
             case 2:
                 return 'bi';
             case 3:
