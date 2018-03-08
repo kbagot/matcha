@@ -58,6 +58,7 @@ class User {
     }
 
     update_coords(res, db, sess) {
+        console.log(res);
         let options = {
             provider: 'google',
             httpAdapter: 'https', // Default
@@ -65,9 +66,19 @@ class User {
             formatter: null
         };
         let geocoder = NodeGeocoder(options);
-        geocoder.reverse({'lat': res.lat, 'lon': res.lon})
+
+        let api = 'reverse';
+        let query = {'lat': res.lat, 'lon': res.lon};
+        if ('city' in res) {
+            api = 'geocode';
+            query = res.city;
+        }
+
+            geocoder[api](query)
             .then(res => {
-                User.update_coords_db(res[0], db, sess);
+                console.log(res[0]);
+                if (res[0])
+                    User.update_coords_db(res[0], db, sess);
             })
             .catch(err => {
                 rp('https://ipapi.co/' + sess.ip + '/json')
@@ -96,7 +107,10 @@ class User {
             entry.push('1');
         } else {
             entry.push(res.country);
-            entry.push(res.zipcode);
+            if (!res.zipcode)
+                entry.push(res.countryCode);
+            else
+                entry.push(res.zipcode);
             entry.push('0');
         }
 
@@ -106,6 +120,7 @@ class User {
 
             if (results[0]) {
                 req = "DELETE FROM location WHERE logid=?";
+
                 [results, fields] = await db.execute(req, [sess.data.id]);
             }
             req = "INSERT INTO location(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";

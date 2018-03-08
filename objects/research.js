@@ -6,6 +6,7 @@ class Research {
             let ordertag = '';
             let results = [];
 
+            console.log(req[0]);
             if (req[0].tags && req[0].tags.length !== 0)
                 req[0].tags.forEach((elem) => {
                     usertag += ', JSON_CONTAINS(tags, \'[\"' + elem + '\"]\') AS `' + elem + '` ';
@@ -19,31 +20,50 @@ class Research {
                 let i = 0;
                 const j = ['', 'tags', 'distance'];
 
-                if (req[0].orientation === 'hetero') {
+                if (req[0].orientation === 'm') {
                     if (req[0].sexe === 'M') {
-                        opt[req[0].orientation] = req[0].orientation;
+                        opt['M'] = 'M';
                         opt['bi'] = 'bi';
-                        opt['F'] = 'F';
+                        opt['m'] = 'm';
                     }
                     else if (req[0].sexe === 'F') {
-                        opt[req[0].orientation] = req[0].orientation;
-                        opt['bi'] = 'bi';
                         opt['M'] = 'M';
+                        opt['bi'] = 'bi';
+                        opt['f'] = 'f';
                     }
-                    else if (req[0].sexe === 'T') {
-                        opt[req[0].orientation] = req[0].orientation;
-
+                    else if (req[0].sexe === 'trans') {
+                        opt['M'] = 'M';
+                        opt['trans'] = 'trans';
+                    }
+                } else if (req[0].orientation === 'f'){
+                    if (req[0].sexe === 'M') {
+                        opt['F'] = 'F';
+                        opt['bi'] = 'bi';
+                        opt['m'] = 'm';
+                    }
+                    else if (req[0].sexe === 'F') {
+                        opt['F'] = 'F';
+                        opt['bi'] = 'bi';
+                        opt['f'] = 'f';
+                    }
+                    else if (req[0].sexe === 'trans') {
+                        opt['F'] = 'F';
+                        opt['trans'] = 'trans';
                     }
                 } else if (req[0].orientation === 'bi') {
                     opt['M'] = 'M';
                     opt['F'] = 'F';
-                    opt[req[0].orientation] = req[0].orientation;
                     opt['bi'] = 'bi';
-                    opt['gay'] = 'gay';
-                } else if (req[0].orientation === 'gay') {
-                    opt[req[0].sexe] = req[0].sexe;
-                    opt[req[0].orientation] = req[0].orientation;
-                    opt['bi'] = 'bi';
+                    if (req[0].sexe === 'T')
+                        opt['trans'] = 'trans';
+                    else
+                        opt[req[0].sexe.toLowerCase()] = req[0].sexe.toLowerCase(); //TODO  CARE
+                } else if (req[0].orientation === 'trans') {
+                    if (req[0].sexe === 'T')
+                        opt['trans'] = 'trans';
+                    else
+                        opt[req[0].sexe.toLowerCase()] = req[0].sexe.toLowerCase();
+                    opt['T'] = 'T';
                 }
                 opt.distance = '50';
                 opt.tags = req[0].tags; // TODO reducteur de tags pour match
@@ -91,11 +111,11 @@ class Research {
                 opt.max = '99';
             if (!opt.tags)
                 opt.tags = [];
-            if (!opt.hetero && !opt.bi && !opt.trans && !opt.gay) {
-                opt.hetero = 'hetero';
+            if (!opt.m && !opt.f && !opt.bi && !opt.trans) {
+                opt.m = 'm';
+                opt.f = 'f';
                 opt.bi = 'bi';
                 opt.trans = 'trans';
-                opt.gay = 'gay';
             }
             if (!opt.M && !opt.F && !opt.T) {
                 opt.M = 'M';
@@ -127,7 +147,7 @@ class Research {
                 "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
                 "AND (age >= ? AND age <= ?) AND (spop >= " + minpop + " AND spop <= " + maxpop + ")" + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
             // " (SELECT likes.user1, likes.user2, likes.matcha FROM likes, users WHERE (likes.user1 = users.id OR likes.user2 = users.id) AND users.id = " + req[0].id + ") "
-            let inserts = [maxspop[0].maxspop / 10, req[0].lon, req[0].lat, opt.hetero, opt.bi, opt.trans, opt.gay, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
+            let inserts = [maxspop[0].maxspop / 10, req[0].lon, req[0].lat, opt.m, opt.f, opt.bi, opt.trans, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
             let [results] = await db.query(sql);
             return (results);

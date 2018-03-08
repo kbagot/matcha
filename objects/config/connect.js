@@ -120,13 +120,15 @@ class ConDb {
             let date = new Date();
             date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
 
+            const sexe = ['M', 'F', 'T'];
+
             let password = await bcrypt.hash("test", 10);
             for (const [i, elem] of data.entries()) {
                 let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, age, orientation, tags, spop, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 let login = elem.name.last + elem.name.first + i;
 
                 let ret = await this.con.execute(req, [login, elem.name.last, elem.name.first, password, elem.email,
-                    elem.gender === 'female' ? 'F' : 'M', 'Fake User', Math.floor(Math.random() * 80) + 18, //TODO GEn transsexuelle
+                    sexe[Math.floor(Math.random() * 3)], 'Fake User', Math.floor(Math.random() * 80) + 18, //TODO GEn transsexuelle
                     ConDb.randomOrientation(), JSON.stringify(tags), Math.floor(Math.random() * 1000), date]);
                 console.log("db success => " + i);
 

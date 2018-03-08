@@ -7,7 +7,7 @@ h1 {
 }
 
 .error_input{
-    border-color: red;
+    border-color: indianred;
 }
 
 html, body {
@@ -17,7 +17,7 @@ html, body {
     width: 100%;
 }
 
-/*******************
+/******************
       RESEARCH
 *******************/
 
@@ -127,12 +127,12 @@ h3 {
     display: none;
 }
 
-/**/
-/*HEADER*/
-/**/
+/***************
+     HEADER
+****************/
 
 .header {
-    height: 8%;
+    height: 5%;
     width: 100%;
     background-color: #0a466b;
     display: flex;
@@ -201,8 +201,8 @@ h3 {
 
 .header img {
     border-radius: 60px;
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
     box-shadow: 3px 5px 18px #6666;
 }
 
@@ -217,13 +217,17 @@ h3 {
     cursor: pointer;
 }
 
-/* notif */
+/*
+notif
+*/
 
 .notifButton {
+    outline: none;
     border-radius: 60px;
-    width: 60px;
-    height: 60px;
+    width: 25px;
+    height: 25px;
     box-shadow: 3px 5px 18px #6666;
+    color: indianred;
     /*background-color: #666666;*/
 }
 
@@ -236,14 +240,30 @@ h3 {
     /*display: inline-flex;*/
     /*justify-content: space-around;*/
 
-
+    top: 83px;
     position: absolute;
-    right: 20%;
+    right: 15%;
     /*background-color: whitesmoke;*/
     border: 1px solid #6666;
     box-shadow: 0 2px 2px #6666;
     justify-content: center;
     cursor: pointer;
+    filter: brightness(0.95);
+}
+
+.notifList ul {
+    margin: 0;
+    padding: 0;
+    padding-right: 5px;
+}
+
+.notifList li {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 0;
+    padding-right: 5px;
+    width: 100%;
+    height: 30px;
 }
 
 .notifContent {
@@ -253,8 +273,10 @@ h3 {
     padding-right: 10px;
     padding-left: 10px;
     font-family: Verdana;
+    font-size: medium;
+    padding-top: 10px;
     text-transform: capitalize;
-    box-shadow: 0 2px 2px #6666;
+    color: white;
 }
 
 .notifContent:nth-child(even) {
@@ -263,8 +285,7 @@ h3 {
 }
 
 .notifContent:nth-child(odd) {
-    background-color: #6666;
-    color: white;
+    background-color: rgba(10,70,107,0.80) ;
 }
 
 /**/

@@ -46,7 +46,7 @@ export default class Notif extends React.Component{
                         unread = true;
                     }
                     return <li className={'notifContent'} name={"test"} key={index}>{msg(elem)}
-                        <button style={{float: 'right', color: 'white', backgroundColor: 'red', borderRadius: '4px', border: 'none'}} name={"notif"} value={elem.id} onClick={this.deleteNotif}>x</button>
+                        <button style={{float: 'right', color: 'white', backgroundColor: 'indianred', borderRadius: '4px', border: 'none'}} name={"notif"} value={elem.id} onClick={this.deleteNotif}>x</button>
                     </li>
                 }
             });
