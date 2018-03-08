@@ -310,11 +310,10 @@ export default class Research extends React.Component {
                              online = {color: 'lawngreen'};
                         else
                             online = {color: 'white'};
+                        // const self = this.props.user.id === node.id;
 
-                        const match = this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1;
-                        const self = this.props.user.id === node.id;
-
-                        if (match) {
+                        if (this.props.profil && this.props.user)
+                        if (this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1) {
                             like = "../../img/fullheart.png";
                         } else if (node.user1) {
                             like = "../../img/halfheart.png";
