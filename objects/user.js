@@ -6,30 +6,23 @@ let update = require('./update.js');
 
 class User {
     constructor(props) {
-        this.data = {
-            login: "motherfcker",
-            password: '',
-            email: '',
-            valid: '',
-            notif: '',
-            sexe: '',
-            bio: '',
-            orientation: ''
-        };
         this.likes = new likes();
     }
 
     async dologin(res, db, sess, io, socket, allUsers) {
         const [results, fields] = await db.execute(
-            "SELECT * FROM `users` WHERE login=?",
+            "SELECT users.* , visit.visits FROM `users` LEFT JOIN visit ON visit.userid = users.id WHERE login=?",
             [res.login]);
 
         if (results[0]) {
             bcrypt.compare(res.password, results[0].password, (err, succ) => {
                 if (succ) {
+                    if (!results[0].visits){
+                        const sql = "INSERT INTO visit VALUES (?, '{}')";
+
+                        db.execute(sql, [results[0].id]);
+                    }
                     User.update_date(db, res.login);
-                    for (let i in this.data)
-                        this.data[i] = results[0][i];
                     delete results[0].password;
                     sess.data = results[0];
                     sess.save((err) => {
@@ -117,7 +110,7 @@ class User {
     };
 
     userDisconnect(io, sess, socket, allUsers) {
-        let index = allUsers.indexOf(sess.data.login);
+        let index = allUsers.findIndex(elem => elem.login === sess.data.login);
 
         allUsers.splice(index, 1);
         sess.destroy();

@@ -81,10 +81,9 @@ class Register {
             Register.checkPassword(data.password) && Register.checkOrientation(data.orientation) &&
             Register.checkSexe(data.sexe) && await this.uniqueInput(data)){
             try {
-                console.log(data.orientation);
-                // data = Register.changeOrientation(data);
                     let password = await bcrypt.hash(data.password, 10);
                     let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags, age, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
                     let tags = data.tags.map(val => {
                         if (val.className)
                             Register.addTags(this.db, val.value);

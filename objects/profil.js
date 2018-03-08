@@ -21,12 +21,9 @@ class Profil {
 
     static async addVisit(db, sess, socket, data, io){
         if (data.data.id !== sess.data.id) {
-            const sql = "UPDATE visit SET visits = (JSON_MERGE((SELECT visits FROM (SELECT visits FROM visit WHERE userid = ?) AS lol), ?))";
-            const json = {
-                [sess.data.id]: Date.now()
-            };
+            const sql = `UPDATE visit SET visits = (JSON_SET((SELECT visits FROM (SELECT visits FROM visit WHERE userid = ?) AS lol), '$."${sess.data.id}"', ? )) WHERE userid = ?`;
 
-            db.execute(sql, [data.data.id, json]);
+            db.execute(sql, [data.data.id, Date.now(), data.data.id]);
         }
     }
 
@@ -34,6 +31,8 @@ class Profil {
         const profil = data.data;
 
         if (profil.tags) {
+            
+            
             data.data.tags.map(async (elem) => {
                 if (elem.className) {
                     register.addTags(db, elem.value);
