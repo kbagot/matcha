@@ -5,6 +5,7 @@ import Profil from './Profil.jsx';
 import Research from './Research.jsx';
 import UserSettings from './User.Settings.jsx';
 
+const profilList = [];
 export default class User extends React.Component {
     constructor(props) {
         super(props);
@@ -116,13 +117,18 @@ export default class User extends React.Component {
 
         if (node) {
             this.props.socket.on('user', () => {
-                console.log("HEY");
                 this.props.socket.emit('profil', {
                     type: 'getProfil',
                     id: node.id
                 }, (data) => this.setState({profil: data}))
             });
-            this.props.socket.on(node.id, (profil) => this.setState({profil: profil})); //TODO  WTF
+            this.props.socket.on(node.id, (profil) => {
+                if (profil){
+                    this.setState({profil: profil})
+                } else {
+                    this.props.socket.emit('profil', {type: 'getProfil', id: node.id}, (data) => this.handleClick(null, data));
+                }
+            }); //TODO  WTF
             this.setState({profil: node});
         }
 

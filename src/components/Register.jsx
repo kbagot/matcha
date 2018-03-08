@@ -114,10 +114,10 @@ export default class Register extends React.Component {
                     Bio <textarea value={this.state.bio} name="bio" onChange={this.handleChange}/><br />
                     J'aime
                     <select value={this.state.orientation} onChange={this.handleChange} name={"orientation"}>
-                        <option value="M">Les Hommes</option>
-                        <option value="F">Les Femmes</option>
+                        <option value="m">Les Hommes</option>
+                        <option value="f">Les Femmes</option>
                         <option value="bi">Les deux</option>
-                        <option value="T">Trans</option>
+                        <option value="trans">Trans</option>
                     </select><br />
                     Tags
                     <SelectTags socket={this.props.socket} sendTags={this.getUserTags} create/><br />

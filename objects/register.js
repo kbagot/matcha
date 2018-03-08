@@ -81,12 +81,12 @@ class Register {
             Register.checkPassword(data.password) && Register.checkOrientation(data.orientation) &&
             Register.checkSexe(data.sexe) && await this.uniqueInput(data)){
             try {
-                data = Register.changeOrientation(data);
-                    let password = await bcrypt.hash(data.password, 10);  //TODO    add  validation account  for avoid issue if no location dbentry for register user
+                    let password = await bcrypt.hash(data.password, 10);
                     let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags, age, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
                     let tags = data.tags.map(val => {
                         if (val.className)
-                            this.addTags(val.value);
+                            Register.addTags(this.db, val.value);
                             return val.value;
                     });
                     let date = new Date();
@@ -151,9 +151,9 @@ class Register {
         }
     }
 
-    async addTags(ntag) {
+    static async addTags(db, ntag) {
         try {
-            const [rows, fields] = await this.db.execute("REPLACE INTO tags (tag_name) VALUES (?);", [ntag]);
+            const [rows, fields] = await db.execute("REPLACE INTO tags (tag_name) VALUES (?);", [ntag]);
             return rows[0];
         } catch (err) {
             console.log(err);
@@ -179,22 +179,12 @@ class Register {
         }
     }
 
-    static changeOrientation(data) {
-        if (data.sexe === data.orientation) {
-            return Object.assign({}, data, {orientation: 'gay'});
-        } else if (data.sexe !== data.orientation && data.orientation !== 'bi') {
-            return Object.assign({}, data, {orientation: 'hetero'});
-        } else {
-            return data;
-        }
-    }
-
     static checkSexe(sexe){
         return ['M', 'F', 'T'].indexOf(sexe) !== -1;
     }
 
     static checkOrientation(orientation){
-        return ['M', 'F', 'T', 'bi'].indexOf(orientation) !== -1;
+        return ['m', 'f', 'trans', 'bi'].indexOf(orientation) !== -1;
     }
 
     static checkAge(age){

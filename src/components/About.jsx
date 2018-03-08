@@ -1,28 +1,36 @@
 import React from 'react';
+import SelectTags from './SelectTags.jsx';
+
+const initialState = {
+    edit: false,
+    age: null,
+    last: null,
+    first: null,
+    bio: null,
+    sexe: null,
+    orientation: null,
+    tags: null
+};
 
 export default class About extends React.Component{
     constructor(props){
         super(props);
-        this.state = {
-            edit: false,
-            age: null,
-            last: null,
-            first: null,
-            bio: null,
-            sexe: null,
-            orientation: null,
-            tags: null
-        };
+        this.state = initialState;
         this.renderOnline = this.renderOnline.bind(this);
         this.renderLocation = this.renderLocation.bind(this);
         this.renderOrientation = this.renderOrientation.bind(this);
         this.renderBio = this.renderBio.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
+        this.getUserTags = this.getUserTags.bind(this);
+    }
+
+    getUserTags(tags) {
+        this.setState({['tags']: tags});
     }
 
     renderTags(){
-        if (this.props.profil.tags.length ) {
+        if (this.props.profil.tags.length && !this.state.edit) {
             const li = this.props.profil.tags.map((elem, id) => <li style={list} key={id}> {elem} </li>);
 
             return (
@@ -30,6 +38,12 @@ export default class About extends React.Component{
                     <ul style={uList}>
                         {li}
                     </ul>
+                </div>
+            )
+        } else if (this.state.edit){
+            return (
+                <div style={selectTags}>
+                    <SelectTags socket={this.props.socket} sendTags={this.getUserTags} tags={this.props.profil.tags} create />
                 </div>
             )
         }
@@ -56,46 +70,39 @@ export default class About extends React.Component{
 
     renderOrientation(){
         if (!this.state.edit) {
+            const sexe = {
+                M: "Interesse ",
+                F: "Interessee ",
+                T: "Interesse.e "
+            };
             const orientation = {
-                M: {
-                    hetero: 'Interesse par les femmes',
-                    bi: 'Interesse par les hommes et les femmes',
-                    gay: 'Interesse par les hommes',
-                    trans: 'Interesse par les trans'
-                },
-                F: {
-                    hetero: 'Interessee par les hommes',
-                    bi: 'Interessee par les femmes et les hommes',
-                    gay: 'Interessee par les femmes',
-                    trans: 'Interessee par les trans'
-                },
-                T: {
-                    hetero: 'Interessee par les femmes et les hommes',
-                    bi: 'Interessee par les femmes et les hommes',
-                    gay: 'Interessee par les femmes et les hommes',
-                    trans: 'Interessee par les trans'
-                }
+                m: "par les hommes",
+                f: "par les femmes",
+                bi: "par les hommes et les femmes",
+                trans: 'par les trans'
             };
 
-            console.log(this.props.profil)
-            return orientation[this.props.profil.sexe][this.props.profil.orientation];
+            return sexe[this.props.profil.sexe] + orientation[this.props.profil.orientation];
         } else {
             return (
                 <select style={selectOrientation} value={this.state.orientation !== null ? this.state.orientation : this.props.profil.orientation} onChange={this.handleChange} name={"orientation"}>
-                    <option value="M">Les Hommes</option>
-                    <option value="F">Les Femmes</option>
+                    <option value="m">Les Hommes</option>
+                    <option value="f">Les Femmes</option>
                     <option value="bi">Les deux</option>
-                    <option value="T">Trans</option>
+                    <option value="trans">Trans</option>
                 </select>
             )
         }
     }
 
     handleEdit(){
+        if (!this.state.edit || !Object.values(this.state).filter(elem => elem !== true && elem !== null)[0]) {
+            this.setState(prevState => ({edit: !prevState.edit}));
+        }
+        this.props.socket.on('user', () => this.setState(initialState));
         if (this.state.edit) {
             this.props.socket.emit('profil', {type: 'editProfil', data: this.state});
         }
-        this.setState(prevState => ({edit: !prevState.edit}));
     }
 
     renderEdit(){
@@ -191,6 +198,10 @@ export default class About extends React.Component{
         )
     }
 }
+const selectTags = {
+    height: '20%',
+    width: '62vmin',
+};
 
 const selectOrientation = {
     backgroundColor: 'transparent',
@@ -260,7 +271,7 @@ const edit = {
 };
 
 const editContainer = {
-    width: '64%',
+    marginLeft: '30vmin',
     zIndex: '0',
     position: 'absolute',
     display: 'flex',
