@@ -10,7 +10,8 @@ class Profil {
             getProfil: Profil.sendProfil,
             imgDel: Profil.deleteImage,
             profilImg: Profil.setProfilImg,
-            editProfil: Profil.editProfil
+            editProfil: Profil.editProfil,
+            visit: Profil.addVisit
         };
 
         if (menu[data.type]){
@@ -18,14 +19,32 @@ class Profil {
         }
     }
 
+    static async addVisit(db, sess, socket, data, io){
+        if (data.data.id !== sess.data.id) {
+            const sql = "UPDATE visit SET visits = (JSON_MERGE((SELECT visits FROM (SELECT visits FROM visit WHERE userid = ?) AS lol), ?))";
+            const json = {
+                [sess.data.id]: Date.now()
+            };
+
+            db.execute(sql, [data.data.id, json]);
+        }
+    }
+
     static async editProfil(db, sess, socket, data, io){
         const profil = data.data;
 
-        console.log(profil);
+        if (profil.tags) {
+            data.data.tags.map(async (elem) => {
+                if (elem.className) {
+                    register.addTags(db, elem.value);
+                }
+            });
+        }
         Object.keys(profil).map(elem => {
             if (profil[elem] === null || elem === 'edit' || (elem === 'orientation' && !register.checkOrientation(profil[elem])) || (elem === 'sexe' && !register.checkSexe(profil[elem]))){
-                console.log(profil[elem]);
                 delete profil[elem];
+            } else if (elem === 'tags'){
+                profil[elem] = profil[elem].map((node, index) => profil[elem][index] = node.value);
             }
         });
 
@@ -35,19 +54,19 @@ class Profil {
             last: profil.last && profil.last !== sess.data.last? ' last = ? ' : null,
             first: profil.first && profil.first !== sess.data.first ? ' first = ? ' : null,
             bio: profil.bio && profil.bio !== sess.data.bio ? ' bio = ? ' : null,
-            sexe: profil.sexe && profil.sexe !== sess.data.sexe && register.checkSexe(profil.sexe)? ' sexe = ? ' : null,
-            orientation: profil.orientation  && profil.orientation !== sess.data.orientation  && register.checkOrientation(profil.orientation)? ' orientation = ? ' : null
+            sexe: profil.sexe && profil.sexe !== sess.data.sexe ? ' sexe = ? ' : null,
+            orientation: profil.orientation  && profil.orientation !== sess.data.orientation ? ' orientation = ? ' : null,
+            tags: profil.tags && profil.tags !== sess.data.tags ? 'tags = ? ' : null
         };
 
         if (empty[0]) {
             const query = "UPDATE users SET " +Object.values(sql).filter(elem => elem ).join() + "WHERE id = ?";
 
-            console.log(query);
-            console.log(empty);
             await db.execute(query, [...empty, sess.data.id]);
             Object.assign(sess.data, profil);
             sess.save();
             socket.emit('user', sess.data);
+            io.emit(sess.data.id, null);
         }
 
     }

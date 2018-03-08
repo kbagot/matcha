@@ -12,8 +12,9 @@ export default class RemoteProfil extends React.Component{
     }
 
     handleLike(ev){
-        ev.preventDefault();
-        if (this.props.profil.id !== this.props.user.id && this.props.profil.imgid) {
+        const defImg = this.props.images.findIndex(elem => elem.imgid === `nopic${this.props.profil.sexe}.jpg`) !== -1;
+
+        if (this.props.profil.id !== this.props.user.id && !defImg) {
             let index;
             const user = {
                 login: this.props.profil.login,
@@ -31,13 +32,15 @@ export default class RemoteProfil extends React.Component{
                 this.props.user.chat.splice(index, 1);
             }
         }
+        ev.preventDefault();
     }
 
 
     renderHeart(){
+        const defImg = this.props.images.findIndex(elem => elem.imgid === `nopic${this.props.profil.sexe}.jpg`) !== -1;
         const match = this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1;
         const self = this.props.user.id === this.props.profil.id;
-        const obj = !this.props.profil.imgid || self ? Object.assign({}, heart, {cursor: 'default'}) : heart;
+        const obj = defImg || self ? Object.assign({}, heart, {cursor: 'default'}) : heart;
 
             if (self || match) {
                 return <a href={""} onClick={this.handleLike}><img style={obj} src={"img/fullheart.png"}/></a>;
@@ -52,7 +55,6 @@ export default class RemoteProfil extends React.Component{
     }
 
     render() {
-        console.log(this.props.profil);
         return (
             <div style={remoteContainer}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
@@ -106,10 +108,11 @@ const heart = {
 };
 
 const remoteContainer = {
+    backgroundColor: 'white',
     justifyContent: 'space-between',
+    marginTop: '14.4vmin',
     display: 'flex',
     alignItems: 'center',
-    width: '77%',
     padding: '1vmin 1vmin 1vmin 17vmin',
     borderRadius: ' 0 0 0 1vmin ',
 };

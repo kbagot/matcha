@@ -1,5 +1,6 @@
 import React from 'react';
 import UploadForm from './UploadForm.jsx';
+import RemoteProfil from './RemoteProfil.jsx';
 
 export default class Images extends React.Component{
     constructor(props){
@@ -120,7 +121,7 @@ export default class Images extends React.Component{
                         {this.renderImg('all')}
                         {upload}
                     </div>
-
+                    <RemoteProfil allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket} profil={this.props.profil} images={this.state.images}/>
                 </div>
             )
         } else {

@@ -25,10 +25,13 @@ export default class SelectTags extends React.Component {
         })
     }
 
+    componentWillMount(){
+        this.setState({multiValue: this.props.tags});
+    }
+
     async handleChange(value) {
         const {multi} = this.state;
 
-        console.log(multi);
         if (multi) {
             await this.setState({multiValue: value});
         } else {

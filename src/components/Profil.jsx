@@ -18,6 +18,13 @@ export default class Profil extends React.Component{
         this.nextImg = this.nextImg.bind(this);
     }
 
+
+    componentDidMount(){
+        if (this.props.profil.id !== this.props.user.id) {
+            this.props.socket.emit('profil', {type: 'visit', data: this.props.profil});
+        }
+    }
+
     displayImages(ev, images){
         ev.preventDefault();
         if (ev.target.src) {
@@ -33,14 +40,12 @@ export default class Profil extends React.Component{
     }
 
     renderProfil(){
-
         if (this.state.profil){
             return (
                 <div style={topContainer}>
                     <Images display={this.displayImages} allUsers={this.props.allUsers}  user={this.props.user} profil={this.props.profil} socket={this.props.socket} />
                 <div style={profil} className={"profil"}>
                     <div style={altContainer}>
-                        <RemoteProfil allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket} profil={this.props.profil}/>
                         <About allUsers={this.props.allUsers} user={this.props.user} profil={this.props.profil} socket={this.props.socket}/>
                     </div>
                 </div>
@@ -105,9 +110,10 @@ const container = {
 };
 
 const profil = {
+    position: 'absolute',
     display: 'flex',
     flexWrap: 'wrap',
-    marginTop: '14.3vmin',
+    marginTop: '21.3vmin',
     borderRadius: '0vh 0vmin 1vmin 1vmin',
     width: '74vmin',
     height: '70vmin',
