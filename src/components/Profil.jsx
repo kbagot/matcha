@@ -23,6 +23,27 @@ export default class Profil extends React.Component{
         if (this.props.profil.id !== this.props.user.id) {
             this.props.socket.emit('profil', {type: 'visit', data: this.props.profil});
         }
+
+        this.props.socket.on('user', () => {
+            console.log("USER");
+            this.props.socket.emit('profil', {
+                type: 'getProfil',
+                id: this.props.profil.id
+            }, this.props.load);
+        });
+
+        this.props.socket.on(this.props.profil.id, (profil) => {
+            if (profil){
+                this.props.load(profil);
+            } else {
+                this.props.socket.emit('profil', {type: 'getProfil', id: this.props.profil.id}, this.props.load);
+            }
+        });
+
+    }
+
+    componentWillUnmount(){
+        this.props.socket.removeListener(this.props.profil.id);
     }
 
     displayImages(ev, images){
@@ -43,7 +64,7 @@ export default class Profil extends React.Component{
         if (this.state.profil){
             return (
                 <div style={topContainer}>
-                    <Images display={this.displayImages} allUsers={this.props.allUsers}  user={this.props.user} profil={this.props.profil} socket={this.props.socket} />
+                    <Images load={this.props.load}  display={this.displayImages} allUsers={this.props.allUsers}  user={this.props.user} profil={this.props.profil} socket={this.props.socket} />
                 <div style={profil} className={"profil"}>
                     <div style={altContainer}>
                         <About allUsers={this.props.allUsers} user={this.props.user} profil={this.props.profil} socket={this.props.socket}/>

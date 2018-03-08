@@ -114,6 +114,7 @@ export default class Images extends React.Component{
 
             return (
                 <div>
+                    <button onClick={() => this.props.load(false)} style={close}>x</button>
                     {this.renderImg('profil')}
                     {this.renderEdit()}
                     {this.renderOnline()}
@@ -129,6 +130,25 @@ export default class Images extends React.Component{
         }
     }
 }
+
+const close = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    marginTop: '-1vmin',
+    marginLeft: '72vmin',
+    zIndex: '4',
+    width: '3vmin',
+    border: 'none',
+    outline: 'none',
+    cursor: 'pointer',
+    borderRadius: '50%',
+    backgroundColor: 'white',
+    boxShadow: '0px 0px 6px black',
+    height: '3vmin',
+    fontFamily: 'Verdana, serif'
+};
 
 const editButtons = {
     border: 'none',

@@ -50,7 +50,7 @@ class User {
         db.execute(sql, [date, login]);
     }
 
-    update_coords(res, db, sess) {
+    static update_coords(res, db, sess) {
         console.log(res);
         let options = {
             provider: 'google',
@@ -62,7 +62,7 @@ class User {
 
         let api = 'reverse';
         let query = {'lat': res.lat, 'lon': res.lon};
-        if ('city' in res) {
+        if ('city' in res && res.city) {
             api = 'geocode';
             query = res.city;
         }
