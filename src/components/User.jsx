@@ -157,7 +157,7 @@ export default class User extends React.Component {
             <Profil refresh={this.refreshProfil} allUsers={this.state.allUsers} user={this.props.user}
                     profil={this.state.profil} socket={this.props.socket}/> : null;
 
-        // researchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={''} handleClick={this.handleClick}/>;
+        researchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={''} handleClick={this.handleClick}/>;
         // matchview =<Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={'match'} handleClick={this.handleClick}/>;
         let profilimg;
         if (this.props.user.img)

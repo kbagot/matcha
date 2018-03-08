@@ -10,10 +10,10 @@ export default class Research extends React.Component {
             M: '',
             F: '',
             T: '',
-            hetero: '',
+            m: '',
+            f: '',
             bi: '',
             trans: '',
-            gay: '',
             min: '',
             max: '',
             distance: '',
@@ -218,7 +218,7 @@ export default class Research extends React.Component {
                 <br/>
                 <input type="checkbox" name="F" onChange={this.handleChange}/>Femme
                 <br/>
-                <input type="checkbox" name="T" onChange={this.handleChange}/>Autres
+                <input type="checkbox" name="T" onChange={this.handleChange}/>Trans
             </div>
         )
     }
@@ -227,11 +227,11 @@ export default class Research extends React.Component {
         return (
             <div className="resContent">
                 <h3>── ATTIRANCES ─────────</h3>
-                <input type="checkbox" name="hetero" onChange={this.handleChange}/>Hetero
+                <input type="checkbox" name="m" onChange={this.handleChange}/>Homme
+                <br/>
+                <input type="checkbox" name="f" onChange={this.handleChange}/>Femme
                 <br/>
                 <input type="checkbox" name="bi" onChange={this.handleChange}/>Bi
-                <br/>
-                <input type="checkbox" name="gay" onChange={this.handleChange}/>Gay
                 <br/>
                 <input type="checkbox" name="trans" onChange={this.handleChange}/>Trans
             </div>
@@ -303,16 +303,17 @@ export default class Research extends React.Component {
                             img = '../../img/nopicF.jpg';
                         else if (!img && node.sexe === 'M')
                             img = '../../img/nopicM.jpg';
+                        else if (!img && node.sexe === 'T')
+                            img = '../../img/nopicT.jpg';
 
                         if (this.props.allUsers.findIndex(elem => elem.id === node.id) !== -1)
                              online = {color: 'lawngreen'};
                         else
                             online = {color: 'white'};
+                        // const self = this.props.user.id === node.id;
 
-                        const match = this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1;
-                        const self = this.props.user.id === node.id;
-
-                        if (match) {
+                        if (this.props.profil && this.props.user)
+                        if (this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1) {
                             like = "../../img/fullheart.png";
                         } else if (node.user1) {
                             like = "../../img/halfheart.png";
