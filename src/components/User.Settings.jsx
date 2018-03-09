@@ -23,30 +23,16 @@ export default class UserSettings extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleClick = this.handleClick.bind(this);
     }
 
     componentDidMount() {
         this.props.socket.on('registerError', data => {
             this.handleError(data)
         });
-        document.body.addEventListener('click', ev => this.handleClick(ev));
     }
 
     componentWillUnmount(){
         this.props.socket.removeListener('registerError');
-    }
-
-    handleClick(ev){
-        const array = [ev.target.name, ev.target.className, ev.target.parentNode.name, ev.target.parentNode.className];
-        let edit = array.filter(elem => elem ? elem.search('edit') >= 0 : false);
-        const obj = {login: null, email: null, password: '', editLogin: false, editEmail: false, editPassword: false};
-
-        if (this.state.display && array.indexOf('userSettings') === -1 && !edit[0]){
-            this.handleButton(ev);
-        } else if (edit[0] && !ev.target.type){
-            this.setState(obj);
-        }
     }
 
     handleButton(ev){

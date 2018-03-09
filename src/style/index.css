@@ -18,6 +18,17 @@ html, body {
 }
 
 /******************
+    PAGE CONTENT
+******************/
+
+.Content {
+    padding-top: 60px;
+    width: 100%;
+    height: calc(100% - 60px);
+    position: absolute;
+}
+
+/******************
       RESEARCH
 *******************/
 
@@ -139,11 +150,12 @@ h3 {
 ****************/
 
 .header {
-    height: 5%;
+    height: 60px;
     width: 100%;
     background-color: #0a466b;
     display: flex;
-    /*position: fixed;*/
+    position: fixed;
+    z-index: 10;
     justify-content: flex-end;
     /*top: 0;*/
     align-items: center;
@@ -151,8 +163,8 @@ h3 {
 }
 
 .headercontent {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    /*margin-top: 10px;*/
+    /*margin-bottom: 10px;*/
     margin-right: 40px;
     text-align: center;
 }
@@ -167,9 +179,10 @@ h3 {
 
 .hburgercontent {
     display: flex;
-    position: absolute;
+    top: 60px;
+    position: fixed;
     right: 0;
-    /*background-color: whitesmoke;*/
+    background-color: white;
     border: 1px solid #6666;
     box-shadow: 0 2px 2px #6666;
     justify-content: center;
@@ -214,14 +227,42 @@ h3 {
 }
 
 .userSettingsdisplay {
-    /*background-color: yellow;*/
-    /*display: flex;*/
+    background-color: white;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     position: absolute;
+    display: flex;
     /*background-color: whitesmoke;*/
     border: 1px solid #6666;
     box-shadow: 0 2px 2px #6666;
     justify-content: center;
     cursor: pointer;
+}
+
+.userSettingsdisplay button{
+    /*box-shadow: 3px 5px 18px #6666;*/
+    font-family: verdana;
+    /*width: 50%;*/
+    /*height: 80%;*/
+    margin-right: 0;
+    background-color: #0a466b; /* Green */
+    border: 1px solid white;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 12px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.userSettingsdisplay input[type="submit"]{
+    background-color: #0a466b; /* Green */
+    color: white;
 }
 
 /*
@@ -235,6 +276,7 @@ notif
     height: 25px;
     box-shadow: 3px 5px 18px #6666;
     color: indianred;
+    padding: 0px;
     /*background-color: #666666;*/
 }
 
@@ -247,10 +289,12 @@ notif
     /*display: inline-flex;*/
     /*justify-content: space-around;*/
 
+    top: 60px;
+    /*position: fixed;*/
     top: 63px;
     position: absolute;
     right: 15%;
-    /*background-color: whitesmoke;*/
+    background-color: white;
     border: 1px solid #6666;
     box-shadow: 0 2px 2px #6666;
     justify-content: center;

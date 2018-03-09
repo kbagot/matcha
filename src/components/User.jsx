@@ -4,8 +4,8 @@ import Notif from './Notif.jsx';
 import Profil from './Profil.jsx';
 import Research from './Research.jsx';
 import UserSettings from './User.Settings.jsx';
+import HomeUsers from './HomeUsers.jsx';
 
-const profilList = [];
 export default class User extends React.Component {
     constructor(props) {
         super(props);
@@ -33,22 +33,35 @@ export default class User extends React.Component {
         this.props.socket.on('allUsers', (data) => {
             this.setState({['allUsers']: data});
         });
-
         this.props.socket.on('refresh', data => {
             this.props.socket.emit('Register', data);
             this.setState({['allUsers']: data.allUsers});
         });
-        document.body.addEventListener('click', (ev) => {
-            if (this.state.burger && this.checkClickZone(ev)) {
-                this.setState({burger: false})
-            }
-        });
+        // document.body.addEventListener('click', (ev) => {
+        //     if (this.state.burger && this.checkClickZone(ev)) {
+        //         this.setState({burger: false})
+        //     }
+        // });
+    }
+
+    componentWillMount() {
+        document.addEventListener('mousedown', this.handleclickclose, false);
     }
 
     componentWillUnmount() {
         this.props.socket.removeListener('allUsers');
         this.props.socket.removeListener('match');
         this.props.socket.removeListener('refresh');
+        document.removeEventListener('mousedown', this.handleclickclose, false);
+    }
+
+    handleclickclose = (e) => {
+        if (this.node.contains(e.target))
+            console.log('CLICK');
+        else
+            this.setState({burger: false});
+        // console.log('noclick');
+        console.log('--------');
     }
 
     disconnectUser() {
@@ -109,7 +122,7 @@ export default class User extends React.Component {
         return notif ? notif.length : null;
     }
 
-    setProfil(profil){
+    setProfil(profil) {
         this.setState({profil: profil});
     }
 
@@ -132,7 +145,7 @@ export default class User extends React.Component {
     burgercontent() {
         if (this.state.burger) {
             return (
-                <div className={'hburgercontent'}>
+                <div ref={node => this.node = node} className={'hburgercontent'}>
                     <UserSettings user={this.props.user} socket={this.props.socket}/>
                     <button className={'hburgerbut'} onClick={this.disconnectUser}>Disconnect</button>
                 </div>
@@ -146,11 +159,15 @@ export default class User extends React.Component {
         let matchview = null;
         let view = null;
         let profil = this.state.profil ?
-            <Profil load={this.setProfil} refresh={this.refreshProfil} allUsers={this.state.allUsers} user={this.props.user}
+            <Profil load={this.setProfil} refresh={this.refreshProfil} allUsers={this.state.allUsers}
+                    user={this.props.user}
                     profil={this.state.profil} socket={this.props.socket}/> : null;
 
-        researchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={''} handleClick={this.handleClick}/>;
-        // matchview =<Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={'match'} handleClick={this.handleClick}/>;
+        researchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user}
+                                 match={''} handleClick={this.handleClick}/>;
+        matchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user}
+                              match={'match'} handleClick={this.handleClick}/>;
+
         let profilimg;
         if (this.props.user.img)
             profilimg = `../../img/${this.props.user.img["0"].imgid}`;
@@ -162,28 +179,37 @@ export default class User extends React.Component {
         else
             burgerdisplay = true;
 
-
+        /**********/
+        this.props.user.visits = ['500', '400'];
+        let HomeVisited = <HomeUsers socket={this.props.socket} user={this.props.user} task={'visits'} handleClick={this.handleClick}/>;
+        /**********/
+        // console.log(this.props.user);
+        // if (this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1) {
         return (
             <div className={"User"}>
                 <div className={"header"}>
-                        <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br/>
+                    <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br/>
                     <div className={'headercontent'}>
                         <img value={this.props.user.id} src={profilimg} onClick={this.handleClick}/>
                     </div>
-                    <div className={'headercontent bodyclick'} onClick={() => this.setState({['burger']: burgerdisplay})}>
+                    <div ref={node => this.node = node} className={'headercontent bodyclick'}
+                         onClick={() => this.setState({['burger']: burgerdisplay})}>
                         <div className={'hburger'}></div>
                         <div className={'hburger'}></div>
                         <div className={'hburger'}></div>
                     </div>
+                    {burgercontent}
                 </div>
-                {burgercontent}
                 {profil}
-                {researchview}
-                {matchview}
-                <h2>All Users</h2>
-                <ul>{list}</ul>
-                <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket}
-                      listUsers={this.listUsers}/>
+                <div className={'Content'}>
+                    {HomeVisited}
+                    {/*{researchview}*/}
+                    {/*{matchview}*/}
+                    {/*<h2>All Users</h2>*/}
+                    {/*<ul>{list}</ul>*/}
+                    {/*<Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket}*/}
+                    {/*listUsers={this.listUsers}/>*/}
+                </div>
             </div>
         );
     }
