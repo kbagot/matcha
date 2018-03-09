@@ -4,6 +4,8 @@ import SelectTags from './SelectTags.jsx';
 const initialState = {
     edit: false,
     age: null,
+    city: null,
+    country: null,
     last: null,
     first: null,
     bio: null,
@@ -95,11 +97,14 @@ export default class About extends React.Component{
         }
     }
 
+    componentDidMount(){
+        this.props.socket.on('user', () => this.setState(initialState));
+    }
+
     handleEdit(){
-        if (!this.state.edit || !Object.values(this.state).filter(elem => elem !== true && elem !== null)[0]) {
+        if (!this.state.edit) {
             this.setState(prevState => ({edit: !prevState.edit}));
         }
-        this.props.socket.on('user', () => this.setState(initialState));
         if (this.state.edit) {
             this.props.socket.emit('profil', {type: 'editProfil', data: this.state});
         }
@@ -119,7 +124,7 @@ export default class About extends React.Component{
 
     handleChange(ev){
         let name = ev.target.name;
-        let value = (ev.target.name === 'bio' ? ev.target.value : ev.target.value.trim());
+        let value = (['bio', 'city', 'country'].indexOf(ev.target.name ) !== -1 ? ev.target.value : ev.target.value.trim());
 
         this.setState({[name]: value});
         ev.preventDefault();
@@ -179,7 +184,8 @@ export default class About extends React.Component{
                     <input style={name} type={"number"} min={"18"} max={"99"} name="age" onChange={this.handleChange} value={this.state.age !== null ? this.state.age : this.props.profil.age}/>
                 </p>
                 <p style={firstName}>
-                    {this.renderLocation()}
+                    <input style={name} type={'text'} name={'city'} value={this.state.city !== null ? this.state.city : this.props.profil.city} onChange={this.handleChange}/>
+                    <input style={name} type={'text'} name={'country'} value={this.state.country !== null ? this.state.country : this.props.profil.country} onChange={this.handleChange}/>
                 </p>
                 <p style={firstName}>
                     {this.renderOrientation()}

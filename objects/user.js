@@ -6,12 +6,11 @@ let update = require('./update.js');
 
 class User {
     constructor(props) {
-        this.likes = new likes();
     }
 
     async dologin(res, db, sess, io, socket, allUsers) {
         const [results, fields] = await db.execute(
-            "SELECT users.* , visit.visits FROM `users` LEFT JOIN visit ON visit.userid = users.id WHERE login=?",
+            "SELECT users.* , visit.visits, block.list AS block FROM `users` LEFT JOIN visit ON visit.userid = users.id LEFT JOIN block ON block.userid = users.id WHERE login=?",
             [res.login]);
 
         if (results[0]) {
@@ -50,7 +49,7 @@ class User {
         db.execute(sql, [date, login]);
     }
 
-    update_coords(res, db, sess) {
+    static update_coords(res, db, sess) {
         console.log(res);
         let options = {
             provider: 'google',
@@ -62,7 +61,7 @@ class User {
 
         let api = 'reverse';
         let query = {'lat': res.lat, 'lon': res.lon};
-        if ('city' in res) {
+        if ('city' in res && res.city) {
             api = 'geocode';
             query = res.city;
         }

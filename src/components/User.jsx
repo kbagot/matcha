@@ -22,6 +22,7 @@ export default class User extends React.Component {
         this.seekUser = this.seekUser.bind(this);
         this.listUsers = this.listUsers.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.setProfil = this.setProfil.bind(this);
     }
 
     componentDidMount() {
@@ -108,28 +109,19 @@ export default class User extends React.Component {
         return notif ? notif.length : null;
     }
 
+    setProfil(profil){
+        this.setState({profil: profil});
+    }
+
     handleClick(ev, node) {
 
         if (!node) {
             const id = Number(ev.target.getAttribute('value'));
-            this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.handleClick(null, data));
+            this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.setProfil(data));
         }
 
         if (node) {
-            this.props.socket.on('user', () => {
-                this.props.socket.emit('profil', {
-                    type: 'getProfil',
-                    id: node.id
-                }, (data) => this.setState({profil: data}))
-            });
-            this.props.socket.on(node.id, (profil) => {
-                if (profil){
-                    this.setState({profil: profil})
-                } else {
-                    this.props.socket.emit('profil', {type: 'getProfil', id: node.id}, (data) => this.handleClick(null, data));
-                }
-            }); //TODO  WTF
-            this.setState({profil: node});
+            this.setProfil(node);
         }
 
         if (ev) {
@@ -154,7 +146,7 @@ export default class User extends React.Component {
         let matchview = null;
         let view = null;
         let profil = this.state.profil ?
-            <Profil refresh={this.refreshProfil} allUsers={this.state.allUsers} user={this.props.user}
+            <Profil load={this.setProfil} refresh={this.refreshProfil} allUsers={this.state.allUsers} user={this.props.user}
                     profil={this.state.profil} socket={this.props.socket}/> : null;
 
         researchview = <Research socket={this.props.socket} allUsers={this.state.allUsers} user={this.props.user} match={''} handleClick={this.handleClick}/>;

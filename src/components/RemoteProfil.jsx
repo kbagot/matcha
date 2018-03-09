@@ -9,6 +9,8 @@ export default class RemoteProfil extends React.Component{
         this.renderHeart = this.renderHeart.bind(this);
         this.handleLike = this.handleLike.bind(this);
         this.renderScore = this.renderScore.bind(this);
+        this.handleBlock = this.handleBlock.bind(this);
+        this.renderBlock = this.renderBlock.bind(this);
     }
 
     handleLike(ev){
@@ -50,8 +52,22 @@ export default class RemoteProfil extends React.Component{
                 return <a href={""} onClick={this.handleLike}><img style={obj} src={"img/emptyheart.png"}/></a>;
             }
     }
+
     renderScore(){
         return Object.assign({}, scoreContainer, {background: `linear-gradient(#ecf4fe ${10 - this.props.profil.spop}%, #2b94fb ${10 - this.props.profil.spop}%)`});
+    }
+
+    handleBlock(){
+        if (!this.props.user.block || (this.props.user.id !== this.props.profil.id && this.props.user.block.indexOf(this.props.profil.id) === -1)) {
+            this.props.socket.emit('profil', {type: 'block', data: this.props.profil})
+        }
+    }
+
+    renderBlock(){
+        if (this.props.user.id !== this.props.profil.id  && (!this.props.user.block || this.props.user.block.indexOf(this.props.profil.id) === -1)){
+            return <button style={button} onClick={this.handleBlock} >{'\u26D4'}</button>
+
+        }
     }
 
     render() {
@@ -66,8 +82,8 @@ export default class RemoteProfil extends React.Component{
                 </div>
                 </div>
                 <div style={{display: 'flex'}}>
-                <button style={button}>{'\u26A0'}</button>
-                <button style={button}>{'\u26D4'}</button>
+                <button style={button} >{'\u26A0'}</button>
+                    {this.renderBlock()}
                 </div>
             </div>
         )
