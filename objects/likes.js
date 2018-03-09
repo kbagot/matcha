@@ -1,16 +1,17 @@
 let update = require('./update.js');
+const profil = require('./profil.js');
 
 class Likes{
 
-    static handleLikes(data, socket, db, sess, allUsers){
+    static async handleLikes(data, socket, db, sess, allUsers, io){
 
         switch(data.type){
             case 'Add':
-                Likes.addLike(data.login, socket, db, sess);
+                await Likes.addLike(data.login, socket, db, sess, io);
                 Likes.sendNotif(db, data.login, socket, allUsers);
                 break;
             case 'Remove':
-                Likes.removeLike(data.login, socket, db, sess);
+                await Likes.removeLike(data.login, socket, db, sess, io);
                 Likes.sendNotif(db, data.login, socket, allUsers);
                 break ;
             case 'addMatch':
@@ -26,16 +27,25 @@ class Likes{
 
     }
 
-    static addLike(user, socket, db, sess){
+
+    static refreshProfil(db, sess, socket, id, io){
+        io.emit(sess.data.id, null);
+        profil.sendProfil(db, sess, socket, {id: id}, io);
+    }
+
+
+    static addLike(user, socket, db, sess, io){
         let id = sess.data.id;
         let sql;
 
         Likes.likeExist(user.id, sess, db)
-            .then((res) => {
+            .then(async (res) => {
                 if (!res)
                 {
                     sql = "INSERT INTO likes(user1, user2) VALUES (?, ?)";
-                    db.execute(sql, [id, user.id]);
+                    await db.execute(sql, [id, user.id]);
+                    sql = "UPDATE users SET spop=spop+50 WHERE id = ?";
+                    await db.execute(sql, [id]);
                     Likes.addNotif(db, sess, 'like', user.id, id);
                     socket.emit('user', sess.data);
                 } else if (!res.matcha && Number(res.user1) !== id){
@@ -47,30 +57,38 @@ class Likes{
                     db.execute(sql, [user.id, id, user.id, id, id, user.id])
                         .catch(e => console.log(e));
                     sql = "UPDATE likes SET matcha=true WHERE (user1=? AND user2=?) OR (user1=? AND user2=?); " ;
-                    db.execute(sql, [user.id, id, user.id, id]);
+                    await db.execute(sql, [user.id, id, user.id, id]);
+                    sql = "UPDATE users SET spop=spop+50 WHERE id = ? OR id = ?";
+                    await db.execute(sql, [user.id, id]);
                 }
+                Likes.refreshProfil(db, sess, socket, user.id, io);
             })
             .catch((e) => console.log(e));
     }
 
-    static removeLike(user, socket, db, sess){
+    static removeLike(user, socket, db, sess, io){
         let id = sess.data.id;
         let sql;
 
         Likes.likeExist(user.id, sess, db)
-            .then((res) =>{
+            .then(async (res) =>{
             if (res && res.matcha){
                 Likes.deleteMatchList(socket, db, sess, user, true);
                 Likes.addNotif(db, sess, 'unmatch', user.id, id);
+                sql = "UPDATE users SET spop=spop-100 WHERE id = ?";
+                await db.execute(sql, [sql, [user.id]]);
                 sql = "UPDATE likes SET matcha=false ,user1= (CASE WHEN user1=? THEN ? ELSE ? END)," +
                     " user2= (CASE WHEN user2=? THEN ? ELSE ? END) WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
-                db.execute(sql, [id, user.id, user.id, user.id, id, id, user.id, id, id, user.id]);
+                await db.execute(sql, [id, user.id, user.id, user.id, id, id, user.id, id, id, user.id]);
            } else {
                 Likes.addNotif(db, sess, 'unlike', user.id, id);
                 socket.emit('user', sess.data);
+                sql = "UPDATE users SET spop=spop-50 WHERE id = ? OR id = ?";
+                await db.execute(sql, [user.id, id]);
                 sql = "DELETE FROM likes WHERE user1=? AND user2=?";
-               db.execute(sql, [id, user.id]);
+                await db.execute(sql, [id, user.id]);
            }
+           Likes.refreshProfil(db, sess, socket, user.id, io);
         })
             .catch((e) => console.log(e));
     }

@@ -14,7 +14,7 @@ class User {
             [res.login]);
 
         if (results[0]) {
-            bcrypt.compare(res.password, results[0].password, (err, succ) => {
+            bcrypt.compare(res.password, results[0].password, async (err, succ) => {
                 if (succ) {
                     if (!results[0].visits){
                         const sql = "INSERT INTO visit VALUES (?, '{}')";
@@ -22,8 +22,11 @@ class User {
                         db.execute(sql, [results[0].id]);
                     }
                     User.update_date(db, res.login);
+
                     delete results[0].password;
                     sess.data = results[0];
+                    await User.addPopLogin(db, sess);
+                    sess.spop += 10;
                     sess.save((err) => {
                         if (err)
                             console.log(err);
@@ -39,6 +42,12 @@ class User {
         }
         else
             io.sockets.emit('loglog');
+    }
+
+    static async addPopLogin(db, sess){
+        const sql = "UPDATE users SET spop = spop+10 WHERE id = ?";
+
+        await db.execute(sql, [sess.data.id]);
     }
 
     static update_date(db, login) {

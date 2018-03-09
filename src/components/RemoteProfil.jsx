@@ -11,9 +11,11 @@ export default class RemoteProfil extends React.Component{
         this.renderScore = this.renderScore.bind(this);
         this.handleBlock = this.handleBlock.bind(this);
         this.renderBlock = this.renderBlock.bind(this);
+        this.renderReport = this.renderReport.bind(this);
+        this.handleReport = this.handleReport.bind(this);
     }
 
-    handleLike(ev){
+    handleLike(ev) {
         const defImg = this.props.images.findIndex(elem => elem.imgid === `nopic.png`) !== -1;
 
         if (this.props.profil.id !== this.props.user.id && !defImg) {
@@ -29,7 +31,6 @@ export default class RemoteProfil extends React.Component{
             };
 
             this.props.socket.emit("like", {type: type[ev.target.src.split('/').pop()], login: user});
-            this.props.socket.emit('profil', {type: 'getProfil', id: this.props.user.id});
             if (this.props.user.chat && (index = this.props.user.chat.findIndex(elem => elem.login === user) !== -1)) {
                 this.props.user.chat.splice(index, 1);
             }
@@ -53,6 +54,12 @@ export default class RemoteProfil extends React.Component{
             }
     }
 
+    renderReport(){
+        if (this.props.user.id !==  this.props.profil.id){
+            return <button style={button} onClick={this.handleReport}>{'\u26A0'}</button>
+        }
+    }
+
     renderScore(){
         return Object.assign({}, scoreContainer, {background: `linear-gradient(#ecf4fe ${10 - this.props.profil.spop}%, #2b94fb ${10 - this.props.profil.spop}%)`});
     }
@@ -70,6 +77,10 @@ export default class RemoteProfil extends React.Component{
         }
     }
 
+    handleReport(){
+        this.props.socket.emit('profil', {type: 'report', data: this.props.profil});
+    }
+
     render() {
         return (
             <div style={remoteContainer}>
@@ -82,7 +93,7 @@ export default class RemoteProfil extends React.Component{
                 </div>
                 </div>
                 <div style={{display: 'flex'}}>
-                <button style={button} >{'\u26A0'}</button>
+                    {this.renderReport()}
                     {this.renderBlock()}
                 </div>
             </div>
