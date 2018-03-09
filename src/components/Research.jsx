@@ -299,12 +299,8 @@ export default class Research extends React.Component {
                         let online = '';
                         let usersexe = 'resUserInfo';
 
-                        if (!img && node.sexe === 'F')
-                            img = '../../img/nopicF.jpg';
-                        else if (!img && node.sexe === 'M')
-                            img = '../../img/nopicM.jpg';
-                        else if (!img && node.sexe === 'T')
-                            img = '../../img/nopicT.jpg';
+                        if (!img)
+                            img = '../../img/nopic.png';
 
                         if (this.props.allUsers.findIndex(elem => elem.id === node.id) !== -1)
                              online = {color: 'lawngreen'};
