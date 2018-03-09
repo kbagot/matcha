@@ -95,7 +95,10 @@ class ConDb {
                         "`profil` boolean default false);" +
                         "CREATE TABLE visit (" +
                         "userid int not null," +
-                        "visits JSON);";
+                        "visits JSON);" +
+                        "CREATE TABLE block (" +
+                        "userid int not null," +
+                        "list JSON);";
 
                     db.query(sql).then(() => resolve(db))
                         .catch((err) => reject(err));
