@@ -25,7 +25,7 @@ export default class Images extends React.Component{
     }
 
     renderEdit(){
-        if (this.props.profil.id === this.props.user.id && this.state.images[0].imgid !== `nopic${this.props.user.sexe}.jpg`){
+        if (this.props.profil.id === this.props.user.id && this.state.images[0].imgid !== `nopic.png`){
             return (
                     <button style={edit} onClick={() => this.setState(prevState => ({edit: !prevState.edit}))}>
                         <img style={editLogo} src={"img/edit.png"} />
@@ -87,13 +87,6 @@ export default class Images extends React.Component{
 
     componentDidMount(){
         this.props.socket.on(this.props.profil.login, (data) => this.setState({images: data}));
-        this.props.socket.on(this.props.profil.id, (profil) => {
-           // if (this.state.images.findIndex(elem => elem.imgid === `nopic${this.props.profil.sexe}.jpg`)){
-           //     this.setState({images: [{imgid: `nopic${profil.sexe}.jpg`, profil: true}]});
-           //     console.log(profil);
-           //
-           // }
-        });
         if (this.props.profil && this.props.profil.id !== this.props.user.id){
             this.props.socket.emit("profil", {type:'getImages', profil: this.props.profil});
         } else  if (this.props.profil.id === this.props.user.id){

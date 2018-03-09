@@ -21,7 +21,7 @@ class Update {
             if (rows[0]) {
                 sess.data.img = rows;
             } else {
-                sess.data.img = [{imgid: `nopic${sess.data.sexe}.jpg`, profil: true}];
+                sess.data.img = [{imgid: `nopic.png`, profil: true}];
             }
             sess.save();
         } catch (e){

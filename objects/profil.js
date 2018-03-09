@@ -101,8 +101,8 @@ class Profil {
     }
 
     static async changeProfilPic(sess, sexe){
-        if (sexe && sess.data.img.findIndex(elem => elem.imgid === `nopic${sess.data.sexe}.jpg`) !== -1){
-            sess.data.img = [{imgid: `nopic${sexe}.jpg`, profil: 'true'}];
+        if (sexe && sess.data.img.findIndex(elem => elem.imgid === `nopic.png`) !== -1){
+            sess.data.img = [{imgid: `nopic.png`, profil: 'true'}];
         }
     }
 
@@ -161,7 +161,7 @@ class Profil {
            await db.execute(sql, [sess.data.id]);
         }
         if (sess.data.img.length === 1){
-            sess.data.img = [{imgid: `nopic${sess.data.sexe}.jpg`, profil: true}];
+            sess.data.img = [{imgid: `nopic.png`, profil: true}];
         } else {
             const index = sess.data.img.findIndex(elem => elem.imgid === data.img.imgid);
 
@@ -191,7 +191,7 @@ class Profil {
         if (await fs.exists('img') && sess.data.img.length < 5){
             const id = `${uniqid()}.${data.ext}`;
             const sql = "INSERT INTO img SET userid= ?, imgid = ?, profil= ?";
-            const profil = sess.data.img[0].imgid === `nopic${sess.data.sexe}.jpg`;
+            const profil = sess.data.img[0].imgid === `nopic.png`;
             const newPic = {imgid: id, profil: profil};
 
             await fs.writeFile(`img/${id}`, data.img, 'base64');
@@ -217,7 +217,7 @@ class Profil {
         if (rows[0]){
             io.emit(data.profil.login, rows);
         } else {
-            io.emit(data.profil.login, [{imgid: `nopic${data.profil.sexe}.jpg`, profil: true}]);
+            io.emit(data.profil.login, [{imgid: `nopic.png`, profil: true}]);
         }
     }
 }
