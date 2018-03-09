@@ -2,7 +2,7 @@ let update = require('./update.js');
 
 class Likes{
 
-    handleLikes(data, socket, db, sess, allUsers){
+    static handleLikes(data, socket, db, sess, allUsers){
 
         switch(data.type){
             case 'Add':

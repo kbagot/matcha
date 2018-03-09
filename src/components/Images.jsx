@@ -87,6 +87,13 @@ export default class Images extends React.Component{
 
     componentDidMount(){
         this.props.socket.on(this.props.profil.login, (data) => this.setState({images: data}));
+        this.props.socket.on(this.props.profil.id, (profil) => {
+           // if (this.state.images.findIndex(elem => elem.imgid === `nopic${this.props.profil.sexe}.jpg`)){
+           //     this.setState({images: [{imgid: `nopic${profil.sexe}.jpg`, profil: true}]});
+           //     console.log(profil);
+           //
+           // }
+        });
         if (this.props.profil && this.props.profil.id !== this.props.user.id){
             this.props.socket.emit("profil", {type:'getImages', profil: this.props.profil});
         } else  if (this.props.profil.id === this.props.user.id){
@@ -94,8 +101,10 @@ export default class Images extends React.Component{
         }
     }
 
+
     componentWillUnmount(){
         this.props.socket.removeListener(this.props.profil.login);
+        this.props.socket.removeListener(this.props.profil.id);
     }
 
     renderUpload(){

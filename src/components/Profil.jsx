@@ -24,13 +24,6 @@ export default class Profil extends React.Component{
             this.props.socket.emit('profil', {type: 'visit', data: this.props.profil});
         }
 
-        this.props.socket.on('user', () => {
-            console.log("USER");
-            this.props.socket.emit('profil', {
-                type: 'getProfil',
-                id: this.props.profil.id
-            }, this.props.load);
-        });
 
         this.props.socket.on(this.props.profil.id, (profil) => {
             if (profil){

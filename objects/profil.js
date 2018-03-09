@@ -3,9 +3,10 @@ const uniqid = require('uniqid');
 const register = require('./register.js');
 const user = require('./user.js');
 const NodeGeocoder = require('node-geocoder');
+const likes = require('./likes.js');
 
 class Profil {
-    static mainHandler(db, sess, socket, data, io, setState){
+    static mainHandler(db, sess, socket, data, io, setState, allUsers){
         const menu = {
             upload: Profil.handleUpload,
             getImages: Profil.sendImages,
@@ -13,11 +14,28 @@ class Profil {
             imgDel: Profil.deleteImage,
             profilImg: Profil.setProfilImg,
             editProfil: Profil.editProfil,
-            visit: Profil.addVisit
+            visit: Profil.addVisit,
+            block: Profil.addBlock
         };
 
         if (menu[data.type]){
-            menu[data.type](db, sess, socket, data, io, setState);
+            menu[data.type](db, sess, socket, data, io, setState, allUsers);
+        }
+    }
+
+    static async addBlock(db, sess, socket, data, io, setState, allUsers){
+        if (!sess.data.block || (sess.data.id !== data.data.id && sess.data.block.indexOf(data.data.id) === -1)){
+            const sql = sess.data.block ? "UPDATE block SET list = JSON_MERGE((SELECT list FROM (SELECT list FROM block WHERE userid = ?) AS lol), ?)" : "INSERT INTO block VALUES(? , ?)";
+
+            await db.execute(sql, [sess.data.id, [data.data.id]]);
+            if (!sess.data.block){
+                sess.data.block = [data.data.id];
+            } else {
+                sess.data.block.push(data.data.id);
+            }
+            likes.handleLikes({type: 'Remove', login: {id: data.data.id, login: data.data.login}}, socket, db, sess, allUsers);
+            sess.save();
+            socket.emit("user", sess.data);
         }
     }
 
@@ -82,11 +100,18 @@ class Profil {
         }
     }
 
+    static async changeProfilPic(sess, sexe){
+        if (sexe && sess.data.img.findIndex(elem => elem.imgid === `nopic${sess.data.sexe}.jpg`) !== -1){
+            sess.data.img = [{imgid: `nopic${sexe}.jpg`, profil: 'true'}];
+        }
+    }
+
     static async editProfil(db, sess, socket, data, io){
         let profil = data.data;
         let sql;
         let empty;
 
+        Profil.changeProfilPic(sess, profil.sexe);
         Profil.addTags(db, profil.tags);
         await Profil.changeLocation(db, data.data, sess);
         profil = Profil.cleanProfil(profil);
@@ -107,8 +132,8 @@ class Profil {
             await db.execute(query, [...empty, sess.data.id]);
             Object.assign(sess.data, profil);
             sess.save();
-            io.emit(sess.data.id, null);
         }
+        io.emit(sess.data.id, null);
         socket.emit('user', sess.data);
     }
 

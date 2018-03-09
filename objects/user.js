@@ -6,12 +6,11 @@ let update = require('./update.js');
 
 class User {
     constructor(props) {
-        this.likes = new likes();
     }
 
     async dologin(res, db, sess, io, socket, allUsers) {
         const [results, fields] = await db.execute(
-            "SELECT users.* , visit.visits FROM `users` LEFT JOIN visit ON visit.userid = users.id WHERE login=?",
+            "SELECT users.* , visit.visits, block.list AS block FROM `users` LEFT JOIN visit ON visit.userid = users.id LEFT JOIN block ON block.userid = users.id WHERE login=?",
             [res.login]);
 
         if (results[0]) {

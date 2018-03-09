@@ -97,7 +97,9 @@ export default class About extends React.Component{
         }
     }
 
-
+    componentDidMount(){
+        this.props.socket.on('user', () => this.setState(initialState));
+    }
 
     handleEdit(){
         if (!this.state.edit) {
@@ -106,7 +108,6 @@ export default class About extends React.Component{
         if (this.state.edit) {
             this.props.socket.emit('profil', {type: 'editProfil', data: this.state});
         }
-        this.props.socket.on('user', () => this.setState(initialState));
     }
 
     renderEdit(){
