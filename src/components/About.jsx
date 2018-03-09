@@ -98,7 +98,11 @@ export default class About extends React.Component{
     }
 
     componentDidMount(){
-        this.props.socket.on('user', () => this.setState(initialState));
+        this.props.socket.on('user', () => {
+            if (this.state.edit) {
+                this.setState(initialState)
+            }
+        });
     }
 
     handleEdit(){
