@@ -59,7 +59,6 @@ class User {
     }
 
     static update_coords(res, db, sess) {
-        console.log(res);
         let options = {
             provider: 'google',
             httpAdapter: 'https', // Default
@@ -77,7 +76,6 @@ class User {
 
             geocoder[api](query)
             .then(res => {
-                console.log(res[0]);
                 if (res[0])
                     User.update_coords_db(res[0], db, sess);
             })

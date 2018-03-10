@@ -17,8 +17,9 @@ export default class RemoteProfil extends React.Component{
 
     handleLike(ev) {
         const defImg = this.props.images.findIndex(elem => elem.imgid === `nopic.png`) !== -1;
+        const block = this.props.user.block && this.props.user.block.indexOf(this.props.profil.id) !== -1;
 
-        if (this.props.profil.id !== this.props.user.id && !defImg) {
+        if (this.props.profil.id !== this.props.user.id && !defImg && !block) {
             let index;
             const user = {
                 login: this.props.profil.login,
@@ -43,7 +44,9 @@ export default class RemoteProfil extends React.Component{
         const defImg = this.props.images.findIndex(elem => elem.imgid === `nopic.png`) !== -1;
         const match = this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1;
         const self = this.props.user.id === this.props.profil.id;
-        const obj = defImg || self ? Object.assign({}, heart, {cursor: 'default'}) : heart;
+        const block = this.props.user.block && this.props.user.block.indexOf(this.props.profil.id) !== -1;
+
+        const obj = defImg || self || block ? Object.assign({}, heart, {cursor: 'default'}) : heart;
 
             if (self || match) {
                 return <a href={""} onClick={this.handleLike}><img style={obj} src={"img/fullheart.png"}/></a>;
