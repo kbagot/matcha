@@ -1,4 +1,5 @@
 import React from 'react';
+import DisplayUsers from './DisplayUsers.jsx'
 
 export default class HomeUsers extends React.Component {
     constructor(props) {
@@ -6,7 +7,7 @@ export default class HomeUsers extends React.Component {
         this.state = {
             task: this.props.task,
             idList: ['500', '400'],
-            result: ''
+            result:[]
         };
         // this.setProfil = this.setProfil.bind(this);
     }
@@ -60,10 +61,12 @@ export default class HomeUsers extends React.Component {
 
     render() {
 
-console.log(this.state.result['1']);
+console.log(this.state.result);
         return (
-                    <div className="resUser" onClick={(ev) => this.props.handleClick(ev, this.state.result[1])}>
-                    dffdff</div>
+            <DisplayUsers user={this.props.user} profil={this.props.profil} handleClick={this.props.handleClick}
+                          result={this.state.result} allUsers={this.props.allUsers}/>
+                    // <div className="resUser" onClick={(ev) => this.props.handleClick(ev, this.state.result[1])}>
+                    // dffdff</div>
         )
     }
 }

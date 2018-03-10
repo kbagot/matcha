@@ -181,7 +181,8 @@ export default class User extends React.Component {
 
         /**********/
         this.props.user.visits = ['500', '400'];
-        let HomeVisited = <HomeUsers socket={this.props.socket} user={this.props.user} task={'visits'} handleClick={this.handleClick}/>;
+        let HomeVisited = <HomeUsers socket={this.props.socket} user={this.props.user} profil={this.props.profil}
+                                     task={'visits'} allUsers={this.state.allUsers} handleClick={this.handleClick}/>;
         /**********/
         // console.log(this.props.user);
         // if (this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1) {
