@@ -4,7 +4,8 @@ let database = require('./config/connect.js'),
     chat = require('./chat.js'),
     research = require('./research.js'),
     profil = require('./profil.js'),
-    update = require('./update');
+    update = require('./update'),
+    loadhome = require('./loadhome');
 let os = require('os');
 let allUsers = [];
 const likes = require('./likes.js');
@@ -16,6 +17,7 @@ class Controller {
         this.user = new user();
         this.register = new register();
         this.research = new research();
+        this.loadhome = new loadhome();
         database.createConnection('matcha').then((res) => {
             this.db = res;
             this.register.db = res;
@@ -40,6 +42,8 @@ class Controller {
         socket.on('Register', (data, fn) => this.register.registerHandling(data, socket, fn, allUsers, io, sess));
         socket.on('getTags', (fct) => this.getTags(fct));
         socket.on('ResearchUsers', async (opt, fct) => await this.research.request(opt, fct, this.db, sess));
+        socket.on('HomeUsers', async (opt, fct) => await this.loadhome.request(opt, fct, this.db, sess));
+
     }
 
     async getTags(fct) {

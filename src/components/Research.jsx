@@ -1,5 +1,6 @@
 import React from 'react';
 import SelectTags from './SelectTags.jsx';
+import DisplayUsers from './DisplayUsers.jsx';
 import Ripple from 'react-ripples';
 import ReactLoading from 'react-loading';
 
@@ -269,6 +270,7 @@ export default class Research extends React.Component {
         )
     }
 
+
     render() {
         let sort = this.sortbox();
         let gender = !this.props.match ? this.genderbox() : '';
@@ -292,48 +294,11 @@ export default class Research extends React.Component {
                     {distance}
                     {tags}
                 </form>
-                <div className="resList">
-                    {this.state.result.map((node, key) => {
-                        let img = node.img;
-                        let like = '';
-                        let online = '';
-                        let usersexe = 'resUserInfo';
-
-                        if (!img)
-                            img = '../../img/nopic.png';
-
-                        if (this.props.allUsers.findIndex(elem => elem.id === node.id) !== -1)
-                             online = {color: 'lawngreen'};
-                        else
-                            online = {color: 'white'};
-                        // const self = this.props.user.id === node.id;
-
-                        if (this.props.profil && this.props.user)
-                        if (this.props.user.match && this.props.user.match.findIndex(elem => Number(elem.id) === this.props.profil.id) !== -1) {
-                            like = "../../img/fullheart.png";
-                        } else if (node.user1) {
-                            like = "../../img/halfheart.png";
-                        } else {
-                            like = "";
-                        }
-                        if (node.sexe === 'M')
-                            usersexe += ' resUsermen';
-                        else if (node.sexe === 'F')
-                            usersexe += ' resUsergirl';
-
-                        return (<div key={key} className="resUser" onClick={(ev) => this.props.handleClick(ev, node)}>
-                                <img src={img} width={'100%'} height={'100%'}/>
-                                <div className={usersexe}>
-                                     <img className='like' src={like}/>
-                                    <p style={online}>{node.login}</p>
-                                </div>
-                            </div>
-                        )
-                    })}
+                    <DisplayUsers user={this.props.user} profil={this.props.profil} handleClick={this.props.handleClick}
+                                  result={this.state.result} allUsers={this.props.allUsers}/>
                     {/*<div>*/}
                     {/*<ReactLoading type='bubbles' color='#0a466b' width='30%' height='30px'/>*/}
                     {/*</div>*/}
-                </div>
             </div>
         );
     }
