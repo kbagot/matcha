@@ -26,6 +26,8 @@ export default class Profil extends React.Component{
 
 
         this.props.socket.on(this.props.profil.id, (profil) => {
+            console.log("SOCKET");
+            console.log(profil);
             if (profil){
                 this.props.load(profil);
             } else {

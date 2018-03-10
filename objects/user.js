@@ -14,7 +14,7 @@ class User {
             [res.login]);
 
         if (results[0]) {
-            bcrypt.compare(res.password, results[0].password, (err, succ) => {
+            bcrypt.compare(res.password, results[0].password, async (err, succ) => {
                 if (succ) {
                     if (!results[0].visits){
                         const sql = "INSERT INTO visit VALUES (?, '{}')";
@@ -22,8 +22,11 @@ class User {
                         db.execute(sql, [results[0].id]);
                     }
                     User.update_date(db, res.login);
+
                     delete results[0].password;
                     sess.data = results[0];
+                    await User.addPopLogin(db, sess);
+                    sess.spop += 10;
                     sess.save((err) => {
                         if (err)
                             console.log(err);
@@ -41,6 +44,12 @@ class User {
             io.sockets.emit('loglog');
     }
 
+    static async addPopLogin(db, sess){
+        const sql = "UPDATE users SET spop = spop+10 WHERE id = ?";
+
+        await db.execute(sql, [sess.data.id]);
+    }
+
     static update_date(db, login) {
         let date = new Date();
         date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
@@ -50,7 +59,6 @@ class User {
     }
 
     static update_coords(res, db, sess) {
-        console.log(res);
         let options = {
             provider: 'google',
             httpAdapter: 'https', // Default
@@ -68,7 +76,6 @@ class User {
 
             geocoder[api](query)
             .then(res => {
-                console.log(res[0]);
                 if (res[0])
                     User.update_coords_db(res[0], db, sess);
             })

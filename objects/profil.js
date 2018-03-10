@@ -1,9 +1,8 @@
 const fs = require('mz/fs');
 const uniqid = require('uniqid');
-const register = require('./register.js');
-const user = require('./user.js');
-const NodeGeocoder = require('node-geocoder');
 const likes = require('./likes.js');
+const register = require('./register.js');
+const NodeGeocoder = require('node-geocoder');
 
 class Profil {
     static mainHandler(db, sess, socket, data, io, setState, allUsers){
@@ -15,12 +14,19 @@ class Profil {
             profilImg: Profil.setProfilImg,
             editProfil: Profil.editProfil,
             visit: Profil.addVisit,
-            block: Profil.addBlock
+            block: Profil.addBlock,
+            report: Profil.addReport
         };
 
         if (menu[data.type]){
             menu[data.type](db, sess, socket, data, io, setState, allUsers);
         }
+    }
+
+    static addReport(db, sess, socket, data, io){
+        const sql = "INSERT INTO report VALUES (?)";
+
+        db.execute(sql, [data.data.id]);
     }
 
     static async addBlock(db, sess, socket, data, io, setState, allUsers){
@@ -34,17 +40,23 @@ class Profil {
                 await db.execute(sql, [sess.data.id, `[${data.data.id}]`, sess.data.id]);
                 sess.data.block.push(data.data.id);
             }
-            likes.handleLikes({type: 'Remove', login: {id: data.data.id, login: data.data.login}}, socket, db, sess, allUsers);
+            likes.handleLikes({type: 'Remove', login: {id: data.data.id, login: data.data.login}}, socket, db, sess, allUsers, io);
             sess.save();
             socket.emit("user", sess.data);
         }
     }
 
-    static async addVisit(db, sess, socket, data, io){
-        if (data.data.id !== sess.data.id) {
-            const sql = `UPDATE visit SET visits = (JSON_SET((SELECT visits FROM (SELECT visits FROM visit WHERE userid = ?) AS lol), '$."${sess.data.id}"', ? )) WHERE userid = ?`;
+    static async addVisit(db, sess, socket, data, io, setState, allUsers){
+        const sql = "SELECT JSON_CONTAINS((SELECT list FROM block WHERE userid=?), ?, '$') AS blocked";
+        const [blocked] = await db.execute(sql, [data.data.id, `${sess.data.id}`]);
+
+        if (data.data.id !== sess.data.id && blocked[0].blocked !== 1) {
+            let sql = `UPDATE visit SET visits = (JSON_SET((SELECT visits FROM (SELECT visits FROM visit WHERE userid = ?) AS lol), '$."${sess.data.id}"', ? )) WHERE userid = ?`;
 
             db.execute(sql, [data.data.id, Date.now(), data.data.id]);
+            sql =  "INSERT INTO notif SET login = ?, type = 'visit', `from` = ?";
+            db.execute(sql, [data.data.id, sess.data.id]);
+            likes.sendNotif(db, data.data, socket, allUsers);
         }
     }
 
@@ -176,8 +188,8 @@ class Profil {
     static async sendProfil(db, sess, socket, data, io, setState){
         const sql = "SELECT users.id, users.login, users.last, users.first, users.age, users.sexe, users.bio, users.orientation, users.tags, users.spop, users.date, location.city, location.country, location.zipcode, likes.user1, likes.user2, img.imgid, " +
             "(SELECT st_distance_sphere((SELECT POINT(lon, lat) FROM location WHERE logid = ?), (SELECT POINT(lon, lat) FROM location WHERE logid = ?))) AS distance " +
-            "FROM users LEFT JOIN img ON img.userid = users.id AND img.profil = '1' LEFT JOIN likes ON likes.user1 = users.id OR likes.user2 = users.id INNER JOIN location ON location.logid = users.id  WHERE users.id = ?";
-        const [rows] = await db.execute(sql, [data.id, sess.data.id, data.id]);
+            "FROM users LEFT JOIN img ON img.userid = users.id AND img.profil = '1' LEFT JOIN likes ON ((likes.user1 = ? AND likes.user2 = users.id) OR (likes.user1 = users.id AND likes.user2 = ?)) INNER JOIN location ON location.logid = users.id  WHERE users.id = ?";
+        const [rows] = await db.execute(sql, [data.id, sess.data.id, sess.data.id, sess.data.id, data.id]);
 
         if (rows[0]){
             if (setState) {
