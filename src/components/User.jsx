@@ -17,7 +17,6 @@ export default class User extends React.Component {
         };
         this.disconnectUser = this.disconnectUser.bind(this);
         this.seekUser = this.seekUser.bind(this);
-        this.listUsers = this.listUsers.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.setProfil = this.setProfil.bind(this);
     }
@@ -74,46 +73,6 @@ export default class User extends React.Component {
         }
     }
 
-    listUsers(list) {
-        let array = list.data;
-
-        if (array) {
-            if (list.type === "all") {
-                return array.map((user, index) => {
-                    if (user.login !== this.props.user.login) {
-                        return <li key={index}><a href={""} value={user.id} onClick={this.handleClick}>{user.login}</a>
-                            <button onClick={(ev) => this.handleLike(ev, user)}> Add</button>
-                            <button onClick={(ev) => this.handleLike(ev, user)}> Remove</button>
-                        </li>
-                    }
-                });
-            } else if (list.type === "chat") {
-                return array.map((user, index) => {
-                    if (user.login !== this.props.user.login) {
-                        let notif = this.getMessagesNotif(user, this.props.user.notif);
-
-                        return <li key={index}>
-                            <button onClick={ev => this.props.socket.emit('chat', {
-                                type: 'chatList',
-                                login: user,
-                                history: list.history['user']
-                            })}>{user.login}</button>
-                            {notif}
-                        </li>
-                    }
-                });
-            }
-        }
-    }
-
-    getMessagesNotif(user, list) {
-        let notif;
-
-        if (list && typeof list === typeof []) {
-            notif = list.filter(elem => elem.type === 'message' && Number(elem.from) === Number(user.id));
-        }
-        return notif ? notif.length : null;
-    }
 
     setProfil(profil) {
         this.setState({profil: profil});
@@ -147,7 +106,6 @@ export default class User extends React.Component {
     }
 
     render() {
-        let list = this.listUsers({type: 'all', data: this.state.allUsers});
         let view = null;
         let profil = this.state.profil ?
             <Profil load={this.setProfil} refresh={this.refreshProfil} allUsers={this.state.allUsers}
@@ -176,9 +134,12 @@ export default class User extends React.Component {
                     {burgercontent}
                 </div>
                 {profil}
-                <HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}/>
-                    {/*<Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket}*/}
+                    <HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}/>
+                    <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket}
+                     listUsers={this.listUsers} profil={this.handleClick}/>
                 </div>
+
+            </div>
         );
     }
 }

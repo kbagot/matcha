@@ -32,11 +32,12 @@ class Update {
     static getMatch(db, sess){
         return (new Promise((resolve, reject) => {
             let sql = "SELECT  (SELECT login FROM users WHERE id = (CASE u1 WHEN ? THEN u2 ELSE u1 END)) AS login, " +
+                "(SELECT imgid FROM img WHERE userid = (CASE u1 WHEN ? THEN u2 ELSE u1 END) AND profil = 1) as imgid, " +
                 "(CASE u1 WHEN ? THEN u2 ELSE u1 END) AS id " +
                 "FROM (SELECT user1 AS u1, user2 AS u2 FROM likes WHERE (user1=? OR user2=?) AND matcha=true) AS results";
             let id = sess.data.id;
 
-            db.execute(sql, [id, id, id, id])
+            db.execute(sql, [id, id, id, id, id])
                 .then(([rows]) => {
                     rows.forEach((elem) => {
                         if (!sess.data.match) {
@@ -90,7 +91,7 @@ class Update {
     }
 
     static getChatLog(db, data, sess, socket) {
-        if (data.history === undefined) {
+        if (data.history === undefined || !data.history.length) {
             let sql = "SELECT history FROM chat WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";
             let login = data.login.id;
             let login2 = sess.data.id;

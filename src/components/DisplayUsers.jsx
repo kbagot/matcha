@@ -8,8 +8,6 @@ export default class DisplayUsers extends React.Component {
     }
 
     displayres() {
-        let res = this.props.result;
-
         return(
             res.map((node, key) => { //TODO CREATE COMPONENT
                 if (!this.props.user.block || !this.props.user.block.includes(node.id)) {
@@ -39,6 +37,7 @@ export default class DisplayUsers extends React.Component {
                         usersexe += ' resUsermen';
                     else if (node.sexe === 'F')
                         usersexe += ' resUsergirl';
+
                     let homestyle;
 
                     if (this.props.idList === 'home')
