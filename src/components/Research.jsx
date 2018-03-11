@@ -311,8 +311,8 @@ export default class Research extends React.Component {
         return (
             <div style={restyle}>
                 {resForm}
-                    <DisplayUsers user={this.props.user} profil={this.props.profil} handleClick={this.props.handleClick}
-                                  result={res} allUsers={this.props.allUsers}/>
+                    <DisplayUsers user={this.props.user} handleClick={this.props.handleClick}
+                                  result={res} allUsers={this.props.allUsers} idList={'home'}/>
                     {/*<div>*/}
                     {/*<ReactLoading type='bubbles' color='#0a466b' width='30%' height='30px'/>*/}
                     {/*</div>*/}

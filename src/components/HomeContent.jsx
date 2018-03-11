@@ -6,7 +6,7 @@ export default class HomeContent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            visit: false,
+            visiteur: false,
             match: false,
             star: false,
             morebut: false,
@@ -40,17 +40,22 @@ export default class HomeContent extends React.Component {
             idList = idList.slice(0, 4);
         if (name === 'match')
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
-                       match={'match'} handleClick={this.props.handleClick} render={this.state.match}/>;
+                       match={'match'} handleClick={this.props.handleClick} render={this.state.match} idList={'home'}/>;
              else
             view = <HomeUsers socket={this.props.socket} user={this.props.user} profil={this.props.profil}
                            idList={idList} allUsers={this.props.allUsers} handleClick={this.props.handleClick}/>;
 
-        let morebut = !this.state.morebut ? <button name={name} onClick={this.moreClick}>MORE</button> : '';
+        let fu = '';
+        if (name === 'match')
+            fu = '_ME';
+        let morebut = !this.state.morebut ? <button name={name} onClick={this.moreClick}>{name + fu}</button> : '';
 
         return (
-            <div>
-                {view}
-                {morebut}
+            <div className={'homePart'}>
+                <div className={'homeContentHeader'}>
+                    {morebut}
+                </div>
+                    {view}
             </div>
         )
     }
@@ -63,19 +68,10 @@ export default class HomeContent extends React.Component {
 
     content() {
         return (
-            <div>
-                VISITEUR
-                {
-                    this.homecontents('visit', this.props.user.visits)
-                }
-                MATCH
-                {
-                    this.homecontents('match')
-                }
-                STAR
-                {
-                    this.homecontents('star', 'star')
-                }
+            <div className={'homeContent'}>
+                {this.homecontents('star', 'star')}
+                {this.homecontents('visiteur', this.props.user.visits)}
+                {this.homecontents('match')}
             </div>
         )
 
@@ -85,15 +81,20 @@ export default class HomeContent extends React.Component {
         this.props.user.visits = ['500', '400', '300', '460', '450', '404', '403', '409', '408', '410', '470', '401', '402', '405', '499'];
 
         let view;
-        if (this.state.showres)
+        let resbut;
+        if (this.state.showres) {
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
                              match={''} handleClick={this.handleClick} render={true}/>;
-        else
+            resbut = '◀' + 'ACCUEIL';
+        }else {
             view = this.content();
+            resbut = 'RECHERCHE        ' + '🔎';
+        }
+
 
         return (
             <div className={'Content'}>
-                <button onClick={this.showRes}>RESEARCH</button>
+                <button className="hburgerbut" onClick={this.showRes}>{resbut}</button>
                     {view}
             </div>
         )

@@ -39,8 +39,16 @@ export default class DisplayUsers extends React.Component {
                         usersexe += ' resUsermen';
                     else if (node.sexe === 'F')
                         usersexe += ' resUsergirl';
+                    let homestyle;
+
+                    if (this.props.idList === 'home')
+                         homestyle = {
+                            width: '200px',
+                            height: '200px'
+                        };
+
                     return (
-                        <div key={key} className="resUser" onClick={(ev) => this.props.handleClick(ev, node)}>
+                        <div key={key} className="resUser" style={homestyle} onClick={(ev) => this.props.handleClick(ev, node)}>
                             <img src={img} width={'100%'} height={'100%'}/>
                             <div className={usersexe}>
                                 <img className='like' src={like}/>

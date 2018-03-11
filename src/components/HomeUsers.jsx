@@ -51,9 +51,9 @@ export default class HomeUsers extends React.Component {
         // let res = this.state.result.slice(0, 4);
 
         return (
-            <div>
-            <DisplayUsers user={this.props.user} profil={this.props.profil} handleClick={this.props.handleClick}
-                          result={this.state.result} allUsers={this.props.allUsers}/>
+            <div className={'homeres'}>
+            <DisplayUsers user={this.props.user} handleClick={this.props.handleClick}
+                          result={this.state.result} allUsers={this.props.allUsers} idList={'home'}/>
             </div>
                     // <div className="resUser" onClick={(ev) => this.props.handleClick(ev, this.state.result[1])}>
                     // dffdff</div>
