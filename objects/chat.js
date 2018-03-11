@@ -16,6 +16,20 @@ class Chat {
             case 'readMsg':
                 Chat.addMsg(data, db, sess);
                 break ;
+            case 'swapIndex':
+                Chat.swapIndex(data.user, sess, socket);
+                break ;
+        }
+    }
+
+    static swapIndex(user, sess, socket){
+        if (sess.data.chat){
+            const array = sess.data.chat;
+
+            array[user] = array.splice(0, 1, array[user])[0];
+            sess.data.chat = array;
+            sess.save();
+            socket.emit('user', sess.data);
         }
     }
 

@@ -11,8 +11,13 @@ export default class ChatWindow extends React.Component{
         if (this.props.msg) {
             return (
                 this.props.msg.map((elem, index) => {
+                    const self = elem.from === this.props.user.id;
+                    const selfMsgContainer = self ? Object.assign({}, msgContainer, {justifyContent: 'flex-end'}) : msgContainer;
+                    const selfMessage = self ? Object.assign({}, message, {backgroundColor: 'rgb(10, 70, 105)', color: 'white'}) : message;
                     return (
-                        <p style={message} key={index}>{elem.msg}</p>
+                        <div key={elem.msg+index} style={selfMsgContainer}>
+                            <p style={selfMessage}>{elem.msg}</p>
+                        </div>
                     );
                 })
             )
@@ -26,10 +31,18 @@ export default class ChatWindow extends React.Component{
 }
 
 
+const msgContainer = {
+    width: '100%',
+    display: 'flex',
+    flexWrap:'wrap'
+};
 
 const message = {
-    position: 'absolute',
+    color: 'rgb(10, 70, 105)',
     padding: '0.6vmin',
+    margin: '0.5vmin',
+    maxWidth: '75%',
+    overflowWrap: 'break-word',
     backgroundColor: 'rgba(9, 70, 106, 0.15)',
     borderRadius: '1vmin'
 };
