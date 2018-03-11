@@ -17,7 +17,7 @@ class Research {
                 matchorder = 'ORDER BY ' + ordertag + '0' + ' DESC';
             if (opt.dofirstmatch) {
                 let i = 0;
-                const j = ['', 'tags', 'distance'];
+                const j = ['distance', 'tags', 'spop'];
 
                 if (req[0].orientation === 'm') {
                     if (req[0].sexe === 'M') {
@@ -121,18 +121,19 @@ class Research {
                 opt.F = 'F';
                 opt.T = 'T';
             }
+
             let minpop = '';
             let maxpop = '';
+            let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
+
             if ('spop' in opt) {
-                minpop = opt.spop - 3;
-                maxpop = opt.spop + 3;
+                minpop = Math.round((opt.spop / maxspop[0].maxspop) - 3);
+                maxpop = Math.round((opt.spop / maxspop[0].maxspop) + 3);
             }
             else {
                 minpop = 0;
                 maxpop = 10;
             }
-
-            let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
 
             let sql = "SELECT * FROM (SELECT users.login, users.first, users.age, users.sexe, users.bio, users.orientation, " +
                 "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, location.zipcode, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, " +
