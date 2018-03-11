@@ -23,7 +23,8 @@ export default class RemoteProfil extends React.Component{
             let index;
             const user = {
                 login: this.props.profil.login,
-                id: this.props.profil.id
+                id: this.props.profil.id,
+                img: this.props.profil.img
             };
             const type = {
                 ['fullheart.png']: 'Remove',

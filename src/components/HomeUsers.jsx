@@ -14,9 +14,7 @@ export default class HomeUsers extends React.Component {
 
     componentDidMount() {
         if (this.props.task){
-            console.log(this.state);
             this.props.socket.emit('HomeUsers', this.state, (users) => {
-                console.log(users);
                 let data = [];
                 users.result.forEach(users => {
                     data.push(users);
@@ -61,7 +59,6 @@ export default class HomeUsers extends React.Component {
 
     render() {
 
-console.log(this.state.result);
         return (
             <DisplayUsers user={this.props.user} profil={this.props.profil} handleClick={this.props.handleClick}
                           result={this.state.result} allUsers={this.props.allUsers}/>

@@ -7,7 +7,6 @@ export default class DisplayUsers extends React.Component {
     }
 
     displayres() {
-        console.log(this.props.allUsers);
         return(
             this.props.result.map((node, key) => { //TODO CREATE COMPONENT
                 if (!this.props.user.block || !this.props.user.block.includes(node.id)) {
@@ -37,7 +36,6 @@ export default class DisplayUsers extends React.Component {
                         usersexe += ' resUsermen';
                     else if (node.sexe === 'F')
                         usersexe += ' resUsergirl';
-                    console.log(this.props.profil);
                     return (
                         <div key={key} className="resUser" onClick={(ev) => this.props.handleClick(ev, node)}>
                             <img src={img} width={'100%'} height={'100%'}/>
