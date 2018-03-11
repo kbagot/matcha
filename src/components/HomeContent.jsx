@@ -1,6 +1,7 @@
 import React from 'react';
 import Research from './Research.jsx';
 import HomeUsers from './HomeUsers.jsx';
+import Chat from './Chat.jsx';
 
 export default class HomeContent extends React.Component {
     constructor(props) {
@@ -96,6 +97,8 @@ export default class HomeContent extends React.Component {
             <div className={'Content'}>
                 <button className="hburgerbut" onClick={this.showRes}>{resbut}</button>
                     {view}
+                <Chat allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket}
+                      listUsers={this.listUsers} profil={this.props.handleClick}/>
             </div>
         )
     }
