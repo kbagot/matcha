@@ -11,11 +11,10 @@ class Loadhome {
                 "LEFT JOIN likes ON ((likes.user2 = " + req[0].id + " AND likes.user1 = users.id) OR (likes.user1 = " + req[0].id + " AND likes.user2 = users.id))" +
                 "WHERE users.id IN (?)";
             // if (opt.task === 'visits') {
-            let inserts = [maxspop[0].maxspop / 10, req[0].lon, req[0].lat, opt.idList];
+            let inserts = [maxspop[0].maxspop / 10, req[0].lon, req[0].lat, opt];
             sql = db.format(sql, inserts);
             let [results] = await db.query(sql);
-            opt.result = results;
-            fct(opt);
+            fct(results);
         } catch (e) {
             console.log(e);
         }

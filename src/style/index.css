@@ -348,9 +348,10 @@ notif
 
 .resList {
     /*background-color: red;*/
-    margin: auto;
-    height: 100%;
-    width: 100%;
+    padding-right: 20%;
+    padding-left: 5%;
+    /*height: 100%;*/
+    width: 75%;
     text-align: center;
     display: inline-block;
 }
