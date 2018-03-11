@@ -103,7 +103,6 @@ export default class Research extends React.Component {
                         result: data
                         // result: [...this.state.result, ...login]
                     }, () => {
-                        console.log(this.state);
                         window.addEventListener("scroll", this.handleScroll);
                     });
                 }
@@ -270,8 +269,7 @@ export default class Research extends React.Component {
         )
     }
 
-
-    render() {
+    resForm() {
         let sort = this.sortbox();
         let gender = !this.props.match ? this.genderbox() : '';
         let attraction = !this.props.match ? this.attractionbox() : '';
@@ -279,23 +277,42 @@ export default class Research extends React.Component {
         let distance = this.distancebox();
         let tags = this.tagsbox();
 
+        return (
+            <div>
+        {this.displaybutton()}
+        <form className={this.state.display.form}>
+            {sort}
+            {gender}
+            {attraction}
+            {age}
+            {distance}
+            {tags}
+        </form>
+            </div>
+    )
+
+    }
+
+    render() {
         let restyle = {
             display: 'flex',
         };
 
+        let  res = '';
+        let resForm = '';
+        if (this.props.render) {
+            res = this.state.result;
+            resForm = this.resForm();
+        } else {
+            res = this.state.result.slice(0, 4);
+            resForm = '';
+        }
+
         return (
             <div style={restyle}>
-                {this.displaybutton()}
-                <form className={this.state.display.form}>
-                    {sort}
-                    {gender}
-                    {attraction}
-                    {age}
-                    {distance}
-                    {tags}
-                </form>
-                    <DisplayUsers user={this.props.user} profil={this.props.profil} handleClick={this.props.handleClick}
-                                  result={this.state.result} allUsers={this.props.allUsers}/>
+                {resForm}
+                    <DisplayUsers user={this.props.user} handleClick={this.props.handleClick}
+                                  result={res} allUsers={this.props.allUsers} idList={'home'}/>
                     {/*<div>*/}
                     {/*<ReactLoading type='bubbles' color='#0a466b' width='30%' height='30px'/>*/}
                     {/*</div>*/}

@@ -5,63 +5,56 @@ export default class HomeUsers extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            task: this.props.task,
-            idList: ['500', '400'],
-            result:[]
+            idList: [],
+            result:[],
+            more: false
         };
-        // this.setProfil = this.setProfil.bind(this);
-    }
-
-    componentDidMount() {
-        if (this.props.task){
-            this.props.socket.emit('HomeUsers', this.state, (users) => {
-                let data = [];
-                users.result.forEach(users => {
-                    data.push(users);
-                });
-                // if (this.state.dofirstmatch) {
-                //     users.dofirstmatch = '';
-                //     users.result = data;
-                //     users.matchtag = users.tags;
-                //     this.setState(users, () => {
-                //         window.addEventListener("scroll", this.handleScroll);
-                //     });
-                // }
-                // else {
-                //     if (this.state.resultLength > 0 && from === 'scroll') {
-                //         this.setState({
-                            // result: [login]
-                            // result: [...this.state.result, ...data]
-                        // }, () => {
-                        //     window.addEventListener("scroll", this.handleScroll);
-                        // })
-                    // } else {
-                        this.setState({
-                            result: data
-                    //         result: [...this.state.result, ...login]
-                        })
-                        //     console.log(this.state);
-                        //     window.addEventListener("scroll", this.handleScroll);
-                        // });
-                    // }
-                // }
-            //
-            });
-        }
-
+        this.refresh = this.refresh.bind(this);
     }
 
     componentWillMount() {
+        this.setState ({
+            idList: this.props.idList
+        },
+            () => this.refresh()
+        );
     }
 
     componentWillUnmount() {
     }
 
+    handleClick () {
+            this.setState({['res']: this.state.result});
+    }
+
+    componentWillReceiveProps(nextProps){
+        this.setState ({
+            idList: nextProps.idList
+        },
+           () => this.refresh()
+        );
+    }
+
+    refresh () {
+        this.props.socket.emit('HomeUsers', this.state.idList, (users) => {
+            let data = [];
+            users.map(users => {
+                data.push(users);
+            });
+            this.setState({
+                result: data
+            })
+        })
+    }
+
     render() {
+        // let res = this.state.result.slice(0, 4);
 
         return (
-            <DisplayUsers user={this.props.user} profil={this.props.profil} handleClick={this.props.handleClick}
-                          result={this.state.result} allUsers={this.props.allUsers}/>
+            <div className={'homeres'}>
+            <DisplayUsers user={this.props.user} handleClick={this.props.handleClick}
+                          result={this.state.result} allUsers={this.props.allUsers} idList={'home'}/>
+            </div>
                     // <div className="resUser" onClick={(ev) => this.props.handleClick(ev, this.state.result[1])}>
                     // dffdff</div>
         )

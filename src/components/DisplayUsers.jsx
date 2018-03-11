@@ -2,13 +2,14 @@ import React from 'react';
 
 export default class DisplayUsers extends React.Component {
     constructor(props) {
-        super(props)
-
+        super(props);
+            this.state = {
+            };
     }
 
     displayres() {
         return(
-            this.props.result.map((node, key) => { //TODO CREATE COMPONENT
+            res.map((node, key) => { //TODO CREATE COMPONENT
                 if (!this.props.user.block || !this.props.user.block.includes(node.id)) {
                     let img = node.img;
                     let like = '';
@@ -36,8 +37,17 @@ export default class DisplayUsers extends React.Component {
                         usersexe += ' resUsermen';
                     else if (node.sexe === 'F')
                         usersexe += ' resUsergirl';
+
+                    let homestyle;
+
+                    if (this.props.idList === 'home')
+                         homestyle = {
+                            width: '200px',
+                            height: '200px'
+                        };
+
                     return (
-                        <div key={key} className="resUser" onClick={(ev) => this.props.handleClick(ev, node)}>
+                        <div key={key} className="resUser" style={homestyle} onClick={(ev) => this.props.handleClick(ev, node)}>
                             <img src={img} width={'100%'} height={'100%'}/>
                             <div className={usersexe}>
                                 <img className='like' src={like}/>
@@ -51,9 +61,11 @@ export default class DisplayUsers extends React.Component {
     }
 
     render () {
+        let val = this.props.result.length > 0 ? this.displayres() : <h2>EMPTY</h2>;
+
         return (
             <div className="resList">
-                {this.displayres()}
+                {val}
             </div>
         )
     }
