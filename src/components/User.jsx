@@ -136,7 +136,9 @@ export default class User extends React.Component {
                     {burgercontent}
                 </div>
                 {profil}
-                    <HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}/>
+                <HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}/>
+                <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket}
+                      listUsers={this.listUsers} profil={this.handleClick}/>
             </div>
         );
     }

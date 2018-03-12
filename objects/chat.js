@@ -2,7 +2,7 @@ let like = require('./likes');
 let update = require('./update.js');
 
 class Chat {
-    handleChat(data, socket, db, sess, allUsers){
+    async handleChat(data, socket, db, sess, allUsers){
         switch (data.type){
             case 'newMsg':
                 Chat.handleNewMsg(data, socket, db, sess, allUsers);
@@ -18,6 +18,10 @@ class Chat {
                 break ;
             case 'swapIndex':
                 Chat.swapIndex(data.user, sess, socket);
+                break ;
+            case 'openChat':
+                await update.openChat(db, data, sess, socket);
+                socket.emit('user', sess.data);
                 break ;
         }
     }

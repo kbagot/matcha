@@ -101,8 +101,6 @@ export default class HomeContent extends React.Component {
             <div className={'Content'}>
                 <button style={{position: 'fixed'}} className="hburgerbut" onClick={this.showRes}>{resbut}</button>
                     {view}
-                <Chat allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket}
-                      listUsers={this.listUsers} profil={this.props.handleClick}/>
             </div>
         )
     }
