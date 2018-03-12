@@ -38,7 +38,7 @@ class Register {
                 switch (data[1]) {
                     case 'password':
                         if (!Register.checkPassword(result)) {
-                            error = result.length ? "Le mot de passe doit contenir au moins 6 caracteres." : null;
+                            error = result.length ? "Minimum: 6 caracteres, 1 chiffre, 1 minuscule et 1 majuscule." : null;
                         }
                         break;
                     case 'last':
@@ -204,7 +204,7 @@ class Register {
     }
 
     static checkPassword(str) {
-        return str.length >= 6;
+        return str.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/);
     }
 }
 

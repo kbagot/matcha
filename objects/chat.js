@@ -107,7 +107,7 @@ class Chat {
             let index = sess.data.chat.findIndex(elem => elem.login === data.login.login);
 
             if (index === -1) {
-                sess.data.chat.push(data.login);
+                sess.data.chat.splice(0, 0, data.login);
                 update.openChat(db, data, sess, socket);
             } else {
                 sess.data.chat.splice(index, 1);

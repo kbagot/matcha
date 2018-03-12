@@ -1,7 +1,7 @@
 import React from 'react';
 import Login from './Login.jsx';
 import Register from './Register.jsx';
-import ResetPassword from './ResetPassword.jsx';
+import ResetPassword from './ResetEmail.jsx';
 
 let prevState = JSON.parse(sessionStorage.getItem('GuestState'));
 
@@ -58,11 +58,32 @@ export default class Guest extends React.Component{
         }
 
         return (
-            <div>
-                <h1> Surprise !</h1>
+            <div style={container}>
                 {window}
-                <button onClick={this.switchButton}>{this.state.status}</button>
+                <button style={switchButton} onClick={this.switchButton}>{this.state.status}</button>
             </div>
         );
     }
 }
+
+const switchButton = {
+    margin: '0.1vmin',
+    fontSize: '1vmin',
+    borderRadius: '3px',
+    border: 'none',
+    boxShadow: '0px 3px 4px gray',
+    backgroundColor: 'white',
+    outline: 'none',
+    color: '#0a466b',
+    width: '10%',
+    cursor: 'pointer'
+};
+
+const container = {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#0a466b',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+};
