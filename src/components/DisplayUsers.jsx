@@ -11,15 +11,16 @@ export default class DisplayUsers extends React.Component {
         return(
             this.props.result.map((node, key) => { //TODO CREATE COMPONENT
                 if (!this.props.user.block || !this.props.user.block.includes(node.id)) {
-                    let img = node.img;
+                    let img = node.imgid;
                     let like = '';
                     let online = '';
                     let usersexe = 'resUserInfo';
 
+                    console.log(node);
                     if (!img)
                         img = '../../img/nopic.png';
                     else
-                        img = '../../img/' +  node.img;
+                        img = 'img/' +  img;
 
                     if (this.props.allUsers.findIndex(elem => elem.id === node.id) !== -1)
                         online = {color: 'lawngreen'};
@@ -63,7 +64,7 @@ export default class DisplayUsers extends React.Component {
     }
 
     render () {
-        let val = this.props.result.length > 0 ? this.displayres() : <h2>EMPTY</h2>;
+        let val = this.props.result.length > 0 ? this.displayres() : <h2>AUCUN</h2>;
 
         return (
             <div className="resList">
