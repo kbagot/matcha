@@ -6,7 +6,7 @@ class Loadhome {
 
             let sort = '';
             if (opt === 'star')
-                sort = "ORDER BY spop DESC LIMIT 4";
+                sort = "ORDER BY spop DESC LIMIT 20";
             else
                 sort = "WHERE users.id IN (?)";
             let sql = "SELECT users.login, users.first, users.age, users.sexe, users.bio, users.orientation, " +
