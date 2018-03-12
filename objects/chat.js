@@ -23,7 +23,26 @@ class Chat {
                 await update.openChat(db, data, sess, socket);
                 socket.emit('user', sess.data);
                 break ;
+            case 'updateImg':
+                Chat.updateImg(db, data, sess, socket);
+                break ;
         }
+    }
+
+    static updateImg(db, data, sess, socket){
+        if (sess.data.match){
+            const index = sess.data.match.findIndex(elem => elem.id === data.user.id);
+
+            sess.data.match[index].imgid = data.user.img;
+        }
+
+        if (sess.data.chat){
+            const index =  sess.data.chat.findIndex(elem => elem.id === data.user.id);
+
+            sess.data.chat[index].imgid = data.user.img;
+        }
+        sess.save();
+        socket.emit('user', sess.data);
     }
 
     static swapIndex(user, sess, socket){

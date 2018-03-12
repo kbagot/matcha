@@ -2,6 +2,7 @@ import React from 'react';
 import ChatWindow from './ChatWindow.jsx';
 
 let toScroll = [];
+let socket = [];
 
 export default class Chat extends React.Component{
     constructor(props) {
@@ -31,8 +32,6 @@ export default class Chat extends React.Component{
     }
 
     componentDidMount() {
-        console.log("MATCH");
-        console.log(this.props.user);
         this.props.socket.on('chat',  (data) => {
             if (data.type === 'chatLog') {
                 let obj = {[data.id]: JSON.parse(data.log)};
@@ -46,7 +45,23 @@ export default class Chat extends React.Component{
         });
     }
 
+    componentWillUnmount(){
+        if (this.props.user.match){
+            this.props.match.forEach(elem => this.props.socket.removeListener(elem.login));
+        }
+    }
+
     componentDidUpdate(prevProps, prevState){
+        if (this.props.user.match && this.props.user.match !== prevProps.user.match){
+            this.props.user.match.forEach(elem => {
+               if (socket.indexOf(elem.login) === -1){
+                   this.props.socket.on(elem.login, (data) => {
+                       this.props.socket.emit('chat', {type: 'updateImg', user: {img: data[0].imgid, id: elem.id}});
+                   });
+                   socket.push(elem.login);
+               }
+            });
+        }
 
         if (prevState.open !== this.state.open || toScroll.length) {
             const array = Array.from(this.state.open);

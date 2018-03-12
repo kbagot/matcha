@@ -161,6 +161,7 @@ class Profil {
         sess.data.img[oldProfil].profil = true;
         sess.data.img[newProfil].profil = false;
         sess.save();
+        socket.emit('user', sess.data);
         io.emit(sess.data.login, sess.data.img);
     }
 
@@ -217,6 +218,7 @@ class Profil {
             }
             sess.save();
             socket.emit('user', sess.data);
+
             io.emit(sess.data.login, sess.data.img);
 
         }
