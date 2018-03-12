@@ -13,6 +13,8 @@ export default class HomeUsers extends React.Component {
     }
 
     componentWillMount() {
+        window.scrollTo(0, 0);
+
         this.setState ({
             idList: this.props.idList
         },
@@ -49,11 +51,16 @@ export default class HomeUsers extends React.Component {
 
     render() {
         // let res = this.state.result.slice(0, 4);
+        // console.log(this.props.star);
+        let res = this.state.result;
+        if (!this.props.star && this.props.idList === 'star')
+            res = this.state.result.slice(0, 4);
+
 
         return (
             <div className={'homeres'}>
             <DisplayUsers user={this.props.user} handleClick={this.props.handleClick}
-                          result={this.state.result} allUsers={this.props.allUsers} idList={'home'}/>
+                          result={res} allUsers={this.props.allUsers} idList={'home'}/>
             </div>
                     // <div className="resUser" onClick={(ev) => this.props.handleClick(ev, this.state.result[1])}>
                     // dffdff</div>
