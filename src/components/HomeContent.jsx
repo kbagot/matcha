@@ -44,12 +44,16 @@ export default class HomeContent extends React.Component {
                        match={'match'} handleClick={this.props.handleClick} render={this.state.match} idList={'home'}/>;
              else
             view = <HomeUsers socket={this.props.socket} user={this.props.user} profil={this.props.profil}
-                           idList={idList} allUsers={this.props.allUsers} handleClick={this.props.handleClick}/>;
+                           idList={idList} allUsers={this.props.allUsers} handleClick={this.props.handleClick} star={this.state.star}/>;
 
         let fu = '';
+        let status = ' −';
         if (name === 'match')
             fu = '_ME';
-        let morebut = !this.state.morebut ? <button name={name} onClick={this.moreClick}>{name + fu}</button> : '';
+        if (this.state[name])
+            status = ' +';
+
+        let morebut = !this.state.morebut ? <button name={name} onClick={this.moreClick}>{name + fu + status}</button> : '';
 
         return (
             <div className={'homePart'}>
@@ -79,23 +83,23 @@ export default class HomeContent extends React.Component {
     }
 
     render() {
-        this.props.user.visits = ['500', '400', '300', '460', '450', '404', '403', '409', '408', '410', '470', '401', '402', '405', '499'];
+        // this.props.user.visits = ['500', '400', '300', '460', '450', '404', '403', '409', '408', '410', '470', '401', '402', '405', '499'];
 
         let view;
         let resbut;
         if (this.state.showres) {
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
-                             match={''} handleClick={this.handleClick} render={true}/>;
-            resbut = '◀' + 'ACCUEIL';
+                             match={''} handleClick={this.props.handleClick} render={true}/>;
+            resbut = '◀ ' + 'ACCUEIL';
         }else {
             view = this.content();
-            resbut = 'RECHERCHE        ' + '🔎';
+            resbut = 'RECHERCHE' + ' 🔎';
         }
 
 
         return (
             <div className={'Content'}>
-                <button className="hburgerbut" onClick={this.showRes}>{resbut}</button>
+                <button style={{position: 'fixed'}} className="hburgerbut" onClick={this.showRes}>{resbut}</button>
                     {view}
                 <Chat allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket}
                       listUsers={this.listUsers} profil={this.props.handleClick}/>

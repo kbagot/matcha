@@ -18,6 +18,8 @@ export default class DisplayUsers extends React.Component {
 
                     if (!img)
                         img = '../../img/nopic.png';
+                    else
+                        img = '../../img/' +  node.img;
 
                     if (this.props.allUsers.findIndex(elem => elem.id === node.id) !== -1)
                         online = {color: 'lawngreen'};
@@ -42,8 +44,8 @@ export default class DisplayUsers extends React.Component {
 
                     if (this.props.idList === 'home')
                          homestyle = {
-                            width: '200px',
-                            height: '200px'
+                            // width: '200px',
+                            // height: '200px'
                         };
 
                     return (

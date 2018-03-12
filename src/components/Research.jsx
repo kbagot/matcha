@@ -55,6 +55,8 @@ export default class Research extends React.Component {
     }
 
     componentDidMount() {
+        window.scrollTo(0, 0);
+
         if (this.state.dofirstmatch)
             this.refresh();
         window.addEventListener("scroll", this.handleScroll);
@@ -177,7 +179,7 @@ export default class Research extends React.Component {
 
         return (
             <div className="displaybutton" onClick={dform}>
-                <img style={{width: '100%', height: '100%'}} src={'../../img/icon/' + this.state.display.img + '.png'}/>
+                <img style={{width: '80%', height: '80%'}} src={'../../img/icon/' + this.state.display.img + '.png'}/>
             </div>
         )
     }
@@ -278,16 +280,16 @@ export default class Research extends React.Component {
         let tags = this.tagsbox();
 
         return (
-            <div>
-        {this.displaybutton()}
-        <form className={this.state.display.form}>
-            {sort}
-            {gender}
-            {attraction}
-            {age}
-            {distance}
-            {tags}
-        </form>
+            <div className={'formcontent'}>
+                <form className={this.state.display.form}>
+                    {sort}
+                    {gender}
+                    {attraction}
+                    {age}
+                    {distance}
+                    {tags}
+                </form>
+                {this.displaybutton()}
             </div>
     )
 
@@ -308,8 +310,12 @@ export default class Research extends React.Component {
             resForm = '';
         }
 
+        let clasname = 'homeContent';
+        if (this.state.match === 'match')
+            clasname = '';
+
         return (
-            <div style={restyle}>
+            <div className={clasname}>
                 {resForm}
                     <DisplayUsers user={this.props.user} handleClick={this.props.handleClick}
                                   result={res} allUsers={this.props.allUsers} idList={'home'}/>

@@ -22,6 +22,8 @@ export default class User extends React.Component {
     }
 
     componentDidMount() {
+
+        window.scrollTo(0, 0);
         this.props.socket.on('match', (res) => {
             this.props.socket.emit('like', {type: res.type, login: res.login});
         });

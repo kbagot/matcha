@@ -88,15 +88,6 @@ h3 {
     /*background-color: white;*/
 }
 
-.displaybutton {
-    width: 30px;
-    height: 30px;
-    position: fixed;
-    top: 0;
-    margin-top: 20%;
-    margin-left: 5px;
-}
-
 .sortbutton{
     margin-left: 5px;
     border-radius: 5px;
@@ -108,25 +99,39 @@ h3 {
     /*height: 20px;*/
 }
 
-.resForm {
+.formcontent {
     z-index: 8;
-    margin-left: 40px;
-    filter: brightness(0.95);
+    position: fixed;
+    width: 20%;
+    margin-bottom: 3%;
+    bottom: 0;
+}
+
+.displaybutton {
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+    border-radius: 0px 0px 5px 5px;
+    display: flex;
+    vertical-align: middle;
+    align-items: center;
+    justify-content: center;
+    background-color: #0a466b;
+}
+
+.resForm {
+    margin-left: 10px;
     color: white;
     vertical-align: middle;
     padding: 10px;
-    border: 1px solid black;
-    box-shadow: 3px 5px 20px black;
-    border-radius: 15px;
+    /*border: 1px solid black;*/
+    /*box-shadow: 3px 0px 20px black;*/
+    border-radius: 15px 15px 15px 0px;
     background-color: #0a466b;
     /*// backgroundColor: white;*/
-    position: fixed;
-    width: 20%;
     min-width: 300px;
     max-width: 300px;
-    margin-top: 20%;
-    top: 0;
-    padding-top: 0;
+    padding-top: 1px;
 }
 
 .resForm input{
@@ -194,6 +199,7 @@ h3 {
     font-family: verdana;
     /*width: 50%;*/
     /*height: 80%;*/
+    border-radius: 8px;
     background-color: #0a466b; /* Green */
     border: 1px solid white;
     color: white;
@@ -205,6 +211,7 @@ h3 {
     -webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
     cursor: pointer;
+    z-index: 8;
 }
 
 .hburgerbut:hover {
@@ -343,12 +350,14 @@ notif
 /*HOME_PAGE*/
 
 .homeContent {
-    margin-top: 4%;
+    margin-top: 68px;
     height: 100%;
 }
 
 .homeContentHeader {
-    height: 30px;
+    padding-left: 20px;
+    display: flex;
+    height: 40px;
     width: 100%;
     background-color: #0a466b;
 }
@@ -358,16 +367,17 @@ notif
     font-family: verdana;
     /*width: 50%;*/
     /*height: 80%;*/
-    margin-right: 0;
+    /*margin-right: 0;*/
+    outline: none;
     background-color: #0a466b; /* Green */
-    border: 1px solid white;
+    border: 2px solid white;
     color: white;
-    padding: 8px 16px;
+    padding: 0px 16px;
     border-radius: 5px;
     text-align: center;
     text-decoration: none;
     font-size: 12px;
-    /*margin: 4px 2px;*/
+    margin: 4px 2px;
     -webkit-transition-duration: 0.4s; /* Safari */
     transition-duration: 0.4s;
     cursor: pointer;
@@ -375,11 +385,12 @@ notif
 }
 
 .homePart {
+    /*display: inline-flex;*/
 
 }
 
-.homeres {
-
+. homeres {
+    /*display: inline-flex;*/
 }
 
 /**/
@@ -389,20 +400,25 @@ notif
 
 .resList {
     /*background-color: red;*/
-    padding-right: 15%;
+    padding-right: 10%;
+    padding-left: 2%;
     /*padding-left: 5%;*/
     /*height: 100%;*/
-    width: 85%;
+    width: 60%;
     text-align: center;
-    display: inline-block;
+    /*display: inline-block;*/
+    display: flex;
+    flex-direction: row;
+    flex-flow: wrap;
+    justify-content: center;
 }
 
 .resUser {
     /*background-color: red;*/
-    width: 250px;
+    width: 220px;
     /*min-width: 350px;*/
     /*max-width: 350px;*/
-    height: 250px;
+    height: 220px;
     margin: 10px;
     /*min-height: 350px;*/
     /*max-height: 350px;*/
