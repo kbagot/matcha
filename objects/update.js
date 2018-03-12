@@ -105,13 +105,13 @@ class Update {
         }
     }
 
-    static updateNotif(db, data, sess) {
+    static async updateNotif(db, data, sess) {
         if (sess.data.notif) {
             sess.data.notif = sess.data.notif.filter(elem => ((elem.type === 'message' && Number(elem.from) !== Number(data.login.id)) || elem.type !== 'message'));
             sess.save();
             let sql = "DELETE FROM notif WHERE login = ? AND type = ? AND `from` = ?";
 
-            db.execute(sql, [sess.data.id, 'message', data.login.id]);
+            await db.execute(sql, [sess.data.id, 'message', data.login.id]);
         }
     }
 
@@ -142,9 +142,9 @@ class Update {
         }
     }
 
-    static openChat(db, data, sess, socket) {
+    static async openChat(db, data, sess, socket) {
         Update.getChatLog(db, data, sess, socket);
-        Update.updateNotif(db, data, sess);
+        await Update.updateNotif(db, data, sess);
     }
 
     add_score_pop(db, sess, type) {

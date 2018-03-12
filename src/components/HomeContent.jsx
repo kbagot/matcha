@@ -79,13 +79,13 @@ export default class HomeContent extends React.Component {
     }
 
     render() {
-        this.props.user.visits = ['500', '400', '300', '460', '450', '404', '403', '409', '408', '410', '470', '401', '402', '405', '499'];
+        // this.props.user.visits = ['500', '400', '300', '460', '450', '404', '403', '409', '408', '410', '470', '401', '402', '405', '499'];
 
         let view;
         let resbut;
         if (this.state.showres) {
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
-                             match={''} handleClick={this.handleClick} render={true}/>;
+                             match={''} handleClick={this.props.handleClick} render={true}/>;
             resbut = '◀' + 'ACCUEIL';
         }else {
             view = this.content();
@@ -97,8 +97,6 @@ export default class HomeContent extends React.Component {
             <div className={'Content'}>
                 <button className="hburgerbut" onClick={this.showRes}>{resbut}</button>
                     {view}
-                <Chat allUsers={this.props.allUsers} user={this.props.user} socket={this.props.socket}
-                      listUsers={this.listUsers} profil={this.props.handleClick}/>
             </div>
         )
     }

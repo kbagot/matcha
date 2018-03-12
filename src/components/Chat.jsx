@@ -1,6 +1,8 @@
 import React from 'react';
 import ChatWindow from './ChatWindow.jsx';
 
+let toScroll = [];
+
 export default class Chat extends React.Component{
     constructor(props) {
         super(props);
@@ -25,9 +27,12 @@ export default class Chat extends React.Component{
         this.renderMoreChat = this.renderMoreChat.bind(this);
         this.swapChat = this.swapChat.bind(this);
         this.closeChat =this.closeChat.bind(this);
+        this.autoScroll = this.autoScroll.bind(this);
     }
 
     componentDidMount() {
+        console.log("MATCH");
+        console.log(this.props.user);
         this.props.socket.on('chat',  (data) => {
             if (data.type === 'chatLog') {
                 let obj = {[data.id]: JSON.parse(data.log)};
@@ -41,34 +46,64 @@ export default class Chat extends React.Component{
         });
     }
 
+    componentDidUpdate(prevProps, prevState){
+
+        if (prevState.open !== this.state.open || toScroll.length) {
+            const array = Array.from(this.state.open);
+
+            toScroll = [...toScroll, ...array.filter(elem => prevState.open.indexOf(elem) === -1)];
+            if (toScroll.length) {
+                toScroll.map(user => this.autoScroll({login: {id: user}}));
+            }
+        }
+    }
+
+    autoScroll(user){
+        const open = document.getElementById('Chat'+user.login.id);
+
+        if (open){
+            const index = toScroll.indexOf(user.login.id);
+
+            toScroll.splice(index, 1);
+            open.scrollTop = open.scrollHeight - open.clientHeight;
+        }
+    }
+
     componentWillUnmount(){
         this.props.socket.removeListener('chat');
     }
 
     newMessage(data){
-        if (!this.props.user.chat || this.props.user.chat.findIndex(elem => elem.login === data.login.login) === -1){
+        const chatIndex = this.props.user.chat.findIndex(elem => elem.login === data.login.login);
+
+
+        if (!this.props.user.chat || chatIndex === -1 || (chatIndex !== -1 && this.state.open.indexOf(data.login.id.toString()) === -1)){
             this.props.socket.emit('chat', {type: 'unreadMsg', msg: data.msg, from: data.login});
         } else {
-            this.addMsg(data.msg, data.login.id, data.login.id);
             this.props.socket.emit('chat', {type: 'readMsg', msg: data.msg, from: data.login});
         }
+        this.addMsg(data.msg, data.login.id, data.login.id);
     }
 
     handleSubmit(ev){
         ev.preventDefault();
-        let inputMsg = this.state.input[ev.target.name + "Input"].trim();
+        const input = this.state.input[ev.target.name + "Input"];
 
-        if (inputMsg) {
-            let input = Object.assign({}, this.state.input, {[ev.target.name + "Input"]: ""});
+        if (input) {
+            let inputMsg = input.trim();
 
-            this.setState({['input']: input});
-            this.props.socket.emit("chat", {
-                type: 'newMsg',
-                from: {login: this.props.user.login, id: this.props.user.id},
-                to: this.props.user.match.filter(elem => elem.login === ev.target.name)[0],
-                msg: inputMsg
-            });
-            this.addMsg(inputMsg, this.props.user.match.filter(elem => elem.login === ev.target.name)[0].id, this.props.user.id);
+            if (inputMsg) {
+                let input = Object.assign({}, this.state.input, {[ev.target.name + "Input"]: ""});
+
+                this.setState({['input']: input});
+                this.props.socket.emit("chat", {
+                    type: 'newMsg',
+                    from: {login: this.props.user.login, id: this.props.user.id},
+                    to: this.props.user.match.filter(elem => elem.login === ev.target.name)[0],
+                    msg: inputMsg
+                });
+                this.addMsg(inputMsg, this.props.user.match.filter(elem => elem.login === ev.target.name)[0].id, this.props.user.id);
+            }
         }
     }
 
@@ -82,7 +117,7 @@ export default class Chat extends React.Component{
             old.push({msg: msg, from: loginFrom});
             obj = {[loginTo]: old};
         }
-        this.setState({['history']: Object.assign({}, this.state.history, obj)});
+        this.setState({['history']: Object.assign({}, this.state.history, obj)}, () => this.autoScroll({login:{id: loginTo}}));
     }
 
     handleChange(ev){
@@ -119,9 +154,10 @@ export default class Chat extends React.Component{
                         let notif = this.getMessagesNotif(user, this.props.user.notif);
                         const online = this.props.allUsers.findIndex(elem => elem.id === Number(user.id)) !== -1;
                         const obj =  online ? Object.assign({}, onlineStyle, {backgroundColor: '#13da13'}) : onlineStyle;
+                        const button = notif ? Object.assign({}, openChatButton, {backgroundColor: '#dbe4e8'}) : openChatButton;
 
                         return <li key={index}>
-                            <button name={'openChat'} style={openChatButton} onClick={ev => this.closeChat(user)}><div style={obj} /><span style={chatListLogin}>{user.login}</span> <img style={miniImg} src={"img/" + user.imgid}/></button>
+                            <button name={'openChat'} style={button} onClick={ev => this.closeChat(user)}><div style={obj} /><span style={chatListLogin}>{user.login}</span> <img style={miniImg} src={"img/" + user.imgid}/></button>
                         </li>
                     }
                 });
@@ -131,12 +167,10 @@ export default class Chat extends React.Component{
 
     renderChatWindow(user){
         const index = this.state.open.indexOf(user.id);
-        const value = this.state.input[user.login + "Input"] ? this.state.input[user.login + "Input"] : "";
 
         if (index !== -1){
-
             return (
-                <div style={textWindow}>
+                <div style={textWindow} id={"Chat" + user.id}>
                     <ChatWindow msg={this.state.history[user.id]} socket={this.props.socket} user={this.props.user}/>
                 </div>
 
@@ -158,14 +192,15 @@ export default class Chat extends React.Component{
         }
     }
 
-    handleOpenChat(ev){
+    handleOpenChat(ev, user){
         const id = [ev.target.getAttribute('value'), ev.target.parentNode.getAttribute('value')].filter(elem => elem)[0];
-        const array = this.state.open;
-        const open = array.indexOf(id);
+        const array = Array.from(this.state.open);
+        const open = array.indexOf(user.id);
 
         if (open === -1) {
-            array.push(id);
+            array.push(user.id);
             this.setState({open: array});
+            this.props.socket.emit('chat', {type: 'openChat', login: user, history: this.state.history[user.id]});
         } else {
             array.splice(open, 1);
             this.setState({open: array});
@@ -184,7 +219,7 @@ export default class Chat extends React.Component{
                     return (
                     <div style={windowStyle} key={user+index}>
                         <div style={{width: '100%', display: 'flex', height: '3vmin'}}>
-                            <button style={chatButton} value={user.id} onClick={this.handleOpenChat}>
+                            <button style={chatButton} value={user.id} onClick={(ev) => this.handleOpenChat(ev, user)}>
                                 <img style={miniImgChatButton} src={"img/" + user.imgid}/>
                                 <span style={chatListLogin}>{user.login}</span>
                                 <div style={obj} />
@@ -206,7 +241,7 @@ export default class Chat extends React.Component{
             return (
                 <button style={moreButton} onClick={() => {
                     const index = this.state.open.indexOf(this.props.user.chat[4].id);
-                    const array = this.state.open;
+                    const array = Array.from(this.state.open);
 
                     if (index !== -1){
                         array.splice(index, 1);
@@ -222,9 +257,8 @@ export default class Chat extends React.Component{
     swapChat(ev){
         const id = ev.target.getAttribute('value');
         const index = this.state.open.indexOf(this.props.user.chat[0].id);
-        const array = this.state.open;
+        const array = Array.from(this.state.open);
 
-        console.log(array);
         if (index !== -1){
             array.splice(index, 1, id);
         } else {
@@ -238,20 +272,30 @@ export default class Chat extends React.Component{
     closeChat(user){
         if (this.props.user.chat) {
             const index = this.props.user.chat.findIndex(elem => elem.id === user.id);
-            if (index !== -1 && this.props.user.chat.length === 7) {
-                this.setState({more: false});
-            } else if (index === -1) {
-                const array = this.state.open;
+            const obj = {};
+            const array = Array.from(this.state.open);
+            const open = array.indexOf(user.id);
 
-                array.push(user.id);
-                this.setState({open: array});
+            if (index !== -1){
+                if (this.props.user.chat.length === 7) {
+                    obj.more = false;
+                }
+                if (open !== -1){
+                    array.splice(open, 1);
+                    obj.open = array;
+                }
             }
+            else if (index === -1) {
+                array.push(user.id);
+                obj.open = array;
+            }
+            this.setState(obj);
         }
         this.props.socket.emit('chat', {
             type: 'chatList',
             login: user,
             history: this.state.history[user.id]
-        })
+        });
     }
 
     renderMoreChat(){
@@ -271,7 +315,7 @@ export default class Chat extends React.Component{
     renderInvisible(){
         const length = this.props.user.chat ? this.props.user.chat.length : 0;
         const invisible = {
-            width: length > 5 ? '5%' : `${105 - (length * 25)}%`,
+            width: length > 5 ? '5%' : `${100 - (length * 19)}%`,
             height: '3vmin',
             backgroundColor: '#dbe4e8',
         };
@@ -413,7 +457,7 @@ const chatButton = {
 
 const chatWindow = {
     backgroundColor: 'transparent',
-    width: '25%'
+    width: '19%'
 };
 
 const miniImgChatButton = {
@@ -428,7 +472,7 @@ const miniImg = {
     width: '4vmin',
     height: '4vmin',
     borderRadius: '50%',
-    boxShadow: '-3px 0px 0px #004065'
+    marginLeft: '1vmin'
 };
 
 const contact = {
@@ -440,7 +484,7 @@ const contact = {
     justifyContent: 'center',
     color: 'white',
     marginBottom: '1vmin',
-    fontSize: '2.8vmin',
+    fontSize: '1.8vmin',
     height: '5vmin',
     margin: '0'
 };
@@ -458,9 +502,12 @@ const container = {
 const ulChatList = {
     backgroundColor: '#0a466921',
     width: '16%',
+    position: 'fixed',
+    top: '60px',
     overflowY: 'auto',
     overflowX: 'hidden',
     right: '0',
+    maxHeight: '95.5%',
     listStyleType: 'none',
     display: 'flex',
     flexDirection: 'column',
@@ -481,9 +528,9 @@ const onlineStyle = {
 const chatListLogin ={
     textAlign: 'left',
     overflow: 'hidden',
-    maxWidth: '13vmin',
-    marginRight: '1vmin',
-    fontSize: '1.3vmin'
+    maxWidth: '8vmin',
+    fontSize: '1vmin',
+    marginRight: '1vmin'
 };
 
 const chatContainer = {

@@ -38,6 +38,7 @@ const msgContainer = {
 };
 
 const message = {
+    fontSize: '1vmin',
     color: 'rgb(10, 70, 105)',
     padding: '0.6vmin',
     margin: '0.5vmin',
