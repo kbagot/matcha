@@ -86,7 +86,6 @@ export default class User extends React.Component {
             const id = Number(ev.target.getAttribute('value'));
             this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.setProfil(data));
         }
-
         if (node) {
             this.setProfil(node);
         }

@@ -54,18 +54,23 @@ app.use(expressSession)
             res.end();
         })
     .get("/", async function (req, res, next){
+        try {
             let ip = await controller.getServerIp();
 
             if (req.secure) {
-                req.session.ip = req.connection.remoteAddress.split(":").pop();
-                if (req.cookies.login === "true" && !req.session.data){
+                if (req.connection.remoteAddress)
+                    req.session.ip = req.connection.remoteAddress.split(":").pop();
+                if (req.cookies.login === "true" && !req.session.data) {
                     res.cookie('error', true);
                 }
                 res.cookie('ip', ip);
                 res.sendFile(__dirname + '/src/index.html');
             } else {
-                res.redirect('https://'+ ip + ':8081');
+                res.redirect('https://' + ip + ':8081');
             }
+        }catch(e){
+            console.log(e);
+        }
         })
         .get("/dist/index_bundle.js", function(req, res, next){
             res.sendFile(__dirname + '/dist/index_bundle.js');

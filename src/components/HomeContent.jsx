@@ -12,6 +12,7 @@ export default class HomeContent extends React.Component {
             star: false,
             morebut: false,
             showres: false,
+            num: 4,
         };
         this.moreClick = this.moreClick.bind(this);
         this.showRes = this.showRes.bind(this);
@@ -29,6 +30,10 @@ export default class HomeContent extends React.Component {
     moreClick (e) {
         let val = !this.state[e.target.name];
         this.setState({
+            ['visiteur']: false,
+            ['match']: false,
+            ['star']: false,
+            ['num']: 0,
             [e.target.name]: val
         }
         // , () => console.log(this.state)
@@ -37,14 +42,15 @@ export default class HomeContent extends React.Component {
 
     homecontents(name, idList) {
         let view = '';
-        if (!this.state.visiteur && idList === 'visiteur')
+        if (this.state.visiteur && idList === 'visiteur' && this.state.num !== 0)
             idList = Object.keys(idList).slice(0, 4);
         if (name === 'match')
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
                        match={'match'} handleClick={this.props.handleClick} render={this.state.match} idList={'home'}/>;
-             else
+             else if (this.state[name] || this.state.num === 4)
             view = <HomeUsers socket={this.props.socket} user={this.props.user} profil={this.props.profil}
-                           idList={idList} allUsers={this.props.allUsers} handleClick={this.props.handleClick} star={this.state.star}/>;
+                           idList={idList} allUsers={this.props.allUsers} handleClick={this.props.handleClick}
+                              star={this.state.star} num={this.state.num}/>;
 
         let fu = '';
         let status = ' −';

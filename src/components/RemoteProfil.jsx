@@ -65,7 +65,7 @@ export default class RemoteProfil extends React.Component{
     }
 
     renderScore(){
-        return Object.assign({}, scoreContainer, {background: `linear-gradient(#ecf4fe ${10 - this.props.profil.spop}%, #2b94fb ${10 - this.props.profil.spop}%)`});
+        return Object.assign({}, scoreContainer, {background: `linear-gradient(#ecf4fe ${10 - this.props.profil.respop}%, #2b94fb ${10 - this.props.profil.respop}%)`});
     }
 
     handleBlock(){
@@ -93,7 +93,7 @@ export default class RemoteProfil extends React.Component{
                     {this.renderHeart()}
                 </div>
                 <div style={this.renderScore()}>
-                    {this.props.profil.spop}
+                    {this.props.profil.respop}
                 </div>
                 </div>
                 <div style={{display: 'flex'}}>
