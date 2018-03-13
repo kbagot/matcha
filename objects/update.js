@@ -53,13 +53,19 @@ class Update {
         }));
     }
 
-    static getNotif(db, sess) {
+    static getNotif(db, sess, visit) {
         return (new Promise(async (resolve, reject) => {
             try {
                 let sql = "SELECT notif.id, type, `from`, `read`, users.login AS login FROM notif INNER JOIN users ON notif.from = users.id WHERE notif.login = ?";
                 let [rows] = await db.execute(sql, [sess.data.id]);
 
+
                 sess.data.notif = rows;
+                if (visit){
+                    sql = "SELECT visits FROM visit WHERE userid = ?";
+                    [rows] = await db.execute(sql, [sess.data.id]);
+                    sess.data.visits = rows[0];
+                }
                 sess.save(() => resolve());
             } catch (e) {
                 reject(e);

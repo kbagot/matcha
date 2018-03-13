@@ -185,8 +185,6 @@ export default class Chat extends React.Component{
         if (array) {
             return array.map((user, index) => {
 
-                console.log(user.login);
-                console.log(user);
                 if (user.login && user.login !== this.props.user.login) {
                     let notif = this.getMessagesNotif(user, this.props.user.notif);
                     const online = this.props.allUsers.findIndex(elem => elem.id === Number(user.id)) !== -1;

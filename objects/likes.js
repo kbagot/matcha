@@ -38,7 +38,7 @@ class Likes {
                 }
                 break ;
             case 'refresh':
-                update.getNotif(db, sess).then(() => socket.emit('user', sess.data));
+                update.getNotif(db, sess, data.object).then(() => socket.emit('user', sess.data));
                 break ;
         }
 
@@ -129,7 +129,7 @@ class Likes {
             Likes.findSocket(db, user.id)
                 .then(res => {
                     res.forEach(id => {
-                        socket.to(id).emit('match', {type: 'refresh'});
+                        socket.to(id).emit('match', {type: 'refresh', object:'visit'});
                     });
                 })
         }

@@ -25,7 +25,7 @@ export default class User extends React.Component {
 
         window.scrollTo(0, 0);
         this.props.socket.on('match', (res) => {
-            this.props.socket.emit('like', {type: res.type, login: res.login});
+            this.props.socket.emit('like', {type: res.type, login: res.login, object: res});
         });
 
         this.props.socket.on('allUsers', (data) => {
@@ -119,8 +119,8 @@ export default class User extends React.Component {
         if (this.props.user.img)
             profilimg = `../../img/${this.props.user.img["0"].imgid}`;
 
+        console.log(this.props.user.visits);
         let burgercontent = this.burgercontent();
-        console.log(this.props.user)
         // if (this.props.user.match && this.props.user.match.findpIndex(elem => Number(elem.id) === this.props.profil.id) !== -1) {
         return (
             <div className={"User"}>
@@ -137,7 +137,7 @@ export default class User extends React.Component {
                     {burgercontent}
                 </div>
                 {profil}
-                {/*<HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}/>*/}
+                <HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}/>
                 <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket}
                       listUsers={this.listUsers} profil={this.handleClick}/>
             </div>

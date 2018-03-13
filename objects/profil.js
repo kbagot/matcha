@@ -54,7 +54,6 @@ class Profil {
         if (data.data.id !== sess.data.id && blocked[0].blocked !== 1) {
             let sql = `UPDATE visit SET visits = (JSON_SET((SELECT visits FROM (SELECT visits FROM visit WHERE userid = ?) AS lol), '$."${sess.data.id}"', ? )) WHERE userid = ?`;
 
-            console.log(data.data.id);
             db.execute(sql, [data.data.id, Date.now(), data.data.id]);
             sql =  "INSERT INTO notif SET login = ?, type = 'visit', `from` = ?";
             db.execute(sql, [data.data.id, sess.data.id]);
