@@ -14,6 +14,7 @@ export default class ResetPassword extends React.Component{
     handleChange (ev, obj) {
         if (ev.target.name === 'email'){
             obj.setState({email: ev.target.value.trim()});
+            console.log(ev.target.value.trim());
             obj.props.socket.emit('Register', {type:'resetChange', value: ev.target.value}, this.setError);
         }
     }
@@ -23,13 +24,64 @@ export default class ResetPassword extends React.Component{
     }
 
     render(){
-        return <div>
-            <p>Afin de reinitialiser votre mot de passe veuillez rentrer votre adresse mail lie a votre compte.</p>
-            <form onSubmit={this.handleSubmit}>
-                <input type={"text"} onChange={(ev) => this.handleChange(ev, this)} name={"email"} value={this.state.email} autoComplete={"email"}/> {this.state.error} <br /><br />
-                <input type={"submit"} name={"Submit"} value={"Envoyer"} /><br />
+        return <div style={container}>
+            <span>Afin de reinitialiser votre mot de passe veuillez rentrer l'adresse mail lie a votre compte.</span>
+            <form style={form} onSubmit={this.handleSubmit}>
+                <input style={input} type={"text"} onChange={(ev) => this.handleChange(ev, this)} name={"email"} value={this.state.email} autoComplete={"email"}/>
+                <span style={error}>{this.state.error}</span>
+                <input style={submit} type={"submit"} name={"Submit"} value={"Envoyer"} />
             </form>
-            <br />
         </div>
     }
 }
+
+const error ={
+    margin: '5px',
+    fontSize: '20px',
+    color: 'indianred'
+};
+
+const submit = {
+    width: '200px',
+    minHeight: '35px',
+    fontSize: '20px',
+    outline: 'none',
+    borderRadius: '2px',
+    backgroundColor : 'white',
+    border: '1px solid',
+    marginTop: '25px'
+};
+
+const input = {
+    width: '280px',
+    minHeight: '45px',
+    fontSize: '20px',
+    outline: 'none',
+    borderRadius: '2px',
+    backgroundColor : 'white',
+    border: '1px solid',
+    marginBottom: '5px'
+};
+
+const form = {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    color: 'rgb(10, 70, 107)',
+    padding: '2vmin',
+    flexDirection: 'column'
+};
+
+const container = {
+    fontSize: '20px',
+    minHeight: '200px',
+    width: '400px',
+    minWidth: '400px',
+    padding: '40px 70px',
+    display: 'flex',
+    alignItems: 'center',
+    color: 'rgb(10, 70, 107)',
+    borderRadius: '4px 0px 4px 4px',
+    flexDirection: 'column',
+    backgroundColor: 'white',
+};

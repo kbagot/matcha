@@ -158,7 +158,7 @@ export default class About extends React.Component{
 
         if (!this.state.edit){
             return (
-            <div style={topContainer}>
+            <div style={Object.assign({}, topContainer, {minHeight: '132px'})}>
                 {this.renderEdit()}
                 <h3 style={h1}>{this.props.profil.login} {sexeLogo[this.props.profil.sexe]}</h3>
                 <p style={firstName}>
@@ -173,7 +173,7 @@ export default class About extends React.Component{
             </div>
             )
         } else {
-            return <div style={topContainer}>
+            return <div style={Object.assign({}, topContainer, {minHeight: '178px'})}>
                 {this.renderEdit()}
                 <h3 style={h1}> {this.props.profil.login}
                     <select style={selectSex} value={this.state.sexe ? this.state.sexe : this.props.profil.sexe} onChange={this.handleChange} name={"sexe"}>
@@ -210,23 +210,27 @@ export default class About extends React.Component{
 }
 const selectTags = {
     height: '20%',
-    width: '62vmin',
+    marginBottom: '20px',
+    width: '620px',
+    maxHeight: '130px'
 };
 
 const selectOrientation = {
     backgroundColor: 'transparent',
     border: 'none',
     color: 'rgba(255, 255, 255, 0.52)',
-    fontSize: '1.8vmin',
+    fontSize: '18px',
+    marginTop: '10px',
     fontFamily: 'Verdana, serif',
 };
 
 const name = {
-    margin: '0.5vmin',
+    marginTop: '10px',
+    marginRight: '5px',
     borderRadius: '1px',
-    fontSize: '1.8vmin',
+    fontSize: '18px',
     border: 'none',
-    width: '8vmin',
+    width: '80px',
     backgroundColor: 'transparent',
     boxShadow: '0px 0px 3px rgba(255, 255, 255, 0.52)',
     color: 'white',
@@ -239,7 +243,7 @@ const selectSex = {
     color: 'white',
     textShadow: '0 0 10px #007eff',
     textTransform: 'uppercase',
-    fontSize: '3vmin',
+    fontSize: '23px',
     fontFamily: 'Verdana, serif',
 };
 
@@ -248,40 +252,40 @@ const textArea = {
     outline: 'none',
     resize: 'none',
     fontFamily: 'Verdana, serif',
-    marginBottom: '1.8vmin',
+    marginBottom: '18px',
     borderRadius: '0 0 1vmin 1vmin',
     boxShadow: '2px 2px 10px #8f949878',
-    padding: '2vmin',
+    padding: '20px',
     marginTop: '0vmin',
     overflow: 'auto',
     whiteSpace: 'pre-line',
-    width: '62vmin',
-    height: '35%',
-    fontSize: '1.8vmin',
+    width: '620px',
+    height: '350px',
+    fontSize: '18px',
     backgroundColor:'white',
     color: 'black',
 };
 
 const editLogo = {
-    width: '2vmin'
+    width: '20px'
 };
 
 const edit = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '3vmin',
+    width: '30px',
     border: 'none',
     outline: 'none',
     cursor: 'pointer',
     borderRadius: '100%',
     backgroundColor: 'rgb(9, 70, 106)',
     boxShadow: '0px 0px 6px black',
-    height: '3vmin',
+    height: '30px',
 };
 
 const editContainer = {
-    marginLeft: '30vmin',
+    marginLeft: '300px',
     zIndex: '0',
     position: 'absolute',
     display: 'flex',
@@ -290,11 +294,11 @@ const editContainer = {
 
 const topContainer = {
     color: 'rgba(255, 255, 255, 0.52)',
-    padding: '2vmin',
+    padding: '20px',
     backgroundColor: '#09466a',
-    borderRadius: '1vmin 1vmin 0vmin 0vmin',
+    borderRadius: '10px 10px 0 0',
     boxShadow: '2px 2px 10px #8f949878',
-    width: '62vmin',
+    width: '620px',
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
@@ -302,16 +306,17 @@ const topContainer = {
 
 const tags = {
     height: '20%',
-    width: '62vmin',
+    width: '620px',
+    marginBottom: '20px',
     overflow: 'auto'
 };
 
 const container = {
     fontFamily: 'Verdana, serif',
-    width: '100%',
-    height: '54vmin',
-    padding: '2vmin',
-    marginTop: '-2vmin',
+    width: '780px',
+    minHeight: '700px',
+    padding: '20px',
+    marginTop: '-20px',
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
@@ -326,20 +331,20 @@ const h1 = {
 };
 
 const firstName = {
-    fontSize: '1.8vmin',
+    fontSize: '18px',
     margin: '0',
 };
 
 const bio = {
-    borderRadius: '0 0 1vmin 1vmin',
+    borderRadius: '0 0 10px 10px',
     boxShadow: '2px 2px 10px #8f949878',
-    padding: '2vmin',
+    padding: '20px',
     marginTop: '0vmin',
     overflow: 'auto',
     whiteSpace: 'pre-line',
-    width: '62vmin',
-    height: '35%',
-    fontSize: '1.8vmin',
+    width: '620px',
+    height: '350px',
+    fontSize: '18px',
     backgroundColor:'white',
     color: '#0a466970',
 };
@@ -365,10 +370,10 @@ const uList = {
     listStyleType: 'none',
     margin: '0',
     alignItems: 'center',
-    padding: '0 0 1vmin 0vmin',
+    padding: '0 0 10px 0px',
     paddingTop: '0',
     overflow: 'auto',
     whiteSpace: 'pre-line',
     width: '90%',
-    fontSize: '1.8vmin'
+    fontSize: '18px'
 };

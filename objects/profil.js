@@ -50,9 +50,11 @@ class Profil {
         const sql = "SELECT JSON_CONTAINS((SELECT list FROM block WHERE userid=?), ?, '$') AS blocked";
         const [blocked] = await db.execute(sql, [data.data.id, `${sess.data.id}`]);
 
+
         if (data.data.id !== sess.data.id && blocked[0].blocked !== 1) {
             let sql = `UPDATE visit SET visits = (JSON_SET((SELECT visits FROM (SELECT visits FROM visit WHERE userid = ?) AS lol), '$."${sess.data.id}"', ? )) WHERE userid = ?`;
 
+            console.log(data.data.id);
             db.execute(sql, [data.data.id, Date.now(), data.data.id]);
             sql =  "INSERT INTO notif SET login = ?, type = 'visit', `from` = ?";
             db.execute(sql, [data.data.id, sess.data.id]);
@@ -157,10 +159,11 @@ class Profil {
 
         await db.execute(sql, [sess.data.id, data.img.imgid]);
 
-        sess.data.img[oldProfil] = sess.data.img.splice(newProfil, newProfil, sess.data.img[oldProfil])[0];
+        sess.data.img[oldProfil] = sess.data.img.splice(newProfil, 1, sess.data.img[oldProfil])[0];
         sess.data.img[oldProfil].profil = true;
         sess.data.img[newProfil].profil = false;
         sess.save();
+        socket.emit('user', sess.data);
         io.emit(sess.data.login, sess.data.img);
     }
 
@@ -217,6 +220,7 @@ class Profil {
             }
             sess.save();
             socket.emit('user', sess.data);
+
             io.emit(sess.data.login, sess.data.img);
 
         }

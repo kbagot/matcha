@@ -65,6 +65,16 @@ export default class HomeContent extends React.Component {
         )
     }
 
+    handleMouseOver(){
+        const elem = document.querySelector('.ulChatList');
+
+        if (elem){
+            if (elem.style.overflow === 'auto'){
+                elem.style.overflow = 'hidden';
+            }
+        }
+    }
+
     showRes () {
         this.setState({
                 ['showres']: !this.state.showres
@@ -96,7 +106,7 @@ export default class HomeContent extends React.Component {
 
 
         return (
-            <div className={'Content'}>
+            <div className={'Content'} onMouseOver={this.handleMouseOver}>
                 <button style={{position: 'fixed'}} className="hburgerbut" onClick={this.showRes}>{resbut}</button>
                     {view}
             </div>

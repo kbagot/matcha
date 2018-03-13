@@ -2,15 +2,7 @@ h1 {
     text-align: center;
 }
 
-.input{
-    margin: 20px;
-}
-
-.error_input{
-    border-color: indianred;
-}
-
-html, body {
+html, body, #root, .app {
     margin:0;
     padding:0;
     height: 100%;
@@ -470,7 +462,6 @@ notif
     text-align: right;
     /*bottom: 40px;*/
 }
-
 
 /***************
 ****************/

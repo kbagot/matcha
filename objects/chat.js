@@ -23,7 +23,25 @@ class Chat {
                 await update.openChat(db, data, sess, socket);
                 socket.emit('user', sess.data);
                 break ;
+            case 'updateImg':
+                Chat.updateImg(db, data, sess, socket);
+                break ;
         }
+    }
+
+    static updateImg(db, data, sess, socket){
+        if (sess.data.match){
+            const index = sess.data.match.findIndex(elem => Number(elem.id) === Number(data.user.id));
+            sess.data.match[index].imgid = data.user.img;
+        }
+
+        if (sess.data.chat){
+            const index =  sess.data.chat.findIndex(elem => Number(elem.id) === Number(data.user.id));
+
+            sess.data.chat[index].imgid = data.user.img;
+        }
+        sess.save();
+        socket.emit('user', sess.data);
     }
 
     static swapIndex(user, sess, socket){
@@ -88,7 +106,7 @@ class Chat {
             let index = sess.data.chat.findIndex(elem => elem.login === data.login.login);
 
             if (index === -1) {
-                sess.data.chat.push(data.login);
+                sess.data.chat.splice(0, 0, data.login);
                 update.openChat(db, data, sess, socket);
             } else {
                 sess.data.chat.splice(index, 1);

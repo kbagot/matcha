@@ -58,11 +58,36 @@ export default class Guest extends React.Component{
         }
 
         return (
-            <div>
-                <h1> Surprise !</h1>
+            <div style={container}>
+                <button style={switchButton} onClick={this.switchButton}>{this.state.status}</button>
                 {window}
-                <button onClick={this.switchButton}>{this.state.status}</button>
             </div>
         );
     }
 }
+
+const switchButton = {
+    marginTop: '125px',
+    marginLeft: '442px',
+    fontSize: '15px',
+    borderRadius: '3px 3px 0px 0px',
+    border: '1px solid #09466a',
+    backgroundColor: 'white',
+    outline: 'none',
+    color: '#0a466b',
+    width: '100px',
+    height: '35px',
+    minHeight: '35px',
+    cursor: 'pointer'
+};
+
+const container = {
+    overflow: 'auto',
+    width: '100%',
+    minWidth: '546px',
+    height: '100%',
+    backgroundColor: '#0a466b',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+};
