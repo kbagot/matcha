@@ -17,7 +17,7 @@ class Research {
                 matchorder = 'ORDER BY ' + ordertag + '0' + ' DESC';
             if (opt.dofirstmatch) {
                 let i = 0;
-                const j = ['distance', 'tags', 'spop'];
+                const j = ['spop', 'tags', 'distance'];
 
                 if (req[0].orientation === 'm') {
                     if (req[0].sexe === 'M') {
@@ -136,7 +136,7 @@ class Research {
             }
 
             let sql = "SELECT * FROM (SELECT users.login, users.first, users.age, users.sexe, users.bio, users.orientation, " +
-                "users.tags, ROUND(users.spop / ?) AS spop, users.date, location.city, location.country, location.zipcode, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, " +
+                "users.tags, ROUND(users.spop / ?) AS respop, users.date, location.city, location.country, location.zipcode, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, users.spop AS spop," +
                 "(st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
                 " from users INNER JOIN location ON location.logid = users.id LEFT JOIN img ON img.userid = users.id AND (img.profil = 1) " +
@@ -145,7 +145,7 @@ class Research {
                 " HAVING orientation IN (?, ?, ?, ?)" +
                 "AND distance < ? AND " +
                 "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
-                "AND (age >= ? AND age <= ?) AND (spop >= " + minpop + " AND spop <= " + maxpop + ")" + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
+                "AND (age >= ? AND age <= ?) AND (respop >= " + minpop + " AND respop <= " + maxpop + ")" + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
             // " (SELECT likes.user1, likes.user2, likes.matcha FROM likes, users WHERE (likes.user1 = users.id OR likes.user2 = users.id) AND users.id = " + req[0].id + ") "
             let inserts = [maxspop[0].maxspop / 10, req[0].lon, req[0].lat, opt.m, opt.f, opt.bi, opt.trans, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);

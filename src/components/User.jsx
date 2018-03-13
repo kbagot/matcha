@@ -86,7 +86,6 @@ export default class User extends React.Component {
             const id = Number(ev.target.getAttribute('value'));
             this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.setProfil(data));
         }
-
         if (node) {
             this.setProfil(node);
         }
@@ -120,7 +119,7 @@ export default class User extends React.Component {
             profilimg = `../../img/${this.props.user.img["0"].imgid}`;
 
         let burgercontent = this.burgercontent();
-        console.log(this.props.user)
+        // console.log(this.props.user);
         // if (this.props.user.match && this.props.user.match.findpIndex(elem => Number(elem.id) === this.props.profil.id) !== -1) {
         return (
             <div className={"User"}>
@@ -137,7 +136,7 @@ export default class User extends React.Component {
                     {burgercontent}
                 </div>
                 {profil}
-                {/*<HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}/>*/}
+                <HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}/>
                 <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket}
                       listUsers={this.listUsers} profil={this.handleClick}/>
             </div>

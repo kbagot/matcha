@@ -78,7 +78,7 @@ class User {
                 rp('https://ipapi.co/' + sess.ip + '/json')
                     .then(res => {
                         res = JSON.parse(res);
-                        if (res.reserved)
+                        if (res.reserved || sess.ip === undefined)
                             return rp('https://ipapi.co/json');
                         else
                             User.update_coords_db(res, db, sess);
@@ -100,11 +100,16 @@ class User {
             entry.push(res.postal);
             entry.push('1');
         } else {
-            entry.push(res.country);
-            if (!res.zipcode)
-                entry.push(res.countryCode);
+            if (!res.country)
+                entry.push('Unknown');
             else
+                entry.push(res.country);
+            if (!res.zipcode && res.countryCode)
+                entry.push(res.countryCode);
+            else if (res.zipcode)
                 entry.push(res.zipcode);
+            else
+                entry.push('Unknown');
             entry.push('0');
         }
 
