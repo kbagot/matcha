@@ -16,7 +16,6 @@ export default class DisplayUsers extends React.Component {
                     let online = '';
                     let usersexe = 'resUserInfo';
 
-                    console.log(node);
                     if (!img)
                         img = '../../img/nopic.png';
                     else

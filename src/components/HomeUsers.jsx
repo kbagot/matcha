@@ -40,7 +40,7 @@ export default class HomeUsers extends React.Component {
     refresh () {
         this.props.socket.emit('HomeUsers', this.state.idList, (users) => {
             let data = [];
-            users.map(users => {
+            users.forEach(users => {
                 data.push(users);
             });
             this.setState({

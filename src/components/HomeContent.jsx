@@ -37,7 +37,7 @@ export default class HomeContent extends React.Component {
 
     homecontents(name, idList) {
         let view = '';
-        if (!this.state[name] && idList)
+        if (!this.state.visiteur && idList === 'visiteur')
             idList = Object.keys(idList).slice(0, 4);
         if (name === 'match')
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
@@ -83,8 +83,6 @@ export default class HomeContent extends React.Component {
     }
 
     render() {
-        // this.props.user.visits = ['500', '400', '300', '460', '450', '404', '403', '409', '408', '410', '470', '401', '402', '405', '499'];
-
         let view;
         let resbut;
         if (this.state.showres) {

@@ -84,6 +84,7 @@ export default class Research extends React.Component {
             users.result.forEach(users => {
                 data.push(users);
             });
+
             if (this.state.dofirstmatch) {
                 users.dofirstmatch = '';
                 users.result = data;
