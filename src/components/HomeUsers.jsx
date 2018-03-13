@@ -30,6 +30,8 @@ export default class HomeUsers extends React.Component {
     }
 
     componentWillReceiveProps(nextProps){
+        // if (nextProps.refreshlist)
+        //     this.refresh();
         this.setState ({
             idList: nextProps.idList
         },

@@ -66,6 +66,12 @@ export default class Research extends React.Component {
         window.removeEventListener("scroll", this.handleScroll);
     }
 
+    componentWillReceiveProps(nextProps){
+        console.log('salut');
+            // if (nextProps.refreshlist)
+             this.refresh();
+    }
+
     handleScroll() {
         const windowHeight = "innerHeight" in window ? window.innerHeight : document.documentElement.offsetHeight;
         const body = document.body;

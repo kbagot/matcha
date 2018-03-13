@@ -42,15 +42,28 @@ export default class HomeContent extends React.Component {
 
     homecontents(name, idList) {
         let view = '';
-        if (this.state.visiteur && idList === 'visiteur' && this.state.num !== 0)
-            idList = Object.keys(idList).slice(0, 4);
+
+        if (this.state.visiteur && name === 'visiteur' && this.state.num !== 0)
+            idList = Object.keys(this.props.user.visits).slice(0, 4);
+
+        // console.log(idList);
+        if (this.props.user.visits){
+            console.log("ICI");
+            console.log(this.props.user.visits);
+        }
+        // console.log(this.props.user.visits);
+           // let lol = Object.assign({}, this.props.user.visits);
+           // cons
+        // console.log(lol);
+        //     let lul = Object.keys(lol);
+        //    console.log(lul);
         if (name === 'match')
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
-                       match={'match'} handleClick={this.props.handleClick} render={this.state.match} idList={'home'}/>;
+                       match={'match'} handleClick={this.props.handleClick} render={this.state.match} idList={'home'} refreshlist={this.props.refreshlist}/>;
              else if (this.state[name] || this.state.num === 4)
             view = <HomeUsers socket={this.props.socket} user={this.props.user} profil={this.props.profil}
                            idList={idList} allUsers={this.props.allUsers} handleClick={this.props.handleClick}
-                              star={this.state.star} num={this.state.num}/>;
+                              star={this.state.star} num={this.state.num} refreshlist={this.props.refreshlist}/>;
 
         let fu = '';
         let status = ' −';
@@ -91,7 +104,7 @@ export default class HomeContent extends React.Component {
         return (
             <div className={'homeContent'}>
                 {this.homecontents('star', 'star')}
-                {this.homecontents('visiteur', this.props.user.visits)}
+                {this.homecontents('visiteur')}
                 {this.homecontents('match')}
             </div>
         )
