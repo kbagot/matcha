@@ -29,6 +29,7 @@ export default class Chat extends React.Component{
         this.swapChat = this.swapChat.bind(this);
         this.closeChat =this.closeChat.bind(this);
         this.autoScroll = this.autoScroll.bind(this);
+        this.handleMouseOut = this.handleMouseOut.bind(this);
     }
 
     componentDidMount() {
@@ -94,8 +95,11 @@ export default class Chat extends React.Component{
     }
 
     newMessage(data){
-        const chatIndex = this.props.user.chat.findIndex(elem => elem.login === data.login.login);
+        let chatIndex;
 
+        if (this.props.user.chat){
+            chatIndex = this.props.user.chat.findIndex(elem => elem.login === data.login.login);
+        }
 
         if (!this.props.user.chat || chatIndex === -1 || (chatIndex !== -1 && this.state.open.indexOf(data.login.id.toString()) === -1)){
             this.props.socket.emit('chat', {type: 'unreadMsg', msg: data.msg, from: data.login});
@@ -165,8 +169,8 @@ export default class Chat extends React.Component{
             if (ul.getAttribute('name') === 'ulChatList'){
                 ul.style.overflow = 'auto';
             }
-            elem.style.backgroundColor = 'rgba(9, 70, 106, 0.42)';
             elem.style.color = 'white';
+            elem.style.backgroundColor = 'rgba(9, 70, 106, 0.42)';
         }
     }
 
@@ -174,8 +178,15 @@ export default class Chat extends React.Component{
         const elem = [ev.target, ev.target.parentNode].filter(elem => elem.name === 'openChat')[0];
 
         if (elem){
-            elem.style.backgroundColor = openChatButton.backgroundColor;
-            elem.style.color = openChatButton.color;
+            const id = elem.getAttribute('value');
+            const message = this.props.user.notif.filter(elem => Number(elem.from) === Number(id) && elem.type === 'message');
+            if (!message.length) {
+                elem.style.backgroundColor = openChatButton.backgroundColor;
+                elem.style.color = openChatButton.color;
+            } else {
+                elem.style.backgroundColor = '#0a466b';
+                elem.style.color = 'white';
+            }
         }
     }
 
@@ -185,8 +196,6 @@ export default class Chat extends React.Component{
         if (array) {
             return array.map((user, index) => {
 
-                console.log(user.login);
-                console.log(user);
                 if (user.login && user.login !== this.props.user.login) {
                     let notif = this.getMessagesNotif(user, this.props.user.notif);
                     const online = this.props.allUsers.findIndex(elem => elem.id === Number(user.id)) !== -1;
@@ -194,7 +203,7 @@ export default class Chat extends React.Component{
                     const button = notif ? Object.assign({}, openChatButton, {backgroundColor: '#0a466b', color: 'white'}) : openChatButton;
 
                     return <li key={index}>
-                        <button  name={'openChat'} style={button} onClick={ev => this.closeChat(user)}>
+                        <button  name={'openChat'} value={user.id} style={button} onClick={ev => this.closeChat(user)}>
                             <div style={obj} />
                             <span style={chatListLogin}>{user.login}</span>
                             <img style={miniImg} src={"img/" + user.imgid}/>
@@ -252,13 +261,13 @@ export default class Chat extends React.Component{
             return this.props.user.chat.map((user, index) => {
                 const online = this.props.allUsers.findIndex(elem => elem.id === Number(user.id)) !== -1;
                 const open = this.state.open.indexOf(user.id) !== -1;
-                const obj =  online ? Object.assign({}, onlineStyle, {backgroundColor: '#13da13'}) : onlineStyle;
+                const obj =  online ? Object.assign({}, miniOnline, {backgroundColor: '#13da13'}) : miniOnline;
                 const windowStyle = open ? Object.assign({}, chatWindow, {height: '22vmin', bottom: '0'}) : chatWindow;
 
                 if (user && this.props.user.match.findIndex(elem => elem.id === user.id) !== -1 && index < 5) {
                     return (
                     <div style={windowStyle} key={user+index}>
-                        <div style={{width: '100%', display: 'flex', height: '3vmin', backgroundColor: 'white', borderWidth: '1px 1px 1px 1px'}}>
+                        <div style={{width: '100%', display: 'flex', minHeight: '30px', backgroundColor: 'white', borderWidth: '1px 1px 1px 1px'}}>
                             <button style={chatButton} value={user.id} onClick={(ev) => this.handleOpenChat(ev, user)}>
                                 <img style={miniImgChatButton} src={"img/" + user.imgid}/>
                                 <span style={chatListLogin}>{user.login}</span>
@@ -335,6 +344,13 @@ export default class Chat extends React.Component{
                 obj.open = array;
             }
             this.setState(obj);
+        } else {
+            const array = Array.from(this.state.open);
+            const obj = {};
+
+            array.push(user.id);
+            obj.open = array;
+            this.setState(obj);
         }
 
     }
@@ -357,7 +373,7 @@ export default class Chat extends React.Component{
         const length = this.props.user.chat ? this.props.user.chat.length : 0;
         const invisible = {
             width: length > 5 ? '5%' : `${100 - (length * 19)}%`,
-            height: '3vmin',
+            height: '37px',
             backgroundColor: '#dbe4e8',
         };
 
@@ -438,11 +454,11 @@ const moreChatButton = {
 
 const moreChatContainer = {
     position: 'absolute',
-    bottom: '3vmin',
-    borderRadius: '0 0.2vmin  0 0',
+    bottom: '37px',
+    borderRadius: '0 2px 0 0',
     margin: '0',
     padding: '0',
-    width: '15vmin',
+    width: '150px',
     listStyleType: 'none',
     backgroundColor: 'rgb(233, 233, 233)',
     display: 'flex',
@@ -453,15 +469,16 @@ const moreChatContainer = {
 const moreButton = {
     borderColor: 'rgba(9, 70, 106, 0.07)',
     outline: 'none',
-    fontSize: '1.8vmin',
+    fontSize: '20px',
     backgroundColor: 'rgb(233, 233, 233)',
     width: '100%',
-    height: '3vmin',
+    height: '40px',
 };
 
 const submitButton ={
     outline: 'none',
     height: '100%',
+    width: '10%',
     backgroundColor: '#dbe4e8',
     border: 'none',
     margin: '0'
@@ -469,13 +486,22 @@ const submitButton ={
 
 const textInput = {
     outline: 'none',
-    padding: '0.5vmin',
-    width: '100%',
+    padding: '5px',
+    width: '90%',
     color: '#0a4669',
     border: 'none',
     backgroundColor: 'transparent',
     height: '100%',
-    fontSize: '1.2vmin'
+    // fontSize: '15
+};
+
+const textWindow = {
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    backgroundColor : 'white',
+    width:'90%',
+    height: '72%',
+    border: '1px solid #cccccc'
 };
 
 const formInput = {
@@ -484,8 +510,8 @@ const formInput = {
     padding: '0',
     margin: '0',
     color: 'white',
-    height: '3vmin',
-    fontSize: '1.3vmin',
+    height: '30px',
+    fontSize: '15px',
     borderColor: 'rgb(204, 204, 204)',
     display: 'flex',
     alignItems: 'center',
@@ -496,8 +522,8 @@ const chatButton = {
     outline: 'none',
     backgroundColor: 'rgba(9, 70, 106, 0.11)',
     color: 'rgba(72, 99, 115, 0.73)',
-    height: '3vmin',
-    fontSize: '1vmin',
+    minHeight: '37px',
+    fontSize: '1vw',
     borderColor: 'rgb(233, 233, 233)',
     display: 'flex',
     justifyContent: 'flex-start',
@@ -506,20 +532,28 @@ const chatButton = {
 };
 
 const chatWindow = {
-    backgroundColor: 'transparent',
+    backgroundColor: 'white',
     width: '19%'
 };
 
 const miniImgChatButton = {
-    width: '2.7vmin',
-    height: '2.7vmin',
+    width: '27px',
+    height: '27px',
     borderRadius: '50%',
     marginRight: '1.2vmin',
 };
 
+const miniOnline = {
+    width: '10px',
+    height: '10px',
+    marginRight: '0.5vmin',
+    backgroundColor: 'gray',
+    borderRadius: '100%'
+
+};
 const miniImg = {
-    width: '3vmin',
-    height: '3vmin',
+    width: '40px',
+    height: '40px',
     borderRadius: '50%',
     marginLeft: '1vmin'
 };
@@ -533,8 +567,8 @@ const contact = {
     justifyContent: 'center',
     color: 'rgb(114, 136, 148)',
     marginBottom: '1vmin',
-    fontSize: '1.8vmin',
-    height: '5vmin',
+    fontSize: '18px',
+    height: '50px',
     margin: '0'
 };
 
@@ -550,12 +584,13 @@ const container = {
 
 const ulChatList = {
     backgroundColor: 'white',
-    width: '20vw',
+    width: '230px',
+    minWidth: '230px',
     position: 'fixed',
     top: '60px',
     overflow: 'hidden',
     right: '0',
-    maxHeight: '95.5%',
+    maxHeight: '70%',
     listStyleType: 'none',
     display: 'flex',
     flexDirection: 'column',
@@ -566,9 +601,9 @@ const ulChatList = {
 };
 
 const onlineStyle = {
-    width: '0.6vmax',
-    height: '0.6vmax',
-    marginRight: '0.5vw',
+    width: '10px',
+    height: '10px',
+    marginRight: '5px',
     backgroundColor: 'gray',
     borderRadius: '100%'
 };
@@ -576,9 +611,9 @@ const onlineStyle = {
 const chatListLogin ={
     textAlign: 'left',
     overflow: 'hidden',
-    maxWidth: '11vw',
-    marginRight: '0.5vw',
-    fontSize: '1.5vmin',
+    marginRight: '5px',
+    maxWidth: '100px',
+    fontSize: '15px',
     whiteSpace: 'nowrap'
 };
 
@@ -586,11 +621,13 @@ const chatContainer = {
     position: 'fixed',
     bottom: '0',
     display: 'flex',
-    height: '20vmin',
+    // height: '20vmin',
+    minHeight: '250px',
     flexFlow: 'row-reverse nowrap',
     alignItems: 'flex-end',
     left: '0',
-    width: '80vw',
+    width: '80%',
+    minWidth: '864px',
     zIndex: '1'
 };
 
@@ -601,7 +638,7 @@ const openChatButton = {
     borderWidth: '0px 0px 1px 0px',
     borderColor: 'rgba(9, 70, 106, 0.07)',
     display: 'flex',
-    height: '3.5vh',
+    height: '45px',
     justifyContent: 'space-between',
     alignItems: 'center',
     outline: 'none',
@@ -609,10 +646,3 @@ const openChatButton = {
     WebkitTransition: '0.5s'
 };
 
-const textWindow = {
-    overflowY: 'auto',
-    overflowX: 'hidden',
-    backgroundColor : 'white',
-    height: '73%',
-    border: '1px solid #cccccc'
-};
