@@ -109,41 +109,41 @@ const button = {
     backgroundColor: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    fontSize: '2vmin',
+    fontSize: '20px',
     color: '#2b92fb57',
-    padding: '0.4vmin'
+    padding: '2px'
 };
 
 let scoreContainer ={
     display: 'flex',
     textAlign: 'center',
-    width: '2vmin',
-    height: '2vmin',
+    width: '20px',
+    height: '20px',
     borderRadius: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     color: '',
-    padding: '1vmin',
-    fontSize: '1.5vmin'
+    padding: '10px',
+    fontSize: '15px'
 };
 
 const heartContainer = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: '1vmin'
+    padding: '10px'
 };
 
 const heart = {
-    width: '4vmin'
+    width: '40px'
 };
 
 const remoteContainer = {
     backgroundColor: 'white',
     justifyContent: 'space-between',
-    marginTop: '14.4vmin',
+    marginTop: '144px',
     display: 'flex',
     alignItems: 'center',
-    padding: '1vmin 1vmin 1vmin 17vmin',
-    borderRadius: ' 0 0 0 1vmin ',
+    padding: '10px 10px 10px 170px',
+    borderRadius: ' 0 0 0 10px',
 };

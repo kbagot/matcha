@@ -140,6 +140,8 @@ class ConDb {
 
                 req = "INSERT INTO location(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 await this.con.execute(req, [ret[0].insertId, ...fakeloc[Math.floor(Math.random() * fakeloc.length)], '1']);
+                req = "INSERT INTO visit VALUES ((SELECT id FROM users WHERE login = ?), '{}')";
+                this.con.execute(req, [login]);
             }
         } catch (e) {
             console.log(e);

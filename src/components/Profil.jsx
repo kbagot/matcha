@@ -101,7 +101,8 @@ const topContainer = {
     flexWrap: 'wrap',
     flexDirection: 'column',
     margin: '5vmax',
-    width: '74vmin',
+    minWidth: '780px',
+    minHeight: '1024px',
     background: 'transparent',
 };
 
@@ -129,13 +130,13 @@ const profil = {
     position: 'absolute',
     display: 'flex',
     flexWrap: 'wrap',
-    marginTop: '21.3vmin',
-    borderRadius: '0vh 0vmin 1vmin 1vmin',
-    width: '74vmin',
-    height: '70vmin',
+    marginTop: '222px',
+    borderRadius: '0vh 0vmin 10px 10px',
+    width: '780px',
+    height: '700px',
     background: 'rgba(255, 255, 255, 1)',
-    minWidth: '400px',
-    minHeight: '400px'
+    minWidth: '780px',
+    minHeight: '700px'
 };
 
 

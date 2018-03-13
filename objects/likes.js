@@ -5,6 +5,7 @@ class Likes {
         const block = sess.data.block && data.login && sess.data.block.indexOf(data.login.id) !== -1;
         const sql = "SELECT JSON_CONTAINS((SELECT list FROM block WHERE userid=?), ?, '$') AS blocked";
         let blocked = false;
+
         if (data.login) {
             [blocked] = await db.execute(sql, [data.login.id, `${sess.data.id}`]);
         }

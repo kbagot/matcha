@@ -91,11 +91,11 @@ class Register {
                     });
                     let date = new Date();
                     date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-                    let ret = await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio,
+                    await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio,
                         data.orientation, JSON.stringify(tags), data.age, date]);
-                    // console.log(ret);
-                    // req = "INSERT INTO location(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                    // await this.db.execute(req, [ret[0].insertId, '45.7640', '4.8357', 'Lyon', 'France', '69000', '1']);
+
+                    req = "INSERT INTO visit VALUES ((SELECT id FROM users WHERE login = ?), '{}')";
+                    this.db.execute(req, [data.login]);
 
             } catch (e) {
                 console.log(e);

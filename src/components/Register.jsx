@@ -130,12 +130,13 @@ export default class Register extends React.Component {
 }
 
 const error ={
-    fontSize: '1vmin',
-    color: 'red'
+    fontSize: '15px',
+    color: 'indianred'
 };
 
 const form = {
     width: '100%',
+    height: '100%',
     display: 'flex',
     alignItems: 'center',
     padding: '2vmin',
@@ -143,10 +144,12 @@ const form = {
 };
 
 const submit = {
-    margin: '3vmin',
-    width: '60%',
-    height: '3vmin',
-    fontSize: '1.5vmin',
+    marginTop: '20px',
+    width: '200px',
+    minWidth: '200px',
+    height: '35px',
+    minHeight: '35px',
+    fontSize: '20px',
     outline: 'none',
     borderRadius: '2px',
     backgroundColor : 'white',
@@ -156,70 +159,77 @@ const submit = {
 };
 
 const selectSex = {
-    width: '45%',
-    height: '3vmin',
-    fontSize: '1.5vmin',
+    width: '280px',
+    minWidth: '280px',
+    height: '45px',
+    minHeight: '45px',
+    fontSize: '20px',
     outline: 'none',
     borderRadius: '2px',
     backgroundColor : 'white',
     color: 'rgb(10, 70, 107)',
     border: '1px solid',
-    margin: '0.2vmin'
+    margin: '2px'
 };
 
 const iAm = {
-  fontSize: '2vmin',
+    fontSize: '20px',
     color: 'rgb(10, 70, 107)',
     textAlign: 'center',
-    margin: '0.5vmin'
+    margin: '5px'
 };
 
 const textarea = {
-    width: '80%',
+    width: '350px',
     resize: 'none',
     overflow: 'auto',
-    height: '15vmin',
-    fontSize: '1.5vmin',
+    height: '125px',
+    minHeight: '125px',
+    fontSize: '20px',
     outline: 'none',
     borderRadius: '2px',
     backgroundColor : 'white',
     color: 'rgb(10, 70, 107)',
     border: '1px solid',
-    margin: '0.5vmin'
+    margin: '5px'
 };
 
 const registerContainer = {
-    marginTop: '10%',
-    width: '35%',
-    padding: '2vmin 5vmin 2vmin 5vmin',
+    width: '400px',
+    minWidth: '400px',
+    minHeight: '816px',
+    padding: '0px 70px',
     display: 'flex',
     alignItems: 'center',
-    borderRadius: '4px',
+    borderRadius: '4px 0px 4px 4px',
     flexDirection: 'column',
     backgroundColor: 'white',
     boxShadow: '0px 0px 10px gray',
 };
 
 const ageInput = {
-    height: '3vmin',
-    fontSize: '1.5vmin',
+    height: '35px',
+    minHeight: '35px',
+    fontSize: '20px',
     outline: 'none',
     borderRadius: '2px',
     backgroundColor : 'white',
     color: 'rgb(10, 70, 107)',
     border: '1px solid',
-    margin: '0.2vmin 10.7vmin 0vmin 0.2vmin',
-    width: '15%',
+    margin: '2px 219px 2px 0px',
+    width: '60px',
 };
 
 const input = {
-    width: '45%',
-    height: '3vmin',
-    fontSize: '1.5vmin',
+    width: '280px',
+    minWidth: '280px',
+    height: '45px',
+    minHeight: '45px',
+    fontSize: '20px',
     outline: 'none',
     borderRadius: '2px',
     backgroundColor : 'white',
     color: 'rgb(10, 70, 107)',
     border: '1px solid',
-    margin: '0.2vmin'
+    margin: '3px'
 };

@@ -16,11 +16,6 @@ class User {
         if (results[0]) {
             bcrypt.compare(res.password, results[0].password, async (err, succ) => {
                 if (succ) {
-                    if (!results[0].visits){
-                        const sql = "INSERT INTO visit VALUES (?, '{}')";
-
-                        db.execute(sql, [results[0].id]);
-                    }
                     User.update_date(db, res.login);
 
                     delete results[0].password;

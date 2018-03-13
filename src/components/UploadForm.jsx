@@ -33,7 +33,7 @@ export default class UploadForm extends React.Component{
     }
 
     render() {
-        const obj = this.props.length > 1 ? uploadContainer : Object.assign({}, uploadContainer, {marginLeft: '3vmin'});
+        const obj = this.props.length > 1 ? uploadContainer : Object.assign({}, uploadContainer, {marginLeft: '5px'});
 
         return (
             <div style={obj} className={"uploadFormContainer"}>
@@ -49,22 +49,23 @@ const inputFile = {
     position: 'absolute',
     opacity: '0',
     top: '0',
-    borderRadius: '10vh',
+    borderRadius: '100px',
     cursor: 'pointer',
-    fontSize: '7vmin',
-    width: '8vmin',
-    height: '8vmin',
+    fontSize: '70px',
+    width: '80px',
+    height: '80px',
 };
 
 const uploadContainer = {
     position: 'relative',
     cursor: 'pointer',
-    fontSize: '7vmin',
-    width: '8vmin',
-    height: '8vmin',
-    marginTop: '6vmin',
+    fontSize: '70px',
+    width: '80px',
+    height: '80px',
+    marginTop: '63px',
     borderTop: '1px dashed gray',
     borderRight: '1px dashed gray',
+    marginLeft: '2px'
 };
 
 const addPicture = {
@@ -73,13 +74,13 @@ const addPicture = {
     display: 'flex',
     alignItems: 'baseline',
     justifyContent: 'center',
-    lineHeight: '3vmin',
+    lineHeight: '3-px',
     padding: '0px',
     border: 'none',
     cursor: 'pointer',
-    fontSize: '7vmin',
-    width: '8vmin',
-    height: '8vmin',
+    fontSize: '70px',
+    width: '80px',
+    height: '80px',
     background: 'transparent',
     color: 'gray',
 };

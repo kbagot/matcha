@@ -185,7 +185,9 @@ export default class Chat extends React.Component{
         if (array) {
             return array.map((user, index) => {
 
-                if (user.login !== this.props.user.login) {
+                console.log(user.login);
+                console.log(user);
+                if (user.login && user.login !== this.props.user.login) {
                     let notif = this.getMessagesNotif(user, this.props.user.notif);
                     const online = this.props.allUsers.findIndex(elem => elem.id === Number(user.id)) !== -1;
                     const obj =  online ? Object.assign({}, onlineStyle, {backgroundColor: '#13da13'}) : onlineStyle;
@@ -548,7 +550,7 @@ const container = {
 
 const ulChatList = {
     backgroundColor: 'white',
-    width: '15vmin',
+    width: '20vw',
     position: 'fixed',
     top: '60px',
     overflow: 'hidden',
@@ -564,9 +566,9 @@ const ulChatList = {
 };
 
 const onlineStyle = {
-    width: '0.6vmin',
-    height: '0.6vmin',
-    marginRight: '0.5vmin',
+    width: '0.6vmax',
+    height: '0.6vmax',
+    marginRight: '0.5vw',
     backgroundColor: 'gray',
     borderRadius: '100%'
 };
@@ -574,9 +576,10 @@ const onlineStyle = {
 const chatListLogin ={
     textAlign: 'left',
     overflow: 'hidden',
-    maxWidth: '7vmin',
-    marginRight: '0.5vmin',
-    fontSize: '1vmin',
+    maxWidth: '11vw',
+    marginRight: '0.5vw',
+    fontSize: '1.5vmin',
+    whiteSpace: 'nowrap'
 };
 
 const chatContainer = {
@@ -587,7 +590,7 @@ const chatContainer = {
     flexFlow: 'row-reverse nowrap',
     alignItems: 'flex-end',
     left: '0',
-    width: '84%',
+    width: '80vw',
     zIndex: '1'
 };
 
@@ -598,7 +601,7 @@ const openChatButton = {
     borderWidth: '0px 0px 1px 0px',
     borderColor: 'rgba(9, 70, 106, 0.07)',
     display: 'flex',
-    height: '3.5vmin',
+    height: '3.5vh',
     justifyContent: 'space-between',
     alignItems: 'center',
     outline: 'none',

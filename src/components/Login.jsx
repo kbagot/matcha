@@ -73,15 +73,15 @@ export default class Login extends React.Component {
 }
 
 const forgotten = {
-    fontSize: '1.5vmin',
+    fontSize: '15px',
     color: '#09466a',
     textDecoration: 'none'
 };
 
 const submit = {
-    width: '45%',
-    height: '3vmin',
-    fontSize: '1.5vmin',
+    width: '200px',
+    height: '35px',
+    fontSize: '20px',
     outline: 'none',
     borderRadius: '2px',
     backgroundColor : 'white',
@@ -89,9 +89,9 @@ const submit = {
 };
 
 const input = {
-    width: '65%',
-    height: '5vmin',
-    fontSize: '1.5vmin',
+    width: '280px',
+    height: '45px',
+    fontSize: '20px',
     outline: 'none',
     borderRadius: '2px',
     backgroundColor : 'white',
@@ -101,6 +101,7 @@ const input = {
 
 const form = {
     width: '100%',
+    height: '100%',
     display: 'flex',
     alignItems: 'center',
     color: 'rgb(10, 70, 107)',
@@ -109,13 +110,15 @@ const form = {
 };
 
 const loginContainer = {
-    marginTop: '20%',
-    width: '35%',
-    padding: '2vmin 5vmin 2vmin 5vmin',
+    width: '400px',
+    minWidth: '400px',
+    height: '300px',
+    minHeight: '300px',
+    padding: '40px 70px',
     display: 'flex',
     alignItems: 'center',
     color: 'rgb(10, 70, 107)',
-    borderRadius: '4px',
+    borderRadius: '4px 0px 4px 4px',
     flexDirection: 'column',
     backgroundColor: 'white',
 };
