@@ -1,7 +1,7 @@
 import React from 'react';
 import Login from './Login.jsx';
 import Register from './Register.jsx';
-import ResetPassword from './ResetEmail.jsx';
+import ResetPassword from './ResetPassword.jsx';
 
 let prevState = JSON.parse(sessionStorage.getItem('GuestState'));
 
