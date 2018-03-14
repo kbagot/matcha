@@ -35,7 +35,10 @@ export default class HomeUsers extends React.Component {
         this.setState ({
             idList: nextProps.idList
         },
-           () => this.refresh()
+           () => {
+            // console.log('refresh' +  this.state.idList);
+            this.refresh();
+           }
         );
     }
 

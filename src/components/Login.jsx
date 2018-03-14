@@ -47,7 +47,8 @@ export default class Login extends React.Component {
         }
     }
 
-    handleSubmit(ev) {
+     handleSubmit(ev) {
+        this.props.location();
         this.props.socket.emit('login', this.state);
         ev.preventDefault();
     }
