@@ -109,7 +109,7 @@ class ConDb {
 
     async seedUsers() {
         ConDb.createConnection()
-            .then(() => request('https://randomuser.me/api/?results=500&exc=picture,id,cell,phone,registered,dob,login&nat=fr,be'))
+            .then(() => request('https://randomuser.me/api/?results=2000&exc=picture,id,cell,phone,registered,dob,login&nat=fr,be'))
             .then((res) => this.fillDb(JSON.parse(res).results))
             .catch((err) => console.log(err));
     }

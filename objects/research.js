@@ -68,8 +68,8 @@ class Research {
                 opt.tags = req[0].tags; // TODO reducteur de tags pour match
                 opt.spop = req[0].spop;
                 while (results.length < 25 && i < 3) {
-                    opt[j[i]] = '';
                     results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
+                    opt[j[i]] = '';
                     i++;
                 }
             } else
@@ -126,9 +126,9 @@ class Research {
             let maxpop = '';
             let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
 
-            if ('spop' in opt) {
-                minpop = Math.round((opt.spop / maxspop[0].maxspop) - 30);
-                maxpop = Math.round((opt.spop / maxspop[0].maxspop) + 30);
+            if ('spop' in opt && opt.spop) {
+                minpop = Math.round(((opt.spop / maxspop[0].maxspop) * 100) - 30);
+                maxpop = Math.round(((opt.spop / maxspop[0].maxspop) * 100) + 30);
             }
             else {
                 minpop = 0;
@@ -150,7 +150,6 @@ class Research {
             let inserts = [maxspop[0].maxspop / 100, req[0].lon, req[0].lat, opt.m, opt.f, opt.bi, opt.trans, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
             let [results] = await db.query(sql);
-            console.log(results);
             return (results);
         } catch (e) {
             console.log(e);
