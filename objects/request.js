@@ -65,6 +65,20 @@ class Controller {
         });
     }
 
+    async checkHash(hash){
+        let SQL = "SELECT login FROM users WHERE hash = ?";
+        const [rows] = await this.db.execute(SQL, [hash]);
+
+        SQL= "UPDATE users SET hash = NULL WHERE hash = ?";
+        await this.db.execute(SQL, [hash]);
+
+        if (rows[0]) {
+            return rows[0].login
+        } else {
+            return false;
+        }
+    }
+
     triggerRefresh(io, socket, sess) {
         socket.emit('user', sess.data, () => {
             this.user.updateUsers(sess, allUsers)
