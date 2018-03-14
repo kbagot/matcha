@@ -118,7 +118,6 @@ export default class User extends React.Component {
         if (this.props.user.img)
             profilimg = `../../img/${this.props.user.img["0"].imgid}`;
 
-        console.log(this.props.user.visits);
         let burgercontent = this.burgercontent();
         // if (this.props.user.match && this.props.user.match.findpIndex(elem => Number(elem.id) === this.props.profil.id) !== -1) {
         return (

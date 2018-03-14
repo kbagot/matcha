@@ -32,13 +32,17 @@ class Chat {
     static updateImg(db, data, sess, socket){
         if (sess.data.match){
             const index = sess.data.match.findIndex(elem => Number(elem.id) === Number(data.user.id));
-            sess.data.match[index].imgid = data.user.img;
+            if (sess.data.chat[index]) {
+                sess.data.match[index].imgid = data.user.img;
+            }
         }
 
         if (sess.data.chat){
             const index =  sess.data.chat.findIndex(elem => Number(elem.id) === Number(data.user.id));
 
-            sess.data.chat[index].imgid = data.user.img;
+            if (sess.data.chat[index]) {
+                sess.data.chat[index].imgid = data.user.img;
+            }
         }
         sess.save();
         socket.emit('user', sess.data);

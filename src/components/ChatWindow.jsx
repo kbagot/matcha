@@ -38,12 +38,12 @@ const msgContainer = {
 };
 
 const message = {
-    fontSize: '1vmin',
+    fontSize: '13px',
     color: 'rgb(10, 70, 105)',
-    padding: '0.6vmin',
-    margin: '0.5vmin',
-    maxWidth: '75%',
+    padding: '8px',
+    margin: '5px',
+    maxWidth: '140px',
     overflowWrap: 'break-word',
     backgroundColor: 'rgba(9, 70, 106, 0.15)',
-    borderRadius: '1vmin'
+    borderRadius: '20px'
 };
