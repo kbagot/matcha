@@ -9,6 +9,19 @@ html, body, #root, .app {
     width: 100%;
 }
 
+.loadpage {
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background-color: #0a466b;
+}
+
+
 /******************
     PAGE CONTENT
 ******************/

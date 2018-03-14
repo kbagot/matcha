@@ -53,7 +53,7 @@ class User {
         db.execute(sql, [date, login]);
     }
 
-    static update_coords(res, db, sess) {
+    static update_coords(res, db, sess, respond) {
         let options = {
             provider: 'google',
             httpAdapter: 'https', // Default
@@ -72,7 +72,7 @@ class User {
             geocoder[api](query)
             .then(res => {
                 if (res[0])
-                    User.update_coords_db(res[0], db, sess);
+                    User.update_coords_db(res[0], db, sess, respond);
             })
             .catch(err => {
                 rp('https://ipapi.co/' + sess.ip + '/json')
@@ -81,19 +81,19 @@ class User {
                         if (res.reserved || sess.ip === undefined)
                             return rp('https://ipapi.co/json');
                         else
-                            User.update_coords_db(res, db, sess);
+                            User.update_coords_db(res, db, sess, respond);
                     })
                     .then(res => {
                         if (res) {
                             res = JSON.parse(res);
-                            User.update_coords_db(res, db, sess);
+                            User.update_coords_db(res, db, sess, respond);
                         }
                     })
                     .catch(err => console.log(err));
             });
     }
 
-    static async update_coords_db(res, db, sess) {
+    static async update_coords_db(res, db, sess, respond) {
         let entry = [];
         if (res.ip) {
             entry.push(res.country_name);
@@ -124,6 +124,7 @@ class User {
             }
             req = "INSERT INTO location(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
             [results, fields] = await db.execute(req, [sess.data.id, res.latitude, res.longitude, res.city, ...entry]);
+            respond();
         } catch (e) {
             console.log(e);
         }

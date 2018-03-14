@@ -35,7 +35,7 @@ class Controller {
         socket.on('chat', (data) => this.chat.handleChat(data, socket, this.db, sess, allUsers));
         socket.on('like', (data, refresh) => likes.handleLikes(data, socket, this.db, sess, allUsers, io));
         socket.on('login', (res) => this.user.dologin(res, this.db, sess, io, socket, allUsers, io));
-        socket.on('locUp', (res) => user.update_coords(res, this.db, sess, socket));
+        socket.on('locUp', (res, respond) => user.update_coords(res, this.db, sess, respond));
         socket.on('notif', (data) => update.handleNotif(this.db, sess, socket, data));
         socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, allUsers));
         socket.on('profil', (data, setState) => profil.mainHandler(this.db, sess, socket, data, io, setState, allUsers));

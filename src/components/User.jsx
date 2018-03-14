@@ -14,6 +14,7 @@ export default class User extends React.Component {
             profil: false,
             view: false,
             burger: false,
+            refreshlist: false,
         };
         this.disconnectUser = this.disconnectUser.bind(this);
         this.seekUser = this.seekUser.bind(this);
@@ -77,7 +78,9 @@ export default class User extends React.Component {
 
 
     setProfil(profil) {
-        this.setState({profil: profil});
+        this.setState({profil: profil,
+            refreshlist: !profil,
+        });
     }
 
     handleClick(ev, node) {
@@ -135,7 +138,8 @@ export default class User extends React.Component {
                     {burgercontent}
                 </div>
                 {profil}
-                <HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}/>
+                <HomeContent user={this.props.user} allUsers={this.state.allUsers} socket={this.props.socket} handleClick={this.handleClick}
+                refreshlist={this.state.refreshlist}/>
                 <Chat allUsers={this.state.allUsers} user={this.props.user} socket={this.props.socket}
                       listUsers={this.listUsers} profil={this.handleClick}/>
             </div>

@@ -64,7 +64,7 @@ class Update {
                 if (visit){
                     sql = "SELECT visits FROM visit WHERE userid = ?";
                     [rows] = await db.execute(sql, [sess.data.id]);
-                    sess.data.visits = rows[0];
+                    sess.data.visits = rows[0].visits;
                 }
                 sess.save(() => resolve());
             } catch (e) {
