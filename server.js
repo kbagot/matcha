@@ -8,8 +8,6 @@ let     options = {
 let     https = require('https');
 let     app = express();
 let     cookieParser = require('cookie-parser');
-
-
 let     session = require('express-session');
 let     bodyParser = require('body-parser');
 let     server = https.createServer(options, app).listen(8081);
@@ -35,7 +33,6 @@ let     expressSession = session({
     })
 });
 
-console.log(path.join(__dirname, 'img'));
 app.use(expressSession)
     .use(cookieParser())
     .use('/img', express.static(path.join(__dirname, 'img')))
@@ -72,14 +69,24 @@ app.use(expressSession)
             console.log(e);
         }
         })
-        .get("/dist/index_bundle.js", function(req, res, next){
-            res.sendFile(__dirname + '/dist/index_bundle.js');
-        })
-        .use(function(req, res, next){
-            res.writeHead(404, {"Content-Type" : "text/html"});
-            res.write("<p>404 Not Found</p>");
-            res.end();
-        });
+    .get("/resetPassword/:hash", async function (req, res, next){
+        if (req.secure) {
+            const login = await controller.checkHash(req.params.hash);
+
+            if (login){
+                res.cookie('reset', login);
+            }
+            res.redirect("/");
+        }
+    })
+    .get("/dist/index_bundle.js", function(req, res, next){
+        res.sendFile(__dirname + '/dist/index_bundle.js');
+    })
+    .use(function(req, res, next){
+        res.writeHead(404, {"Content-Type" : "text/html"});
+        res.write("<p>404 Not Found</p>");
+        res.end();
+    });
 
 
 io.on("connection", (socket) => {

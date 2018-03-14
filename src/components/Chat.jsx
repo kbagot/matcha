@@ -13,7 +13,8 @@ export default class Chat extends React.Component{
             open: [],
             input: {},
             history: {},
-            more: false
+            more: false,
+            max: 0
         };
         this.renderChat = this.renderChat.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -30,6 +31,7 @@ export default class Chat extends React.Component{
         this.closeChat =this.closeChat.bind(this);
         this.autoScroll = this.autoScroll.bind(this);
         this.handleMouseOut = this.handleMouseOut.bind(this);
+        this.setMaxCHat = this.setMaxCHat.bind(this);
     }
 
     componentDidMount() {
@@ -45,11 +47,28 @@ export default class Chat extends React.Component{
             }
         });
         document.body.addEventListener('click', (ev) => {
-           if (this.state.more && ev.target.name !== 'moreButton'){
+           if (this.state.more && ['moreButton', 'moreCloseChat'].indexOf(ev.target.name) === -1){
                this.setState({more: false});
            }
         });
+
+        window.addEventListener('resize', (ev) => {
+            const width = ev.target.innerWidth;
+
+            this.setMaxCHat(width);
+        });
     }
+
+    setMaxCHat(width){
+        const max = Math.floor((width - 10) / 200);
+
+        this.setState({max: max ? max : 1});
+    }
+    componentWillMount(){
+        const width = window.innerWidth;
+
+        this.setMaxCHat(width);
+    };
 
     componentWillUnmount(){
         if (this.props.user.match){
@@ -184,7 +203,7 @@ export default class Chat extends React.Component{
                 elem.style.backgroundColor = openChatButton.backgroundColor;
                 elem.style.color = openChatButton.color;
             } else {
-                elem.style.backgroundColor = '#0a466b';
+                elem.style.backgroundColor = 'rgb(3, 132, 212)';
                 elem.style.color = 'white';
             }
         }
@@ -200,13 +219,14 @@ export default class Chat extends React.Component{
                     let notif = this.getMessagesNotif(user, this.props.user.notif);
                     const online = this.props.allUsers.findIndex(elem => elem.id === Number(user.id)) !== -1;
                     const obj =  online ? Object.assign({}, onlineStyle, {backgroundColor: '#13da13'}) : onlineStyle;
-                    const button = notif ? Object.assign({}, openChatButton, {backgroundColor: '#0a466b', color: 'white'}) : openChatButton;
+                    const button = notif ? Object.assign({}, openChatButton, {backgroundColor: 'rgb(3, 132, 212)', color: 'white'}) : openChatButton;
+                    const img = user.imgid ? user.imgid : 'nopic.png';
 
                     return <li key={index}>
-                        <button  name={'openChat'} value={user.id} style={button} onClick={ev => this.closeChat(user)}>
+                        <button  name={'openChat'} value={user.id} style={button} onClick={ev => this.closeChat(ev, user)}>
                             <div style={obj} />
-                            <span style={chatListLogin}>{user.login}</span>
-                            <img style={miniImg} src={"img/" + user.imgid}/>
+                            <span>{user.login}</span>
+                            <img style={miniImg} src={"img/" + img}/>
                         </button>
                     </li>
                 }
@@ -246,13 +266,15 @@ export default class Chat extends React.Component{
         const array = Array.from(this.state.open);
         const open = array.indexOf(user.id);
 
-        if (open === -1) {
-            array.push(user.id);
-            this.setState({open: array});
-            this.props.socket.emit('chat', {type: 'openChat', login: user, history: this.state.history[user.id]});
-        } else {
-            array.splice(open, 1);
-            this.setState({open: array});
+        if (ev.target.name !== 'chatListProfil') {
+            if (open === -1) {
+                array.push(user.id);
+                this.setState({open: array});
+                this.props.socket.emit('chat', {type: 'openChat', login: user, history: this.state.history[user.id]});
+            } else {
+                array.splice(open, 1);
+                this.setState({open: array});
+            }
         }
     }
 
@@ -262,18 +284,19 @@ export default class Chat extends React.Component{
                 const online = this.props.allUsers.findIndex(elem => elem.id === Number(user.id)) !== -1;
                 const open = this.state.open.indexOf(user.id) !== -1;
                 const obj =  online ? Object.assign({}, miniOnline, {backgroundColor: '#13da13'}) : miniOnline;
-                const windowStyle = open ? Object.assign({}, chatWindow, {height: '22vmin', bottom: '0'}) : chatWindow;
+                const windowStyle = open ? Object.assign({}, chatWindow, {height: '265px', bottom: '0'}) : chatWindow;
+                const img = user.imgid ? user.imgid : 'nopic.png';
 
-                if (user && this.props.user.match.findIndex(elem => elem.id === user.id) !== -1 && index < 5) {
+                if (user && this.props.user.match.findIndex(elem => elem.id === user.id) !== -1 && index < this.state.max) {
                     return (
                     <div style={windowStyle} key={user+index}>
                         <div style={{width: '100%', display: 'flex', minHeight: '30px', backgroundColor: 'white', borderWidth: '1px 1px 1px 1px'}}>
                             <button style={chatButton} value={user.id} onClick={(ev) => this.handleOpenChat(ev, user)}>
-                                <img style={miniImgChatButton} src={"img/" + user.imgid}/>
-                                <span style={chatListLogin}>{user.login}</span>
+                                <img style={miniImgChatButton} src={"img/" + img}/>
+                                <a value={user.id} name={"chatListProfil"} href={""} onClick={this.props.profil} style={chatListLogin}>{user.login}</a>
                                 <div style={obj} />
                             </button>
-                            <button style={chatClose} onClick={() => this.closeChat(user)}>x</button>
+                            <button style={chatClose} onClick={(ev) => this.closeChat(ev, user)}>x</button>
                         </div>
                         {this.renderChatWindow(user)}
                         {this.renderInput(user)}
@@ -286,14 +309,17 @@ export default class Chat extends React.Component{
 
 
     renderMoreButton(length){
-        if (length > 5){
+        if (length > this.state.max){
             return (
                 <button name={"moreButton"} style={moreButton} onClick={() => {
-                    const index = this.state.open.indexOf(this.props.user.chat[4].id);
                     const array = Array.from(this.state.open);
 
-                    if (index !== -1){
-                        array.splice(index, 1);
+                    if (this.props.user.chat.length) {
+                        const index = this.state.open.indexOf(this.props.user.chat[this.state.max - 1].id);
+
+                        if (index !== -1) {
+                            array.splice(index, 1);
+                        }
                     }
                     this.setState(prevState => ({more: !prevState.more, open: array}));
                 }}>
@@ -318,49 +344,50 @@ export default class Chat extends React.Component{
         this.props.socket.emit('chat', {type: 'swapIndex', user: this.props.user.chat.findIndex(elem => elem.id === id)});
     }
 
-    closeChat(user){
-        this.props.socket.emit('chat', {
-            type: 'chatList',
-            login: user,
-            history: this.state.history[user.id]
-        });
-        if (this.props.user.chat) {
-            const index = this.props.user.chat.findIndex(elem => elem.id === user.id);
-            const obj = {};
-            const array = Array.from(this.state.open);
-            const open = array.indexOf(user.id);
+    closeChat(ev, user){
+        if (ev.target.name !== 'chatListProfil') {
+            this.props.socket.emit('chat', {
+                type: 'chatList',
+                login: user,
+                history: this.state.history[user.id]
+            });
+            if (this.props.user.chat) {
+                const index = this.props.user.chat.findIndex(elem => elem.id === user.id);
+                const obj = {};
+                const array = Array.from(this.state.open);
+                const open = array.indexOf(user.id);
 
-            if (index !== -1){
-                if (this.props.user.chat.length === 7) {
-                    obj.more = false;
+                if (index !== -1) {
+                    if (this.props.user.chat.length === this.state.max + 1) {
+                        obj.more = false;
+                    }
+                    if (open !== -1) {
+                        array.splice(open, 1);
+                        obj.open = array;
+                    }
                 }
-                if (open !== -1){
-                 array.splice(open, 1);
-                 obj.open = array;
+                else if (index === -1) {
+                    array.push(user.id);
+                    obj.open = array;
                 }
-            }
-            else if (index === -1) {
+                this.setState(obj);
+            } else {
+                const array = Array.from(this.state.open);
+                const obj = {};
+
                 array.push(user.id);
                 obj.open = array;
+                this.setState(obj);
             }
-            this.setState(obj);
-        } else {
-            const array = Array.from(this.state.open);
-            const obj = {};
-
-            array.push(user.id);
-            obj.open = array;
-            this.setState(obj);
         }
-
     }
 
     renderMoreChat(){
-        if (this.state.more && this.props.user.chat && this.props.user.chat.length > 5){
+        if (this.state.more && this.props.user.chat && this.props.user.chat.length > this.state.max){
             const chat = this.props.user.chat.map((user, index) => {
-                if (index > 4){
+                if (index > (this.state.max - 1)){
                    return (
-                       <li key={user+index} style={moreChatLi}><button name={"moreButton"} onClick={this.swapChat} value={user.id} style={moreChatButton}>{user.login}</button><button onClick={() => this.closeChat(user)} style={moreChatClose}>x</button></li>
+                       <li key={user+index} style={moreChatLi}><button name={"moreButton"} onClick={this.swapChat} value={user.id} style={moreChatButton}>{user.login}</button><button name={'moreCloseChat'} onClick={(ev) => this.closeChat(ev, user)} style={moreChatClose}>x</button></li>
                    )
                }
             });
@@ -372,8 +399,8 @@ export default class Chat extends React.Component{
     renderInvisible(){
         const length = this.props.user.chat ? this.props.user.chat.length : 0;
         const invisible = {
-            width: length > 5 ? '5%' : `${100 - (length * 19)}%`,
-            height: '37px',
+            width: length > this.state.max ? '55px' : `0px`,
+            height: '32px',
             backgroundColor: '#dbe4e8',
         };
 
@@ -388,11 +415,12 @@ export default class Chat extends React.Component{
     render (){
         let list = this.listUsers({type: "chat", data: this.props.user.match, history: this.state.history});
         let chat = this.renderChat();
+        const chatContainerStyle = Object.assign({}, chatContainer, {width: (this.state.max * 200) + 60});
 
         if (list && list.length) {
             return (
                 <div style={container}>
-                    <div style={chatContainer}>
+                    <div style={chatContainerStyle}>
                         {chat}
                         {this.renderInvisible()}
                     </div>
@@ -420,12 +448,12 @@ const clickZone ={
 const chatClose = {
     width: '10%',
     backgroundColor: 'rgb(233, 233, 233)',
-    fontSize: '1.2vmin',
+    fontSize: '12px',
     outline: 'none',
     color: 'rgba(72, 99, 115, 0.73)',
     borderColor: 'rgba(9, 70, 106, 0.07)',
     borderWidth: '1px 1px 1px 0px',
-    height: '3vmin'
+    height: '32px'
 };
 
 const moreChatLi = {
@@ -437,7 +465,7 @@ const moreChatLi = {
 const moreChatClose = {
     border: 'none',
     outline: 'none',
-    fontSize: '1.5vmin',
+    fontSize: '18px',
     backgroundColor: 'rgb(233, 233, 233)',
     color: 'rgba(72, 99, 115, 0.73)'
 };
@@ -446,19 +474,22 @@ const moreChatButton = {
     outline: 'none',
     width: '95%',
     border: 'none',
-    padding: '0.6vmin',
-    fontSize: '1vmin',
+    maxWidth: '155px',
+    overflow: 'hidden',
+    padding: '6px',
+    whiteSpace: 'nowrap',
+    fontSize: '15px',
     color: 'rgba(72, 99, 115, 0.73)',
     backgroundColor: 'transparent'
 };
 
 const moreChatContainer = {
     position: 'absolute',
-    bottom: '37px',
+    bottom: '32px',
     borderRadius: '0 2px 0 0',
     margin: '0',
     padding: '0',
-    width: '150px',
+    width: '160px',
     listStyleType: 'none',
     backgroundColor: 'rgb(233, 233, 233)',
     display: 'flex',
@@ -472,7 +503,7 @@ const moreButton = {
     fontSize: '20px',
     backgroundColor: 'rgb(233, 233, 233)',
     width: '100%',
-    height: '40px',
+    height: '30px',
 };
 
 const submitButton ={
@@ -499,8 +530,8 @@ const textWindow = {
     overflowY: 'auto',
     overflowX: 'hidden',
     backgroundColor : 'white',
-    width:'90%',
-    height: '72%',
+    width:'99%',
+    height: '200px',
     border: '1px solid #cccccc'
 };
 
@@ -510,7 +541,7 @@ const formInput = {
     padding: '0',
     margin: '0',
     color: 'white',
-    height: '30px',
+    height: '35px',
     fontSize: '15px',
     borderColor: 'rgb(204, 204, 204)',
     display: 'flex',
@@ -522,7 +553,7 @@ const chatButton = {
     outline: 'none',
     backgroundColor: 'rgba(9, 70, 106, 0.11)',
     color: 'rgba(72, 99, 115, 0.73)',
-    minHeight: '37px',
+    minHeight: '30px',
     fontSize: '1vw',
     borderColor: 'rgb(233, 233, 233)',
     display: 'flex',
@@ -533,20 +564,20 @@ const chatButton = {
 
 const chatWindow = {
     backgroundColor: 'white',
-    width: '19%'
+    minWidth: '200px'
 };
 
 const miniImgChatButton = {
     width: '27px',
     height: '27px',
     borderRadius: '50%',
-    marginRight: '1.2vmin',
+    marginRight: '12px',
 };
 
 const miniOnline = {
     width: '10px',
     height: '10px',
-    marginRight: '0.5vmin',
+    marginRight: '5px',
     backgroundColor: 'gray',
     borderRadius: '100%'
 
@@ -555,7 +586,7 @@ const miniImg = {
     width: '40px',
     height: '40px',
     borderRadius: '50%',
-    marginLeft: '1vmin'
+    marginLeft: '10px'
 };
 
 const contact = {
@@ -609,6 +640,8 @@ const onlineStyle = {
 };
 
 const chatListLogin ={
+    textDecoration: 'none',
+    color: 'rgba(72, 99, 115, 0.73)',
     textAlign: 'left',
     overflow: 'hidden',
     marginRight: '5px',
@@ -621,14 +654,13 @@ const chatContainer = {
     position: 'fixed',
     bottom: '0',
     display: 'flex',
-    // height: '20vmin',
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
     minHeight: '250px',
     flexFlow: 'row-reverse nowrap',
     alignItems: 'flex-end',
     left: '0',
-    width: '80%',
-    minWidth: '864px',
-    zIndex: '1'
+    width: '1054px',
 };
 
 const openChatButton = {

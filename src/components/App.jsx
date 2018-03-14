@@ -4,6 +4,7 @@ import Guest from './Guest.jsx';
 import User from './User.jsx';
 import Cookie from 'cookie';
 import ReactLoading from 'react-loading';
+import Reset from './Reset.jsx';
 
 let cookie = Cookie.parse(document.cookie);
 let ip = cookie.ip;

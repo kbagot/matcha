@@ -5,7 +5,7 @@ export default class ResetPassword extends React.Component{
         super(props);
         this.state = {
           email: '',
-          error: '',
+          error: null,
           valid: false
         };
         this.setError = this.setError.bind(this);
@@ -24,12 +24,14 @@ export default class ResetPassword extends React.Component{
     }
 
     render(){
+        const valid = !(this.state.error === null && this.state.email);
+
         return <div style={container}>
             <span>Afin de reinitialiser votre mot de passe veuillez rentrer l'adresse mail lie a votre compte.</span>
-            <form style={form} onSubmit={this.handleSubmit}>
+            <form style={form} onSubmit={(ev) => this.props.submit(ev, this.state.email)}>
                 <input style={input} type={"text"} onChange={(ev) => this.handleChange(ev, this)} name={"email"} value={this.state.email} autoComplete={"email"}/>
                 <span style={error}>{this.state.error}</span>
-                <input style={submit} type={"submit"} name={"Submit"} value={"Envoyer"} />
+                <input style={submit} type={"submit"} name={"Submit"} value={"Envoyer"} disabled={valid}/>
             </form>
         </div>
     }

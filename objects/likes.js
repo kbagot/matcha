@@ -45,10 +45,11 @@ class Likes {
     }
 
     static async sendProfil(db, sess, socket, data, io, setState){
-        const sql = "SELECT users.id, users.login, users.last, users.first, users.age, users.sexe, users.bio, users.orientation, users.tags, users.spop, users.date, location.city, location.country, location.zipcode, likes.user1, likes.user2, img.imgid, " +
-            "(SELECT st_distance_sphere((SELECT POINT(lon, lat) FROM location WHERE logid = ?), (SELECT POINT(lon, lat) FROM location WHERE logid = ?))) AS distance " +
+        const sql = "SELECT users.id, users.login, users.last, users.first, users.age, users.sexe, users.bio, users.orientation, users.tags, ROUND(users.spop / ?) AS respop, users.date, location.city, location.country, location.zipcode, likes.user1, likes.user2, img.imgid, " +
+            "(SELECT st_distance_sphere((SELECT POINT(lon, lat) FROM location WHERE logid = ?), (SELECT POINT(lon, lat) FROM location WHERE logid = ?)) / 1000) AS distance " +
             "FROM users LEFT JOIN img ON img.userid = users.id AND img.profil = '1' LEFT JOIN likes ON ((likes.user1 = ? AND likes.user2 = users.id) OR (likes.user1 = users.id AND likes.user2 = ?)) INNER JOIN location ON location.logid = users.id  WHERE users.id = ?";
-        const [rows] = await db.execute(sql, [data.id, sess.data.id, sess.data.id, sess.data.id, data.id]);
+        let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
+        const [rows] = await db.execute(sql, [maxspop[0].maxspop /100, data.id, sess.data.id, sess.data.id, sess.data.id, data.id]);
 
         if (rows[0]){
             if (setState) {

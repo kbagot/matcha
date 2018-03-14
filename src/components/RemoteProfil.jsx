@@ -65,7 +65,10 @@ export default class RemoteProfil extends React.Component{
     }
 
     renderScore(){
-        return Object.assign({}, scoreContainer, {background: `linear-gradient(#ecf4fe ${10 - this.props.profil.respop}%, #2b94fb ${10 - this.props.profil.respop}%)`});
+        const pop = this.props.profil.respop;
+
+        console.log(this.props.profil.respop);
+        return Object.assign({}, scoreContainer, {background: `linear-gradient(rgba(9, 70, 104, 0.29) ${100 - pop}%, rgb(9, 70, 104)  0%)`});
     }
 
     handleBlock(){
@@ -86,6 +89,7 @@ export default class RemoteProfil extends React.Component{
     }
 
     render() {
+
         return (
             <div style={remoteContainer}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
@@ -93,7 +97,7 @@ export default class RemoteProfil extends React.Component{
                     {this.renderHeart()}
                 </div>
                 <div style={this.renderScore()}>
-                    {this.props.profil.respop}
+                    <b>{this.props.profil.respop}</b>
                 </div>
                 </div>
                 <div style={{display: 'flex'}}>
@@ -115,6 +119,8 @@ const button = {
 };
 
 let scoreContainer ={
+    color: 'white',
+    fontFamily: 'Verdana',
     display: 'flex',
     textAlign: 'center',
     width: '20px',
@@ -122,7 +128,6 @@ let scoreContainer ={
     borderRadius: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    color: '',
     padding: '10px',
     fontSize: '15px'
 };

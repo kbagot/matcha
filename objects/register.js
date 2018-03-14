@@ -1,4 +1,7 @@
-let bcrypt = require('bcrypt');
+const md5 = require('md5');
+const nodemailer = require('nodemailer');
+const uniqid = require('uniqid');
+const bcrypt = require('bcrypt');
 
 class Register {
     registerHandling(data, socket, fn, allUsers, io, sess){
@@ -7,6 +10,7 @@ class Register {
             submit: this.registerCheck.bind(this),
             edit: this.editSubmit.bind(this),
             loginEdit: Register.changeLogin.bind(this),
+            resetPassword: Register.resetPassword.bind(this),
             resetChange: () => {
                 let error = null;
 
@@ -18,9 +22,33 @@ class Register {
                 }
             }
         };
+
         if (conditional[data.type]) {
             conditional[data.type](data.value, socket, sess, allUsers, io);
         }
+    }
+
+
+    static async resetPassword (data, socket, sess){
+        const sql = "UPDATE users SET hash = ? WHERE email = ?";
+        const hash = md5(uniqid());
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'matcha987654321',
+                pass: 'matcha123456789'
+            }
+        });
+        const mail ={
+            from: "matcha@gmail.com",
+            to: data.email,
+            subject: 'Matcha reset password.',
+            text: 'Bonjour,\nVeuillez cliquer sur ce lien afin de pouvoir reinitialiser votre mot de passe: \nhttps://' + data.ip + ':8081/resetPassword/'+hash
+        };
+
+        transporter.sendMail(mail);
+
+        this.db.execute(sql , [hash , data.email]);
     }
 
     async   registerErrorHandling(data, socket){
@@ -83,7 +111,6 @@ class Register {
             try {
                     let password = await bcrypt.hash(data.password, 10);
                     let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags, age, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
                     let tags = data.tags.map(val => {
                         if (val.className)
                             Register.addTags(this.db, val.value);
@@ -91,6 +118,8 @@ class Register {
                     });
                     let date = new Date();
                     date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+                    data.first = data.first[0].toUpperCase() + data.last.slice(1);
+                    data.last = data.last[0].toUpperCase() + data.last.slice(1);
                     await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio,
                         data.orientation, JSON.stringify(tags), data.age, date]);
 
