@@ -67,8 +67,7 @@ export default class Research extends React.Component {
     }
 
     componentWillReceiveProps(nextProps){
-        console.log('salut');
-            // if (nextProps.refreshlist)
+            if (nextProps.refreshlist)
              this.refresh();
     }
 

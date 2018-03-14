@@ -127,16 +127,16 @@ class Research {
             let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
 
             if ('spop' in opt) {
-                minpop = Math.round((opt.spop / maxspop[0].maxspop) - 3);
-                maxpop = Math.round((opt.spop / maxspop[0].maxspop) + 3);
+                minpop = Math.round((opt.spop / maxspop[0].maxspop) - 30);
+                maxpop = Math.round((opt.spop / maxspop[0].maxspop) + 30);
             }
             else {
                 minpop = 0;
-                maxpop = 10;
+                maxpop = 100;
             }
 
             let sql = "SELECT * FROM (SELECT users.login, users.first, users.last, users.age, users.sexe, users.bio, users.orientation, " +
-                "users.tags, ROUND(users.spop / ?) AS respop, users.date, location.city, location.country, location.zipcode, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, users.spop AS pop," +
+                "users.tags, ROUND(users.spop / ?) AS respop, users.date, location.city, location.country, location.zipcode, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, users.spop AS spop," +
                 "(st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
                 " from users INNER JOIN location ON location.logid = users.id LEFT JOIN img ON img.userid = users.id AND (img.profil = 1) " +
@@ -150,6 +150,7 @@ class Research {
             let inserts = [maxspop[0].maxspop / 100, req[0].lon, req[0].lat, opt.m, opt.f, opt.bi, opt.trans, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
             let [results] = await db.query(sql);
+            console.log(results);
             return (results);
         } catch (e) {
             console.log(e);
