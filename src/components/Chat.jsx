@@ -60,7 +60,7 @@ export default class Chat extends React.Component{
     }
 
     setMaxCHat(width){
-        const max = Math.floor((width - 73) / 200);
+        const max = Math.floor((width - 10) / 200);
 
         this.setState({max: max ? max : 1});
     }
@@ -220,12 +220,13 @@ export default class Chat extends React.Component{
                     const online = this.props.allUsers.findIndex(elem => elem.id === Number(user.id)) !== -1;
                     const obj =  online ? Object.assign({}, onlineStyle, {backgroundColor: '#13da13'}) : onlineStyle;
                     const button = notif ? Object.assign({}, openChatButton, {backgroundColor: 'rgb(3, 132, 212)', color: 'white'}) : openChatButton;
+                    const img = user.imgid ? user.imgid : 'nopic.png';
 
                     return <li key={index}>
                         <button  name={'openChat'} value={user.id} style={button} onClick={ev => this.closeChat(ev, user)}>
                             <div style={obj} />
                             <span>{user.login}</span>
-                            <img style={miniImg} src={"img/" + user.imgid}/>
+                            <img style={miniImg} src={"img/" + img}/>
                         </button>
                     </li>
                 }
@@ -284,13 +285,14 @@ export default class Chat extends React.Component{
                 const open = this.state.open.indexOf(user.id) !== -1;
                 const obj =  online ? Object.assign({}, miniOnline, {backgroundColor: '#13da13'}) : miniOnline;
                 const windowStyle = open ? Object.assign({}, chatWindow, {height: '265px', bottom: '0'}) : chatWindow;
+                const img = user.imgid ? user.imgid : 'nopic.png';
 
                 if (user && this.props.user.match.findIndex(elem => elem.id === user.id) !== -1 && index < this.state.max) {
                     return (
                     <div style={windowStyle} key={user+index}>
                         <div style={{width: '100%', display: 'flex', minHeight: '30px', backgroundColor: 'white', borderWidth: '1px 1px 1px 1px'}}>
                             <button style={chatButton} value={user.id} onClick={(ev) => this.handleOpenChat(ev, user)}>
-                                <img style={miniImgChatButton} src={"img/" + user.imgid}/>
+                                <img style={miniImgChatButton} src={"img/" + img}/>
                                 <a value={user.id} name={"chatListProfil"} href={""} onClick={this.props.profil} style={chatListLogin}>{user.login}</a>
                                 <div style={obj} />
                             </button>
@@ -397,7 +399,7 @@ export default class Chat extends React.Component{
     renderInvisible(){
         const length = this.props.user.chat ? this.props.user.chat.length : 0;
         const invisible = {
-            width: length > this.state.max ? '55px' : `${100 - (length * 19)}%`,
+            width: length > this.state.max ? '55px' : `0px`,
             height: '32px',
             backgroundColor: '#dbe4e8',
         };
