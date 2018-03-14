@@ -661,7 +661,6 @@ const chatContainer = {
     alignItems: 'flex-end',
     left: '0',
     width: '1054px',
-    zIndex: '1'
 };
 
 const openChatButton = {

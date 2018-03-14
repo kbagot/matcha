@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import Guest from './Guest.jsx';
 import User from './User.jsx';
 import Cookie from 'cookie';
+import Reset from './Reset.jsx';
 
 let cookie = Cookie.parse(document.cookie);
 let ip = cookie.ip;

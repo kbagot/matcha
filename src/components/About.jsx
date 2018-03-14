@@ -66,6 +66,7 @@ export default class About extends React.Component{
         const country = this.props.profil.country ? ', ' +this.props.profil.country : '';
         const distance = this.props.profil.distance ? ' - ' + Math.round(Number(this.props.profil.distance)) + 'km' : '';
 
+        console.log(this.props.profil.distance);
         return city + zip + country + distance;
     }
 

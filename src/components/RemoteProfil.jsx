@@ -67,6 +67,7 @@ export default class RemoteProfil extends React.Component{
     renderScore(){
         const pop = this.props.profil.respop;
 
+        console.log(this.props.profil.respop);
         return Object.assign({}, scoreContainer, {background: `linear-gradient(rgba(9, 70, 104, 0.29) ${100 - pop}%, rgb(9, 70, 104)  0%)`});
     }
 
