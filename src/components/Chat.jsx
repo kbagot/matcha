@@ -415,7 +415,9 @@ export default class Chat extends React.Component{
     render (){
         let list = this.listUsers({type: "chat", data: this.props.user.match, history: this.state.history});
         let chat = this.renderChat();
-        const chatContainerStyle = Object.assign({}, chatContainer, {width: (this.state.max * 200) + 60});
+        const chatLength = this.props.user.chat ? this.props.user.chat.length : 0;
+        const width =  chatLength > this.state.max ? (chatLength * 200) + 60 : chatLength * 200;
+        const chatContainerStyle = Object.assign({}, chatContainer, {width: width});
 
         if (list && list.length) {
             return (
@@ -654,9 +656,8 @@ const chatContainer = {
     position: 'fixed',
     bottom: '0',
     display: 'flex',
-    overflow: 'hidden',
     justifyContent: 'flex-end',
-    minHeight: '250px',
+    maxHeight: '32px',
     flexFlow: 'row-reverse nowrap',
     alignItems: 'flex-end',
     left: '0',
