@@ -113,7 +113,8 @@ export default class HomeContent extends React.Component {
         let resbut;
         if (this.state.showres) {
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
-                             match={''} handleClick={this.props.handleClick} render={true}/>;
+                             match={''} handleClick={this.props.handleClick} render={true}
+                             refreshlist={this.props.refreshlist}/>;
             resbut = '◀ ' + 'ACCUEIL';
         }else {
             view = this.content();

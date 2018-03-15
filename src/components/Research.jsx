@@ -4,37 +4,39 @@ import DisplayUsers from './DisplayUsers.jsx';
 import Ripple from 'react-ripples';
 import ReactLoading from 'react-loading';
 
+let initial_state = {
+    M: '',
+    F: '',
+    T: '',
+    m: '',
+    f: '',
+    bi: '',
+    trans: '',
+    min: '',
+    max: '',
+    distance: '',
+    tags: [],
+    order: {
+        tags: '',
+        distance: '',
+        age: '',
+        spop: ''
+    },
+    result: [],
+    resultLength: 0,
+    dofirstmatch: '',
+    matchtag: '',
+    match: '',
+    display: {
+        form: 'resForm',
+        img: 'cross'
+    }
+};
+
 export default class Research extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            M: '',
-            F: '',
-            T: '',
-            m: '',
-            f: '',
-            bi: '',
-            trans: '',
-            min: '',
-            max: '',
-            distance: '',
-            tags: [],
-            order: {
-                tags: '',
-                distance: '',
-                age: '',
-                spop: ''
-            },
-            result: [],
-            resultLength: 0,
-            dofirstmatch: '',
-            matchtag: '',
-            match: '',
-            display: {
-                form: 'resForm',
-                img: 'cross'
-            }
-        };
+        this.state = initial_state;
         this.getTags = this.getTags.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.refresh = this.refresh.bind(this);
@@ -47,17 +49,18 @@ export default class Research extends React.Component {
     // }
 
     componentWillMount() {
-        if (this.props.match)
+        if (this.props.match === 'match') {
             this.setState({
                 ['dofirstmatch']: 'match',
                 ['match']: 'match'
             });
+        }
     }
 
     componentDidMount() {
         window.scrollTo(0, 0);
 
-        if (this.state.dofirstmatch)
+        // if (this.state.dofirstmatch)
             this.refresh();
         window.addEventListener("scroll", this.handleScroll);
     }
@@ -67,8 +70,18 @@ export default class Research extends React.Component {
     }
 
     componentWillReceiveProps(nextProps){
-            // if (nextProps.refreshlist)
-             this.refresh();
+        if (JSON.stringify(nextProps.user) !== JSON.stringify(this.props.user) || nextProps.refreshlist) {
+            if (this.state.match && this.state.match === 'match') {
+                this.setState(Object.assign({}, initial_state, {
+                    ['dofirstmatch']: 'match',
+                    ['match']: 'match'
+                }), () => {
+                    this.refresh();
+                });
+            } else {
+                this.refresh();
+            }
+        }
     }
 
     handleScroll() {
@@ -77,7 +90,7 @@ export default class Research extends React.Component {
         const html = document.documentElement;
         const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
         const windowBottom = windowHeight + window.pageYOffset;
-        if (windowBottom >= docHeight) {
+        if (windowBottom >= docHeight && this.props.render) {
             this.setState({['resultLength']: this.state.result.length}, () => this.refresh('scroll'));
         }
     }
@@ -91,7 +104,7 @@ export default class Research extends React.Component {
             });
 
             if (this.state.dofirstmatch) {
-                users.dofirstmatch = '';
+                users.dofirstmatch = '';  //TODO CHECK IT MOTHER GFUCKER
                 users.result = data;
                 users.matchtag = users.tags;
                 this.setState(users, () => {
@@ -102,6 +115,7 @@ export default class Research extends React.Component {
                 if (this.state.resultLength > 0 && from === 'scroll') {
                     this.setState({
                         // result: [login]
+                        // result: data
                         result: [...this.state.result, ...data]
                     }, () => {
                         window.addEventListener("scroll", this.handleScroll);
