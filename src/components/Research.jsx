@@ -49,17 +49,18 @@ export default class Research extends React.Component {
     // }
 
     componentWillMount() {
-        if (this.props.match)
+        if (this.props.match === 'match') {
             this.setState({
                 ['dofirstmatch']: 'match',
                 ['match']: 'match'
             });
+        }
     }
 
     componentDidMount() {
         window.scrollTo(0, 0);
 
-        if (this.state.dofirstmatch)
+        // if (this.state.dofirstmatch)
             this.refresh();
         window.addEventListener("scroll", this.handleScroll);
     }
@@ -69,15 +70,30 @@ export default class Research extends React.Component {
     }
 
     componentWillReceiveProps(nextProps){
-    if (nextProps.refreshlist !== this.props.refreshlist)
-        this.refresh();
-    if (nextProps.user !== this.props.user)
-        this.setState(Object.assign(initial_state, {
-            ['dofirstmatch']: 'match',
-            ['match']: 'match'
-        }), () => {
-            this.refresh();
-        });
+        if (JSON.stringify(nextProps.user) !== JSON.stringify(this.props.user) || nextProps.refreshlist) {
+            if (this.state.match && this.state.match === 'match') {
+                this.setState(Object.assign({}, initial_state, {
+                    ['dofirstmatch']: 'match',
+                    ['match']: 'match'
+                }), () => {
+                    this.refresh();
+                });
+            } else {
+                this.refresh();
+            }
+        }
+
+
+
+        // if (nextProps.refreshlist !== this.props.refreshlist)
+    //     this.refresh();
+    // if (nextProps.user !== this.props.user)
+    //     this.setState(Object.assign(initial_state, {
+    //         ['dofirstmatch']: 'match',
+    //         ['match']: 'match'
+    //     }), () => {
+    //         this.refresh();
+    //     });
     }
 
     handleScroll() {
@@ -100,7 +116,7 @@ export default class Research extends React.Component {
             });
 
             if (this.state.dofirstmatch) {
-                // users.dofirstmatch = '';  //TODO CHECK IT MOTHER GFUCKER
+                users.dofirstmatch = '';  //TODO CHECK IT MOTHER GFUCKER
                 users.result = data;
                 users.matchtag = users.tags;
                 this.setState(users, () => {
@@ -111,8 +127,8 @@ export default class Research extends React.Component {
                 if (this.state.resultLength > 0 && from === 'scroll') {
                     this.setState({
                         // result: [login]
-                        result: data
-                        // result: [...this.state.result, ...data]
+                        // result: data
+                        result: [...this.state.result, ...data]
                     }, () => {
                         window.addEventListener("scroll", this.handleScroll);
                     })
