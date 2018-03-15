@@ -33,6 +33,8 @@ class Profil {
         if (!sess.data.block || (sess.data.id !== data.data.id && sess.data.block.indexOf(data.data.id) === -1)){
             const sql = sess.data.block ? "UPDATE block SET list = JSON_MERGE((SELECT list FROM (SELECT list FROM block WHERE userid = ?) AS lol), ?) WHERE userid = ?" : "INSERT INTO block VALUES(? , ?)";
 
+
+            likes.handleLikes({type: 'Remove', login: {id: data.data.id, login: data.data.login}}, socket, db, sess, allUsers, io);
             if (!sess.data.block){
                 await db.execute(sql, [sess.data.id, [data.data.id]]);
                 sess.data.block = [data.data.id];
@@ -40,7 +42,6 @@ class Profil {
                 await db.execute(sql, [sess.data.id, `[${data.data.id}]`, sess.data.id]);
                 sess.data.block.push(data.data.id);
             }
-            likes.handleLikes({type: 'Remove', login: {id: data.data.id, login: data.data.login}}, socket, db, sess, allUsers, io);
             sess.save();
             socket.emit("user", sess.data);
         }

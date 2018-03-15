@@ -4,7 +4,6 @@ import Guest from './Guest.jsx';
 import User from './User.jsx';
 import Cookie from 'cookie';
 import ReactLoading from 'react-loading';
-import Reset from './Reset.jsx';
 
 let cookie = Cookie.parse(document.cookie);
 let ip = cookie.ip;
@@ -18,8 +17,9 @@ export default class App extends React.Component {
             login: cookie.login,
             error: cookie.error,
             ready: cookie.ready,
+            waiting: false
         };
-        this.userlocation = this.userlocation.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     componentDidMount (){
@@ -34,58 +34,35 @@ export default class App extends React.Component {
         socket.on('userDisconnect', (user) => this.userLogout());
     }
 
-    userlocation() {
-        console.log('location');
-            if ("geolocation" in navigator) {
-                /* geolocation is available */
-                navigator.geolocation.getCurrentPosition(async position => {
-                    await socket.emit('locUp', {
-                        lat: position.coords.latitude, lon: position.coords.longitude
-                    }, () => {
-                        document.cookie = "ready=" + true;
-                        this.setState({
-                            ['ready']: true,
-                        });
-                    });
-                }, error => {
-                    console.log(error);
-                    socket.emit('locUp', {lat: '', lon: ''}, () => {
-                        document.cookie = "ready=" + true;
-                        this.setState({
-                            ['ready']: true,
-                        });
-                    });
-                });
-            }
+    handleClick(){
+        this.setState({waiting: true});
     }
 
     userLogin(user){
         document.cookie = "login=" + true;
         document.cookie = "error=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        this.setState({['user']: user,['login']: true, ['error']: false});
+        this.setState({['user']: user,['login']: true, ['error']: false, waiting: false});
     }
 
     userLogout(){
         document.cookie = "login=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        document.cookie = "ready=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        this.setState({['user']: {}, ['login']: undefined, ['ready']: undefined});
+        this.setState({['user']: {}, ['login']: undefined});
     }
 
     render(){
         let display = '';
 
-        if (this.state.login && !this.state.error && this.state.ready)
-            display = <User socket={socket} user={this.state.user}/>;
-        else if (this.state.login && !this.state.ready) {
-            display = <div className="loadpage">
-                <ReactLoading type='cylon' color='white' width='15%' height='15px'/>
-                </div>;
-        } else
-            display = <Guest socket={socket} location={this.userlocation}/>;
+        if (this.state.waiting && !this.state.login && !this.state.error){
+            display = <div className="loadpage"><ReactLoading delay={0} type='cylon' color='white' width='15%' height='15px'/></div>;
+        } else if (this.state.login && !this.state.error) {
+                display = <User socket={socket} user={this.state.user}/>;
+        } else {
+            display = <Guest socket={socket} submit={this.handleClick}/>;
+        }
 
         return (
             <div className={"app"}>
-                    {display}
+                {display}
             </div>
         )
     }

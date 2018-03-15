@@ -47,10 +47,6 @@ export default class HomeContent extends React.Component {
             idList = Object.keys(this.props.user.visits).slice(0, 4);
 
         // console.log(idList);
-        if (this.props.user.visits){
-            console.log("ICI");
-            console.log(this.props.user.visits);
-        }
         // console.log(this.props.user.visits);
            // let lol = Object.assign({}, this.props.user.visits);
            // cons

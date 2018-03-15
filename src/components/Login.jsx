@@ -48,9 +48,22 @@ export default class Login extends React.Component {
     }
 
      handleSubmit(ev) {
-        this.props.location();
-        this.props.socket.emit('login', this.state);
-        ev.preventDefault();
+         ev.preventDefault();
+         if ("geolocation" in navigator) {
+             const pos = {
+                 lat: '',
+                 lon: ''
+             };
+             this.props.submit();
+             navigator.geolocation.getCurrentPosition(async position => {
+                 pos.lat = position.coords.latitude;
+                 pos.lon = position.coords.longitude;
+                 this.props.socket.emit('login', Object.assign({} , this.state, pos));
+             }, error => {
+                 console.log(error);
+                 this.props.socket.emit('login', Object.assign({} , this.state, pos));
+             }, {timeout: 4000});
+         }
     }
 
     render() {

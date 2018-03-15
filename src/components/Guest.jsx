@@ -77,7 +77,7 @@ export default class Guest extends React.Component{
             window = <ResetPassword socket={this.props.socket} submit={this.handleSubmitPassword}/>
         }
         else if (this.state.login){
-            window = <Login socket={this.props.socket} reset={this.resetPassword} location={this.props.location}/>
+            window = <Login socket={this.props.socket} reset={this.resetPassword} submit={this.props.submit}/>
         }
         else if (!this.state.cookieReset){
             window = <Register socket={this.props.socket} switch={this.switchButton}/>
