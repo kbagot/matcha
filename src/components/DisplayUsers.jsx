@@ -63,7 +63,7 @@ export default class DisplayUsers extends React.Component {
     }
 
     render () {
-        let val = this.props.result.length > 0 ? this.displayres() : <h2>AUCUN</h2>;
+        let val = this.props.result.length > 0 ? this.displayres() : <h2>Aucun Résultat</h2>;
 
         return (
             <div className="resList">

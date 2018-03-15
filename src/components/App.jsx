@@ -37,7 +37,6 @@ export default class App extends React.Component {
     userlocation() {
         console.log('location');
             if ("geolocation" in navigator) {
-                /* geolocation is available */
                 navigator.geolocation.getCurrentPosition(async position => {
                     await socket.emit('locUp', {
                         lat: position.coords.latitude, lon: position.coords.longitude

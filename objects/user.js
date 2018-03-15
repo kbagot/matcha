@@ -54,43 +54,45 @@ class User {
     }
 
     static update_coords(res, db, sess, respond) {
-        let options = {
-            provider: 'google',
-            httpAdapter: 'https', // Default
-            apiKey: 'AIzaSyAc2MJltSS6tF0okq-aKxKdtmGIhURn0HI', // for Mapquest, OpenCage, Google Premier
-            formatter: null
-        };
-        let geocoder = NodeGeocoder(options);
+        if (sess.data && sess.data.id) {
+            let options = {
+                provider: 'google',
+                httpAdapter: 'https', // Default
+                apiKey: 'AIzaSyAc2MJltSS6tF0okq-aKxKdtmGIhURn0HI', // for Mapquest, OpenCage, Google Premier
+                formatter: null
+            };
+            let geocoder = NodeGeocoder(options);
 
-        let api = 'reverse';
-        let query = {'lat': res.lat, 'lon': res.lon};
-        if ('city' in res && res.city) {
-            api = 'geocode';
-            query = res.city;
-        }
+            let api = 'reverse';
+            let query = {'lat': res.lat, 'lon': res.lon};
+            if ('city' in res && res.city) {
+                api = 'geocode';
+                query = res.city;
+            }
 
             geocoder[api](query)
-            .then(res => {
-                if (res[0])
-                    User.update_coords_db(res[0], db, sess, respond);
-            })
-            .catch(err => {
-                rp('https://ipapi.co/' + sess.ip + '/json')
-                    .then(res => {
-                        res = JSON.parse(res);
-                        if (res.reserved || sess.ip === undefined)
-                            return rp('https://ipapi.co/json');
-                        else
-                            User.update_coords_db(res, db, sess, respond);
-                    })
-                    .then(res => {
-                        if (res) {
+                .then(res => {
+                    if (res[0])
+                        User.update_coords_db(res[0], db, sess, respond);
+                })
+                .catch(err => {
+                    rp('https://ipapi.co/' + sess.ip + '/json')
+                        .then(res => {
                             res = JSON.parse(res);
-                            User.update_coords_db(res, db, sess, respond);
-                        }
-                    })
-                    .catch(err => console.log(err));
-            });
+                            if (res.reserved || sess.ip === undefined)
+                                return rp('https://ipapi.co/json');
+                            else
+                                User.update_coords_db(res, db, sess, respond);
+                        })
+                        .then(res => {
+                            if (res) {
+                                res = JSON.parse(res);
+                                User.update_coords_db(res, db, sess, respond);
+                            }
+                        })
+                        .catch(err => console.log(err));
+                });
+        }
     }
 
     static async update_coords_db(res, db, sess, respond) {
