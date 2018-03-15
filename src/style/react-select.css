@@ -239,6 +239,9 @@
   padding-right: 5px;
 }
 .Select--multi .Select-multi-value-wrapper {
+  max-height: 150px;
+  overflow-y: auto;
+  width: 100%;
   display: inline-block;
 }
 .Select .Select-aria-only {

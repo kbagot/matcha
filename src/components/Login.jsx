@@ -3,68 +3,39 @@ import React from 'react';
 export default class Login extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            login: '',
-            password: '',
-            errorlogin: '',
-            errorpasswd: 'input',
-        };
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentDidMount() {
-        this.props.socket.on('logpass', () => {
-            this.setState({['errorpasswd']: 'error_input'});
-            console.log('rout');
-        });
-        this.props.socket.on('loglog', () => {
-            this.setState({['errorlogin']: 'error_input'});
-        });
-    }
-
-    componentWillUnmount() {
-        this.props.socket.removeListener('logpass');
-        this.props.socket.removeListener('loglog');
-    }
-
-    handleChange(ev) {
-        if (ev.target.name === "login") {
-            this.setState({
-                ['login']: ev.target.value
-            });
-            this.setState({
-                ['errorlogin']: 'input'
-            });
-        }
-        else if (ev.target.name === "password") {
-            this.setState({
-                ['password']: ev.target.value
-            });
-            this.setState({
-                ['errorpasswd']: 'input'
-            });
-        }
-    }
-
      handleSubmit(ev) {
-        this.props.location();
-        this.props.socket.emit('login', this.state);
-        ev.preventDefault();
+         ev.preventDefault();
+         if ("geolocation" in navigator) {
+             const pos = {
+                 lat: '',
+                 lon: ''
+             };
+             this.props.submit();
+             navigator.geolocation.getCurrentPosition(async position => {
+                 pos.lat = position.coords.latitude;
+                 pos.lon = position.coords.longitude;
+                 this.props.socket.emit('login', Object.assign({} , this.props.login, pos));
+             }, error => {
+                 this.props.socket.emit('login', Object.assign({} , this.props.login, pos));
+             }, {timeout: 4000});
+         }
     }
 
     render() {
         const errorStyle = Object.assign({}, input, {borderColor: 'indianred'});
-        const loginStyle = this.state.errorlogin === 'error_input' ?  errorStyle : input;
-        const passwordStyle = this.state.errorpasswd === 'error_input' ?  errorStyle : input;
+        const loginStyle = this.props.login.errorlogin !== '' ?  errorStyle : input;
+        const passwordStyle = this.props.login.errorpasswd !== '' ?  errorStyle : input;
 
         return (
             <div style={loginContainer} className={'Login-Container'}>
                 <form style={form} onSubmit={this.handleSubmit}>
-                    <input style={loginStyle} autoComplete="username" type="text" value={this.state.login} name="login"
-                                 onChange={this.handleChange} placeholder={"Login"}/>
-                    <input style={passwordStyle} autoComplete="current-password" type="password" value={this.state.password}
-                                    name="password" onChange={this.handleChange} placeholder={"Password"}/>
+                    <input style={loginStyle} autoComplete="username" type="text" value={this.props.login.login} name="login"
+                                 onChange={this.props.handleChange} placeholder={"Login"}/>
+                    <input style={passwordStyle} autoComplete="current-password" type="password" value={this.props.login.password}
+                                    name="password" onChange={this.props.handleChange} placeholder={"Password"}/>
                     <input style={submit} type="submit" value="S'identifier" name="Submit"/>
                 </form>
                 <a style={forgotten} href="" onClick={this.props.reset}> Mot de passe oublie ?</a>

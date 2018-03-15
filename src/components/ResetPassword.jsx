@@ -14,7 +14,6 @@ export default class ResetPassword extends React.Component{
     handleChange (ev, obj) {
         if (ev.target.name === 'email'){
             obj.setState({email: ev.target.value.trim()});
-            console.log(ev.target.value.trim());
             obj.props.socket.emit('Register', {type:'resetChange', value: ev.target.value}, this.setError);
         }
     }

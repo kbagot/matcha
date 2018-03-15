@@ -82,18 +82,6 @@ export default class Research extends React.Component {
                 this.refresh();
             }
         }
-
-
-
-        // if (nextProps.refreshlist !== this.props.refreshlist)
-    //     this.refresh();
-    // if (nextProps.user !== this.props.user)
-    //     this.setState(Object.assign(initial_state, {
-    //         ['dofirstmatch']: 'match',
-    //         ['match']: 'match'
-    //     }), () => {
-    //         this.refresh();
-    //     });
     }
 
     handleScroll() {
