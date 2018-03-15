@@ -119,7 +119,7 @@ export default class Register extends React.Component {
                         <option value="trans">Trans</option>
                     </select>
                     <p style={iAm}>Tags</p>
-                    <div style={{width: '100%'}}>
+                    <div style={{width: '100%', maxHeight: '160px'}}>
                         <SelectTags socket={this.props.socket} sendTags={this.getUserTags} create/>
                     </div>
                     <input style={submitStyle} type="submit" value="S'inscrire" name="Submit" disabled={valid}/>

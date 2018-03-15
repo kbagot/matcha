@@ -66,7 +66,6 @@ export default class About extends React.Component{
         const country = this.props.profil.country ? ', ' +this.props.profil.country : '';
         const distance = this.props.profil.distance ? ' - ' + Math.round(Number(this.props.profil.distance)) + 'km' : '';
 
-        console.log(this.props.profil.distance);
         return city + zip + country + distance;
     }
 
@@ -98,12 +97,34 @@ export default class About extends React.Component{
         }
     }
 
-    componentDidMount(){
-        this.props.socket.on('user', () => {
-            if (this.state.edit) {
-                this.setState(initialState)
+    componentWillReceiveProps(nextProps){
+        if (this.props.profil.id === this.props.user.id){
+            const values = ['id', 'bio', 'first', 'last', 'login', 'orientation', 'sexe', 'spop', 'tags'];
+            let change = 0;
+            Object.keys(nextProps.user).map(elem => {
+               if (values.indexOf(elem) !== -1){
+                   if (elem !== 'tags'){
+                       if (nextProps.user[elem] !== this.props[elem]){
+                           change++;
+                       }
+                   } else {
+                       nextProps.user[elem].map(tag => {
+                          if (this.props.user.tags.indexOf(tag) === -1){
+                              change++;
+                          }
+                       });
+                   }
+               }
+            });
+
+            if (change){
+                this.setState(initialState);
             }
-        });
+        }
+    }
+
+    componentWillUnmount(){
+        this.setState({edit: false});
     }
 
     handleEdit(){

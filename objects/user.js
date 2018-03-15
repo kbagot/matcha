@@ -17,29 +17,29 @@ class User {
             bcrypt.compare(res.password, results[0].password, async (err, succ) => {
                 if (succ) {
                     User.update_date(db, res.login);
-
                     delete results[0].password;
                     sess.data = results[0];
                     await User.addPopLogin(db, sess);
                     sess.spop += 10;
-                    sess.save((err) => {
+                    sess.save(async (err) => {
                         if (err)
                             console.log(err);
+                        await User.update_coords({lon: res.lon, lat: res.last}, db, sess);
                         update.refreshUser(db, sess, socket)
                             .then(() => this.updateUsers(sess, allUsers))
                             .then(() => io.emit('allUsers', allUsers));
-                        socket.emit('doloc');
                     });
                 }
                 else
-                    socket.emit('logpass');
+                    socket.emit('logPass');
             });
         }
-        else
-            io.sockets.emit('loglog');
+        else {
+            socket.emit('logLog');
+        }
     }
 
-    static async addPopLogin(db, sess){
+    static async addPopLogin(db, sess) {
         const sql = "UPDATE users SET spop = spop+10 WHERE id = ?";
 
         await db.execute(sql, [sess.data.id]);
@@ -53,7 +53,7 @@ class User {
         db.execute(sql, [date, login]);
     }
 
-    static update_coords(res, db, sess, respond) {
+    static async update_coords(res, db, sess, respond) {
         let options = {
             provider: 'google',
             httpAdapter: 'https', // Default
@@ -69,31 +69,34 @@ class User {
             query = res.city;
         }
 
-            geocoder[api](query)
-            .then(res => {
-                if (res[0])
-                    User.update_coords_db(res[0], db, sess, respond);
-            })
-            .catch(err => {
-                rp('https://ipapi.co/' + sess.ip + '/json')
-                    .then(res => {
+        try {
+            const res = await geocoder[api](query);
+
+            if (res[0]) {
+                await User.update_coords_db(res[0], db, sess, respond);
+            }
+        } catch (e) {
+            try {
+                let apiRes = await rp('https://ipapi.co/' + sess.ip + '/json');
+
+                let res = JSON.parse(apiRes);
+                if (res.reserved || sess.ip === undefined) {
+                    res = await rp('https://ipapi.co/json');
+                    if (res) {
                         res = JSON.parse(res);
-                        if (res.reserved || sess.ip === undefined)
-                            return rp('https://ipapi.co/json');
-                        else
-                            User.update_coords_db(res, db, sess, respond);
-                    })
-                    .then(res => {
-                        if (res) {
-                            res = JSON.parse(res);
-                            User.update_coords_db(res, db, sess, respond);
-                        }
-                    })
-                    .catch(err => console.log(err));
-            });
+                        await User.update_coords_db(res, db, sess, respond);
+                    }
+                }
+                else
+                    await User.update_coords_db(res, db, sess, respond);
+            } catch (e) {
+                console.log(e);
+            }
+        }
     }
 
     static async update_coords_db(res, db, sess, respond) {
+
         let entry = [];
         if (res.ip) {
             entry.push(res.country_name);
@@ -124,7 +127,7 @@ class User {
             }
             req = "INSERT INTO location(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
             [results, fields] = await db.execute(req, [sess.data.id, res.latitude, res.longitude, res.city, ...entry]);
-            respond();
+            // respond();
         } catch (e) {
             console.log(e);
         }

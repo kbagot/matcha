@@ -47,16 +47,13 @@ export default class HomeContent extends React.Component {
             idList = Object.keys(this.props.user.visits).slice(0, 4);
 
         // console.log(idList);
-        if (this.props.user.visits){
-            console.log("ICI");
-            console.log(this.props.user.visits);
-        }
         // console.log(this.props.user.visits);
            // let lol = Object.assign({}, this.props.user.visits);
            // cons
         // console.log(lol);
         //     let lul = Object.keys(lol);
-        //    console.log(lul);
+        //
+        // (lul);
         if (name === 'match')
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
                        match={'match'} handleClick={this.props.handleClick} render={this.state.match} idList={'home'} refreshlist={this.props.refreshlist}/>;
