@@ -32,6 +32,7 @@ export default class Chat extends React.Component{
         this.autoScroll = this.autoScroll.bind(this);
         this.handleMouseOut = this.handleMouseOut.bind(this);
         this.setMaxCHat = this.setMaxCHat.bind(this);
+        this.handleResize = this.handleResize.bind(this);
     }
 
     componentDidMount() {
@@ -52,11 +53,13 @@ export default class Chat extends React.Component{
            }
         });
 
-        window.addEventListener('resize', (ev) => {
-            const width = ev.target.innerWidth;
+        window.addEventListener('resize', this.handleResize);
+    }
 
-            this.setMaxCHat(width);
-        });
+    handleResize(ev){
+        const width = ev.target.innerWidth;
+
+        this.setMaxCHat(width);
     }
 
     setMaxCHat(width){
@@ -64,16 +67,19 @@ export default class Chat extends React.Component{
 
         this.setState({max: max ? max : 1});
     }
+
     componentWillMount(){
         const width = window.innerWidth;
 
         this.setMaxCHat(width);
-    };
+    }
 
     componentWillUnmount(){
+        this.props.socket.removeListener('chat');
         if (this.props.user.match){
-            this.props.match.forEach(elem => this.props.socket.removeListener(elem.login));
+            this.props.user.match.forEach(elem => this.props.socket.removeListener(elem.login));
         }
+        window.removeEventListener('resize', this.handleResize);
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -99,18 +105,16 @@ export default class Chat extends React.Component{
     }
 
     autoScroll(user){
-        const open = document.getElementById('Chat'+user.login.id);
+        setTimeout(() =>{
+            const open = document.getElementById('Chat'+user.login.id);
 
-        if (open){
-            const index = toScroll.indexOf(user.login.id);
+            if (open && open.scrollHeight){
+                const index = toScroll.indexOf(user.login.id);
+                open.scrollTop = open.scrollHeight - open.clientHeight;
+                toScroll.splice(index, 1);
+            }
+        }, 10);
 
-            toScroll.splice(index, 1);
-            open.scrollTop = open.scrollHeight - open.clientHeight;
-        }
-    }
-
-    componentWillUnmount(){
-        this.props.socket.removeListener('chat');
     }
 
     newMessage(data){
@@ -661,6 +665,7 @@ const chatContainer = {
     flexFlow: 'row-reverse nowrap',
     alignItems: 'flex-end',
     left: '0',
+    zIndex: '2',
     width: '1054px',
 };
 

@@ -13,6 +13,8 @@ export default class RemoteProfil extends React.Component{
         this.renderBlock = this.renderBlock.bind(this);
         this.renderReport = this.renderReport.bind(this);
         this.handleReport = this.handleReport.bind(this);
+        this.renderLocate = this.renderLocate.bind(this);
+        this.handleLocate = this.handleLocate.bind(this);
     }
 
     handleLike(ev) {
@@ -67,7 +69,6 @@ export default class RemoteProfil extends React.Component{
     renderScore(){
         const pop = this.props.profil.respop;
 
-        console.log(this.props.profil.respop);
         return Object.assign({}, scoreContainer, {background: `linear-gradient(rgba(9, 70, 104, 0.29) ${100 - pop}%, rgb(9, 70, 104)  0%)`});
     }
 
@@ -84,6 +85,31 @@ export default class RemoteProfil extends React.Component{
         }
     }
 
+    renderLocate(){
+        if (this.props.user.id === this.props.profil.id){
+            return (
+                <div style={heartContainer}>
+                    <a href={""} onClick={this.handleLocate}><img style={heart} src={'img/icon/locate.png'} /></a>
+                </div>
+            )
+        }
+    }
+
+    handleLocate(ev){
+        navigator.geolocation.getCurrentPosition(async position => {
+            const pos = {
+                lat: '',
+                lon: ''
+            };
+            pos.lat = position.coords.latitude;
+            pos.lon = position.coords.longitude;
+            this.props.socket.emit('profil', {type: 'locate', user: this.state.profil, pos: pos});
+        }, error => {
+            this.props.socket.emit('profil', {type: 'locate', user: this.props.profil,  pos: pos});
+        }, {timeout: 4000});
+        ev.preventDefault();
+    }
+
     handleReport(){
         this.props.socket.emit('profil', {type: 'report', data: this.props.profil});
     }
@@ -93,12 +119,13 @@ export default class RemoteProfil extends React.Component{
         return (
             <div style={remoteContainer}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                <div style={heartContainer}>
-                    {this.renderHeart()}
-                </div>
-                <div style={this.renderScore()}>
-                    <b>{this.props.profil.respop}</b>
-                </div>
+                    <div style={heartContainer}>
+                        {this.renderHeart()}
+                    </div>
+                    {this.renderLocate()}
+                    <div style={this.renderScore()}>
+                        <b>{this.props.profil.respop}</b>
+                    </div>
                 </div>
                 <div style={{display: 'flex'}}>
                     {this.renderReport()}
@@ -123,12 +150,12 @@ let scoreContainer ={
     fontFamily: 'Verdana',
     display: 'flex',
     textAlign: 'center',
-    width: '20px',
-    height: '20px',
+    width: '45px',
+    height: '45px',
     borderRadius: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '10px',
+    marginLeft: '7px',
     fontSize: '15px'
 };
 

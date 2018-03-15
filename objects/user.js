@@ -31,11 +31,12 @@ class User {
                     });
                 }
                 else
-                    socket.emit('logpass');
+                    socket.emit('logPass');
             });
         }
-        else
-            io.sockets.emit('loglog');
+        else {
+            socket.emit('logLog');
+        }
     }
 
     static async addPopLogin(db, sess) {

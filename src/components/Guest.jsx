@@ -5,12 +5,11 @@ import ResetPassword from './ResetPassword.jsx';
 import Cookie from 'cookie';
 import Reset from './Reset.jsx';
 
-let prevState = JSON.parse(sessionStorage.getItem('GuestState'));
 
 export default class Guest extends React.Component{
     constructor (props){
         super(props);
-        this.state = prevState ? prevState : {
+        this.state = {
             login: true,
             reset: false,
             status: 'Register',
@@ -23,19 +22,28 @@ export default class Guest extends React.Component{
         this.setCookie = this.setCookie.bind(this);
     }
 
+    componentWillUnmount(){
+    }
+
     componentWillMount(){
         this.setCookie();
     }
 
     setCookie(){
+        let prevState = JSON.parse(sessionStorage.getItem('GuestState'));
         const reset = Cookie.parse(document.cookie).reset;
+        let obj = {cookieReset: reset, login: false, reset: false, status: 'Login'};
 
-        let obj = {cookieReset: reset, login: false, reset: false};
         if (!reset){
-            obj = Object.assign(obj, {cookieReset: false, login: true});
+            obj = Object.assign({} , obj, {cookieReset: false, login: true});
+        }
+
+        if (prevState){
+            obj = Object.assign({}, obj, prevState);
         }
         this.setState(obj);
     }
+
     switchButton (){
         if (this.state.reset){
             this.setState(prevState => ({
@@ -51,6 +59,7 @@ export default class Guest extends React.Component{
     }
 
     saveState(){
+        sessionStorage.removeItem('GuestState');
         sessionStorage.setItem('GuestState', JSON.stringify(this.state))
     }
 
@@ -77,7 +86,7 @@ export default class Guest extends React.Component{
             window = <ResetPassword socket={this.props.socket} submit={this.handleSubmitPassword}/>
         }
         else if (this.state.login){
-            window = <Login socket={this.props.socket} reset={this.resetPassword} submit={this.props.submit}/>
+            window = <Login socket={this.props.socket} reset={this.resetPassword} submit={this.props.submit} login={this.props.login} handleChange={this.props.handleChange}/>
         }
         else if (!this.state.cookieReset){
             window = <Register socket={this.props.socket} switch={this.switchButton}/>

@@ -75,6 +75,7 @@ class Chat {
         return new Promise((resolve, reject) => {
             let sendId = data.from.id;
             let selfId = data.to ? data.to.id : sess.data.id;
+
             let sql = "UPDATE chat SET history = JSON_MERGE((SELECT history FROM (SELECT history FROM chat " +
                 "WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)) as lol), ?) " +
                 "WHERE (user1=? AND user2=?) OR (user1=? AND user2=?)";

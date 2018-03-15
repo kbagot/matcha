@@ -3,6 +3,7 @@ const uniqid = require('uniqid');
 const likes = require('./likes.js');
 const register = require('./register.js');
 const NodeGeocoder = require('node-geocoder');
+const user = require('./user.js');
 
 class Profil {
     static mainHandler(db, sess, socket, data, io, setState, allUsers){
@@ -15,12 +16,19 @@ class Profil {
             editProfil: Profil.editProfil,
             visit: Profil.addVisit,
             block: Profil.addBlock,
-            report: Profil.addReport
+            report: Profil.addReport,
+            locate: Profil.locateUser
         };
 
         if (menu[data.type]){
             menu[data.type](db, sess, socket, data, io, setState, allUsers);
         }
+    }
+
+    static async locateUser(db, sess, socket, data, io){
+        await user.update_coords(data.pos, db, sess);
+
+        io.emit(sess.data.id, null);
     }
 
     static addReport(db, sess, socket, data, io){

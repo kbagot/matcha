@@ -8,6 +8,12 @@ import ReactLoading from 'react-loading';
 let cookie = Cookie.parse(document.cookie);
 let ip = cookie.ip;
 let socket = io(ip + ':8081');
+const Login = {
+    login: '',
+        password: '',
+        errorlogin: '',
+        errorpasswd: '',
+};
 
 export default class App extends React.Component {
     constructor(props){
@@ -17,31 +23,53 @@ export default class App extends React.Component {
             login: cookie.login,
             error: cookie.error,
             ready: cookie.ready,
-            waiting: false
+            waiting: false,
+            Login: {
+                login: '',
+                password: '',
+                errorlogin: '',
+                errorpasswd: '',
+            }
+
         };
         this.handleClick = this.handleClick.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange(ev) {
+        if (ev.target.name === "login") {
+            this.setState({
+                Login: Object.assign({}, this.state.Login, {login: ev.target.value})
+            });
+        }
+        else if (ev.target.name === "password") {
+            this.setState({
+                Login: Object.assign({}, this.state.Login, {password: ev.target.value})
+            });
+        }
     }
 
     componentDidMount (){
         socket.on("error", (err) => console.log(err));
         socket.on('refresh', data => socket.emit('refresh', data));
         socket.on('user', (user, fn) => {
-
             this.userLogin(user);
             if (fn)
                 fn();
         });
         socket.on('userDisconnect', (user) => this.userLogout());
+        socket.on('logPass', (data) => this.handleClick({Login: Object.assign({}, this.state.Login, {errorpasswd: 'error', errorlogin: ''})}));
+        socket.on('logLog', (data) => this.handleClick({Login: Object.assign({}, this.state.Login, {errorlogin: 'error', errorpasswd: ''})}));
     }
 
-    handleClick(){
-        this.setState({waiting: true});
+    handleClick(obj){
+        this.setState(prevState => (Object.assign({waiting: !prevState.waiting}, obj)));
     }
 
     userLogin(user){
         document.cookie = "login=" + true;
         document.cookie = "error=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        this.setState({['user']: user,['login']: true, ['error']: false, waiting: false});
+        this.setState({['user']: user,['login']: true, ['error']: false, waiting: false, Login: Login});
     }
 
     userLogout(){
@@ -54,10 +82,10 @@ export default class App extends React.Component {
 
         if (this.state.waiting && !this.state.login && !this.state.error){
             display = <div className="loadpage"><ReactLoading delay={0} type='cylon' color='white' width='15%' height='15px'/></div>;
-        } else if (this.state.login && !this.state.error) {
+        } else if (this.state.login && !this.state.error && !this.state.waiting) {
                 display = <User socket={socket} user={this.state.user}/>;
         } else {
-            display = <Guest socket={socket} submit={this.handleClick}/>;
+            display = <Guest handleChange={this.handleChange} socket={socket} submit={this.handleClick} login={this.state.Login}/>;
         }
 
         return (

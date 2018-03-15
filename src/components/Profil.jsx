@@ -32,7 +32,6 @@ export default class Profil extends React.Component{
                 this.props.socket.emit('profil', {type: 'getProfil', id: this.props.profil.id}, this.props.load);
             }
         });
-
     }
 
     componentWillUnmount(){

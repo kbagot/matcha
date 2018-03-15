@@ -86,7 +86,6 @@ export default class Research extends React.Component {
         window.removeEventListener("scroll", this.handleScroll);
         this.props.socket.emit('ResearchUsers', this.state, (users) => {
             let data = [];
-            console.log(users.result);
             users.result.forEach(users => {
                 data.push(users);
             });
@@ -101,7 +100,6 @@ export default class Research extends React.Component {
             }
             else {
                 if (this.state.resultLength > 0 && from === 'scroll') {
-                    console.log(data);
                     this.setState({
                         // result: [login]
                         result: [...this.state.result, ...data]
@@ -109,7 +107,6 @@ export default class Research extends React.Component {
                         window.addEventListener("scroll", this.handleScroll);
                     })
                 } else {
-                    console.log(data);
                     this.setState({
                         result: data
                         // result: [...this.state.result, ...login]
