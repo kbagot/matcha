@@ -1,5 +1,5 @@
 class Research {
-    async request(opt, db, sess, socket) {
+    async request(opt, db, sess, socket, from) {
         try {
             let [req] = await db.query("SELECT * FROM users INNER JOIN location ON location.logid = users.id WHERE users.id = ?", [sess.data.id]);
             let usertag = '';
@@ -11,14 +11,12 @@ class Research {
                     usertag += ', JSON_CONTAINS(tags, \'[\"' + elem + '\"]\') AS `' + elem + '` ';
                     ordertag += '\'' + elem  + '\'' + '+';
                 });
-
             let matchorder = '';
             if (ordertag && opt.match)
                 matchorder = 'ORDER BY ' + ordertag + '0' + ' DESC';
             if (opt.dofirstmatch) {
                 let i = 0;
                 const j = ['spop', 'tags', 'distance'];
-
                 if (req[0].orientation === 'm') {
                     if (req[0].sexe === 'M') {
                         opt['M'] = 'M';
@@ -30,7 +28,7 @@ class Research {
                         opt['bi'] = 'bi';
                         opt['f'] = 'f';
                     }
-                    else if (req[0].sexe === 'trans') {
+                    else if (req[0].sexe === 'T') {
                         opt['M'] = 'M';
                         opt['trans'] = 'trans';
                     }
@@ -45,18 +43,19 @@ class Research {
                         opt['bi'] = 'bi';
                         opt['f'] = 'f';
                     }
-                    else if (req[0].sexe === 'trans') {
+                    else if (req[0].sexe === 'T') {
                         opt['F'] = 'F';
                         opt['trans'] = 'trans';
                     }
                 } else if (req[0].orientation === 'bi') {
                     opt['M'] = 'M';
                     opt['F'] = 'F';
-                    opt['bi'] = 'bi';
                     if (req[0].sexe === 'T')
                         opt['trans'] = 'trans';
-                    else
-                        opt[req[0].sexe.toLowerCase()] = req[0].sexe.toLowerCase(); //TODO  CARE
+                    else {
+                        opt['bi'] = 'bi';
+                        opt[req[0].sexe.toLowerCase()] = req[0].sexe.toLowerCase();
+                    }
                 } else if (req[0].orientation === 'trans') {
                     if (req[0].sexe === 'T')
                         opt['trans'] = 'trans';
@@ -75,7 +74,7 @@ class Research {
             } else
                 results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
             opt.result = results;
-            socket.emit('ReceiveUsers', opt);
+            socket.emit('ReceiveUsers', opt, from);
 
         } catch (e) {
             console.log(e);
