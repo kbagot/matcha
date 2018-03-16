@@ -22,11 +22,28 @@ export default class HomeUsers extends React.Component {
         );
     }
 
+    componentDidMount() {
+        this.props.socket.on('ReceiveUsersHome', (users, name) => {
+            if (name === this.props.name) {
+                let data = [];
+                if (users) {
+                    users.forEach(users => {
+                        data.push(users);
+                    });
+                    this.setState({
+                        result: data
+                    })
+                }
+            }
+        });
+    }
+
     componentWillUnmount() {
+        this.props.socket.off('ReceiveUsersHome');
     }
 
     handleClick () {
-            this.setState({['res']: this.state.result});
+        this.setState({['res']: this.state.result});
     }
 
     componentWillReceiveProps(nextProps){
@@ -43,17 +60,7 @@ export default class HomeUsers extends React.Component {
     }
 
     refresh () {
-        this.props.socket.emit('HomeUsers', this.state.idList, (users) => {
-            let data = [];
-            if (users) {
-                users.forEach(users => {
-                    data.push(users);
-                });
-                this.setState({
-                    result: data
-                })
-            }
-        })
+        this.props.socket.emit('HomeUsers', this.state.idList, this.props.name);
     }
 
     render() {

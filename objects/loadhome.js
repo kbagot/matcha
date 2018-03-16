@@ -1,5 +1,5 @@
 class Loadhome {
-    async request(opt, fct, db, sess) {
+    async request(opt, db, sess, socket, name) {
         try {
             if (opt && opt.length !== 0) {
                 let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
@@ -28,7 +28,7 @@ class Loadhome {
                 sql = db.format(sql, inserts);
                 let [results] = await db.query(sql);
 
-                fct(results);
+                socket.emit('ReceiveUsersHome', results, name);
             }
         } catch (e) {
             console.log(e);

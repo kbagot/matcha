@@ -63,14 +63,60 @@ export default class Research extends React.Component {
         // if (this.state.dofirstmatch)
             this.refresh();
         window.addEventListener("scroll", this.handleScroll);
+
+        this.props.socket.on('ReceiveUsers', (users, from) => {
+           if (this.props.match === users.match) {
+               let data = [];
+               users.result.forEach(users => {
+                   data.push(users);
+               });
+
+               if (this.state.dofirstmatch) {
+                   users.dofirstmatch = '';  //TODO CHECK IT MOTHER GFUCKER
+                   users.result = data;
+                   users.matchtag = users.tags;
+                   this.setState(users, () => {
+                       window.addEventListener("scroll", this.handleScroll);
+                   });
+               }
+               else {
+                   if (this.state.resultLength > 0 && from === 'scroll') {
+                       this.setState({
+                           // result: [login]
+                           // result: data
+                           result: [...this.state.result, ...data]
+                       }, () => {
+                           window.addEventListener("scroll", this.handleScroll);
+                       })
+                   } else {
+                       this.setState({
+                           result: data
+                           // result: [...this.state.result, ...login]
+                       }, () => {
+                           window.addEventListener("scroll", this.handleScroll);
+                       });
+                   }
+               }
+           }
+        });
     }
 
     componentWillUnmount() {
+        this.props.socket.off('ReceiveUsers');
         window.removeEventListener("scroll", this.handleScroll);
     }
 
     componentWillReceiveProps(nextProps){
-        if (JSON.stringify(nextProps.user) !== JSON.stringify(this.props.user) || nextProps.refreshlist) {
+        let user = (() => {
+            const {notif, match, ...nPuser} = this.props.user;
+            return nPuser;
+        })();
+        let nextUser = (() => {
+            const {notif, match, ...nPuser} = nextProps.user;
+            return nPuser;
+        })();
+
+        if (JSON.stringify(user) !== JSON.stringify(nextUser) || nextProps.refreshlist) {
             if (this.state.match && this.state.match === 'match') {
                 this.setState(Object.assign({}, initial_state, {
                     ['dofirstmatch']: 'match',
@@ -101,40 +147,7 @@ export default class Research extends React.Component {
 
     refresh(from) {
         window.removeEventListener("scroll", this.handleScroll);
-        this.props.socket.emit('ResearchUsers', this.state, (users) => {
-            let data = [];
-            users.result.forEach(users => {
-                data.push(users);
-            });
-
-            if (this.state.dofirstmatch) {
-                users.dofirstmatch = '';  //TODO CHECK IT MOTHER GFUCKER
-                users.result = data;
-                users.matchtag = users.tags;
-                this.setState(users, () => {
-                    window.addEventListener("scroll", this.handleScroll);
-                });
-            }
-            else {
-                if (this.state.resultLength > 0 && from === 'scroll') {
-                    this.setState({
-                        // result: [login]
-                        // result: data
-                        result: [...this.state.result, ...data]
-                    }, () => {
-                        window.addEventListener("scroll", this.handleScroll);
-                    })
-                } else {
-                    this.setState({
-                        result: data
-                        // result: [...this.state.result, ...login]
-                    }, () => {
-                        window.addEventListener("scroll", this.handleScroll);
-                    });
-                }
-            }
-
-        });
+        this.props.socket.emit('ResearchUsers', this.state, from);
     }
 
     getTags(tags) {
