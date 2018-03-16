@@ -7,9 +7,9 @@ class Research {
             let results = [];
 
             if (req[0].tags && req[0].tags.length !== 0)
-                req[0].tags.forEach((elem) => {
+                req[0].tags.map((elem) => {
                     usertag += ', JSON_CONTAINS(tags, \'[\"' + elem + '\"]\') AS `' + elem + '` ';
-                    ordertag += '`' + elem  + '`' + '+';
+                    ordertag += '\'' + elem  + '\'' + '+';
                 });
 
             let matchorder = '';
@@ -136,7 +136,7 @@ class Research {
             }
 
             let sql = "SELECT * FROM (SELECT users.login, users.first, users.last, users.age, users.sexe, users.bio, users.orientation, " +
-                "users.tags, ROUND(users.spop / ?) AS respop, users.date, location.city, location.country, location.zipcode, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, users.spop AS spop," +
+                "users.tags, ROUND(users.spop / ?) AS respop, UNIX_TIMESTAMP(users.date) AS date, location.city, location.country, location.zipcode, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, users.spop AS spop," +
                 "(st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
                 " from users INNER JOIN location ON location.logid = users.id LEFT JOIN img ON img.userid = users.id AND (img.profil = 1) " +
