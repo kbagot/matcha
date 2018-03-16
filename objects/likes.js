@@ -78,7 +78,6 @@ class Likes {
                         sql = "UPDATE users SET spop=spop+50 WHERE id = ?";
                         await db.execute(sql, [user.id]);
                         Likes.addNotif(db, sess, 'like', user.id, id, blocked);
-                        socket.emit('user', sess.data);
                     } else if (!res.matcha && Number(res.user1) !== id) {
                         Likes.addMatchList(socket, db, sess, user, true);
                         Likes.addNotif(db, sess, 'match', user.id, id, blocked);
@@ -186,9 +185,11 @@ class Likes {
             sess.save(() => {
                 socket.emit('user', sess.data);
                 if (refresh) {
+                    const img = sess.data.img ? {imgid: sess.data.img[0].imgid} : {};
+
                     Likes.findSocket(db, user.id).then((res) => {
                         for (let elem of res) {
-                            socket.to(elem).emit('match', {type: 'addMatch', login: {login: sess.data.login, id: sess.data.id}});
+                            socket.to(elem).emit('match', {type: 'addMatch', login: Object.assign({login: sess.data.login, id: sess.data.id}, img)});
                         }
                     });
                 }

@@ -86,7 +86,7 @@ export default class Notif extends React.Component{
                 return "Vous avez perdu votre match avec " + notif.login + ".";
                 break ;
             case 'visit':
-                return notif.login + "a visite votre profil.";
+                return notif.login + " a visite votre profil.";
                 break ;
         }
     }

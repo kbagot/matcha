@@ -57,7 +57,7 @@ export default class User extends React.Component {
                 this.setState({burger: true});
         } else if (this.state.burger && !this.node2.contains(e.target))
             this.setState({burger: false});
-    }
+    };
 
     disconnectUser() {
         this.props.socket.emit("userDisconnect", {});
@@ -126,7 +126,7 @@ export default class User extends React.Component {
         return (
             <div className={"User"}>
                 <div className={"header"}>
-                    <Notif className={"Notif"} user={this.props.user} socket={this.props.socket}/><br/>
+                    <Notif className={"Notif"} user={this.props.user} socket={this.props.socket} handleClick={this.handleClick} /><br/>
                     <div className={'headercontent'}>
                         <img value={this.props.user.id} src={profilimg} onClick={this.handleClick}/>
                     </div>

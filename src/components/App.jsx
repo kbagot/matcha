@@ -34,6 +34,12 @@ export default class App extends React.Component {
         };
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.resetLogin = this.resetLogin.bind(this);
+    }
+
+
+    resetLogin(){
+        this.setState({Login: Login});
     }
 
     handleChange(ev) {
@@ -85,7 +91,7 @@ export default class App extends React.Component {
         } else if (this.state.login && !this.state.error && !this.state.waiting) {
                 display = <User socket={socket} user={this.state.user}/>;
         } else {
-            display = <Guest handleChange={this.handleChange} socket={socket} submit={this.handleClick} login={this.state.Login}/>;
+            display = <Guest reset={this.resetLogin} handleChange={this.handleChange} socket={socket} submit={this.handleClick} login={this.state.Login}/>;
         }
 
         return (

@@ -33,7 +33,9 @@ class Chat {
         if (sess.data.match){
             const index = sess.data.match.findIndex(elem => Number(elem.id) === Number(data.user.id));
 
-            sess.data.match[index].imgid = data.user.img;
+            if (sess.data.match[index]) {
+                sess.data.match[index].imgid = data.user.img;
+            }
         }
 
         if (sess.data.chat){

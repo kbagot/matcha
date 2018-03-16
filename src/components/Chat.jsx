@@ -33,6 +33,7 @@ export default class Chat extends React.Component{
         this.handleMouseOut = this.handleMouseOut.bind(this);
         this.setMaxCHat = this.setMaxCHat.bind(this);
         this.handleResize = this.handleResize.bind(this);
+        this.updateImgSocket = this.updateImgSocket.bind(this);
     }
 
     componentDidMount() {
@@ -53,6 +54,7 @@ export default class Chat extends React.Component{
            }
         });
 
+        this.updateImgSocket();
         window.addEventListener('resize', this.handleResize);
     }
 
@@ -82,16 +84,36 @@ export default class Chat extends React.Component{
         window.removeEventListener('resize', this.handleResize);
     }
 
-    componentDidUpdate(prevProps, prevState){
-        if (this.props.user.match && this.props.user.match !== prevProps.user.match){
+    updateImgSocket(){
+        if (this.props.user.match){
             this.props.user.match.forEach(elem => {
-               if (socket.indexOf(elem.login) === -1){
-                   this.props.socket.on(elem.login, (data) => {
-                       this.props.socket.emit('chat', {type: 'updateImg', user: {img: data[0].imgid, id: elem.id}});
-                   });
-                   socket.push(elem.login);
-               }
+                if (socket.indexOf(elem.login) === -1){
+                    this.props.socket.on(elem.login, (data) => {
+                        this.props.socket.emit('chat', {type: 'updateImg', user: {img: data[0].imgid, id: elem.id}});
+                    });
+                    socket.push(elem.login);
+                }
             });
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState){
+
+        this.updateImgSocket();
+
+        if (prevProps.user.match !== this.props.user.match){
+            const open = Array.from(this.state.open);
+
+            if (prevProps.user.match) {
+                prevProps.user.match.map(elem => {
+                    let index;
+
+                    if (this.props.user.match && (index = this.props.user.match.findIndex(user => Number(user.id) === Number(elem.id))) === -1) {
+                        open.splice(index, 1);
+                    }
+                });
+                this.setState({open: open})
+            }
         }
 
         if (prevState.open !== this.state.open || toScroll.length) {

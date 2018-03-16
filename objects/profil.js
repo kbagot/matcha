@@ -152,7 +152,6 @@ class Profil {
             tags: profil.tags && profil.tags !== sess.data.tags ? 'tags = ? ' : null
         };
 
-        console.log(empty[0]);
         if (empty[0]) {
             const query = "UPDATE users SET " +Object.values(sql).filter(elem => elem ).join() + "WHERE id = ?";
 

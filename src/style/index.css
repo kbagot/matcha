@@ -338,7 +338,7 @@ notif
     font-family: Verdana;
     font-size: medium;
     padding-top: 10px;
-    text-transform: capitalize;
+    /*text-transform: capitalize;*/
     color: white;
 }
 

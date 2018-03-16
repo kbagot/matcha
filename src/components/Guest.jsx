@@ -22,9 +22,6 @@ export default class Guest extends React.Component{
         this.setCookie = this.setCookie.bind(this);
     }
 
-    componentWillUnmount(){
-    }
-
     componentWillMount(){
         this.setCookie();
     }
@@ -35,7 +32,7 @@ export default class Guest extends React.Component{
         let obj = {cookieReset: reset, login: false, reset: false, status: 'Login'};
 
         if (!reset){
-            obj = Object.assign({} , obj, {cookieReset: false, login: true});
+            obj = Object.assign({} , obj, {cookieReset: false, login: true, status: 'Register'});
         }
 
         if (prevState){
@@ -45,6 +42,7 @@ export default class Guest extends React.Component{
     }
 
     switchButton (){
+        this.props.reset();
         if (this.state.reset){
             this.setState(prevState => ({
                 reset: !prevState.reset,
@@ -72,6 +70,7 @@ export default class Guest extends React.Component{
     }
 
     resetPassword (ev){
+        this.props.reset();
         this.setState(prevState => ({
             reset: true,
             ['status']: !prevState.login ? 'Register' : 'Login'
