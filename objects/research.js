@@ -1,5 +1,5 @@
 class Research {
-    async request(opt, fct, db, sess) {
+    async request(opt, db, sess, socket) {
         try {
             let [req] = await db.query("SELECT * FROM users INNER JOIN location ON location.logid = users.id WHERE users.id = ?", [sess.data.id]);
             let usertag = '';
@@ -75,7 +75,7 @@ class Research {
             } else
                 results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
             opt.result = results;
-            fct(opt);
+            socket.emit('ReceiveUsers', opt);
 
         } catch (e) {
             console.log(e);
