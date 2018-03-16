@@ -63,9 +63,45 @@ export default class Research extends React.Component {
         // if (this.state.dofirstmatch)
             this.refresh();
         window.addEventListener("scroll", this.handleScroll);
+
+        this.props.socket.on('ReceiveUsers', (users) => {
+            let data = [];
+            users.result.forEach(users => {
+                data.push(users);
+            });
+
+            if (this.state.dofirstmatch) {
+                users.dofirstmatch = '';  //TODO CHECK IT MOTHER GFUCKER
+                users.result = data;
+                users.matchtag = users.tags;
+                this.setState(users, () => {
+                    window.addEventListener("scroll", this.handleScroll);
+                });
+            }
+            else {
+                if (this.state.resultLength > 0 && from === 'scroll') {
+                    this.setState({
+                        // result: [login]
+                        // result: data
+                        result: [...this.state.result, ...data]
+                    }, () => {
+                        window.addEventListener("scroll", this.handleScroll);
+                    })
+                } else {
+                    this.setState({
+                        result: data
+                        // result: [...this.state.result, ...login]
+                    }, () => {
+                        window.addEventListener("scroll", this.handleScroll);
+                    });
+                }
+            }
+
+        });
     }
 
     componentWillUnmount() {
+        this.props.socket.off('ReceiveUsers');
         window.removeEventListener("scroll", this.handleScroll);
     }
 
@@ -101,40 +137,7 @@ export default class Research extends React.Component {
 
     refresh(from) {
         window.removeEventListener("scroll", this.handleScroll);
-        this.props.socket.emit('ResearchUsers', this.state, (users) => {
-            let data = [];
-            users.result.forEach(users => {
-                data.push(users);
-            });
-
-            if (this.state.dofirstmatch) {
-                users.dofirstmatch = '';  //TODO CHECK IT MOTHER GFUCKER
-                users.result = data;
-                users.matchtag = users.tags;
-                this.setState(users, () => {
-                    window.addEventListener("scroll", this.handleScroll);
-                });
-            }
-            else {
-                if (this.state.resultLength > 0 && from === 'scroll') {
-                    this.setState({
-                        // result: [login]
-                        // result: data
-                        result: [...this.state.result, ...data]
-                    }, () => {
-                        window.addEventListener("scroll", this.handleScroll);
-                    })
-                } else {
-                    this.setState({
-                        result: data
-                        // result: [...this.state.result, ...login]
-                    }, () => {
-                        window.addEventListener("scroll", this.handleScroll);
-                    });
-                }
-            }
-
-        });
+        this.props.socket.emit('ResearchUsers', this.state);
     }
 
     getTags(tags) {

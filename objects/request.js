@@ -41,8 +41,8 @@ class Controller {
         socket.on('profil', (data, setState) => profil.mainHandler(this.db, sess, socket, data, io, setState, allUsers));
         socket.on('Register', (data, fn) => this.register.registerHandling(data, socket, fn, allUsers, io, sess));
         socket.on('getTags', (fct) => this.getTags(fct));
-        socket.on('ResearchUsers', async (opt, fct) => await this.research.request(opt, fct, this.db, sess));
-        socket.on('HomeUsers', async (opt, fct) => await this.loadhome.request(opt, fct, this.db, sess));
+        socket.on('ResearchUsers', async (opt, fct) => await this.research.request(opt, this.db, sess, socket));
+        socket.on('HomeUsers', async (opt, fct) => await this.loadhome.request(opt, this.db, sess, socket));
 
     }
 
