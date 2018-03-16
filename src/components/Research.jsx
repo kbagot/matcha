@@ -107,7 +107,16 @@ export default class Research extends React.Component {
     }
 
     componentWillReceiveProps(nextProps){
-        if (JSON.stringify(nextProps.user) !== JSON.stringify(this.props.user) || nextProps.refreshlist) {
+        let user = (() => {
+            const {notif, match, ...nPuser} = this.props.user;
+            return nPuser;
+        })();
+        let nextUser = (() => {
+            const {notif, match, ...nPuser} = nextProps.user;
+            return nPuser;
+        })();
+
+        if (JSON.stringify(user) !== JSON.stringify(nextUser) || nextProps.refreshlist) {
             if (this.state.match && this.state.match === 'match') {
                 this.setState(Object.assign({}, initial_state, {
                     ['dofirstmatch']: 'match',
