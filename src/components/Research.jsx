@@ -79,7 +79,11 @@ export default class Research extends React.Component {
                     this.refresh();
                 });
             } else {
-                this.refresh();
+                this.setState({
+                    ['resultLength']: 0
+                }, () => {
+                    this.refresh();
+                });
             }
         }
     }

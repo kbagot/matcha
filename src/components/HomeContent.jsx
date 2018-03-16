@@ -43,13 +43,32 @@ export default class HomeContent extends React.Component {
     homecontents(name, idList) {
         let view = '';
 
-        if (this.state.visiteur && name === 'visiteur' && this.state.num !== 0)
-            idList = Object.keys(this.props.user.visits).slice(0, 4);
+        if (this.props.user.visits && name === 'visiteur')
+        {
+            let sortable = [];
+            let visits = this.props.user.visits;
 
+            for (let key in visits)
+                if (visits.hasOwnProperty(key))
+                    sortable.push([key, visits[key]]);
+            sortable.sort((a, b) => {
+                return b[1] - a[1];
+            });
+            sortable = sortable.map(x => x[0]);
+
+            if (this.state.num !== 0) {
+                idList = sortable.slice(0, 4);
+            } else {
+                idList = sortable;
+            }
+        }
+        // if (this.props.user.visits)
+// console.log(Object.keys(this.props.user.visits));
+        // console.log(this.props.user.visits);
         // console.log(idList);
         // console.log(this.props.user.visits);
-           // let lol = Object.assign({}, this.props.user.visits);
-           // cons
+        // let lol = Object.assign({}, this.props.user.visits);
+        // cons
         // console.log(lol);
         //     let lul = Object.keys(lol);
         //
@@ -63,11 +82,11 @@ export default class HomeContent extends React.Component {
                               star={this.state.star} num={this.state.num} refreshlist={this.props.refreshlist}/>;
 
         let fu = '';
-        let status = ' −';
+        let status = ' +';
         if (name === 'match')
             fu = '_ME';
         if (this.state[name])
-            status = ' +';
+            status = ' -';
 
         let morebut = !this.state.morebut ? <button name={name} onClick={this.moreClick}>{name + fu + status}</button> : '';
 
