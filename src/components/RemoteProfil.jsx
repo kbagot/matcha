@@ -96,11 +96,11 @@ export default class RemoteProfil extends React.Component{
     }
 
     handleLocate(ev){
+        const pos = {
+            lat: '',
+            lon: ''
+        };
         navigator.geolocation.getCurrentPosition(async position => {
-            const pos = {
-                lat: '',
-                lon: ''
-            };
             pos.lat = position.coords.latitude;
             pos.lon = position.coords.longitude;
             this.props.socket.emit('profil', {type: 'locate', user: this.state.profil, pos: pos});

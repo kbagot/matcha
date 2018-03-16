@@ -1,4 +1,4 @@
 {
-	 "presets": ["react", "es2017", "stage-0"],
-	 "plugins": ["transform-class-properties"]
+	 "presets": ["react", "es2017", "env", "stage-0"],
+	 "plugins": ["transform-class-properties", "transform-regenerator"]
 }

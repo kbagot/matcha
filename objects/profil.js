@@ -5,6 +5,8 @@ const register = require('./register.js');
 const NodeGeocoder = require('node-geocoder');
 const user = require('./user.js');
 
+let locate = false;
+
 class Profil {
     static mainHandler(db, sess, socket, data, io, setState, allUsers){
         const menu = {
@@ -26,9 +28,12 @@ class Profil {
     }
 
     static async locateUser(db, sess, socket, data, io){
-        await user.update_coords(data.pos, db, sess);
-
-        io.emit(sess.data.id, null);
+        if (!locate){
+            locate = true;
+            await user.update_coords(data.pos, db, sess);
+            locate = false;
+            io.emit(sess.data.id, null);
+        }
     }
 
     static addReport(db, sess, socket, data, io){
