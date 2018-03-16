@@ -113,8 +113,8 @@ class Likes {
                     } else {
                         Likes.addNotif(db, sess, 'unlike', user.id, id, blocked);
                         socket.emit('user', sess.data);
-                        sql = "UPDATE users SET spop=(spop-50) WHERE id = ?";
-                        await db.execute(sql, [user.id]);
+                        sql = "UPDATE users INNER JOIN likes ON likes.user2 = ? AND likes.user1 = ? SET spop=(spop-50)  WHERE users.id = ?";
+                        await db.execute(sql, [user.id, id, user.id]);
                         sql = "DELETE FROM likes WHERE user1=? AND user2=?";
                         await db.execute(sql, [id, user.id]);
                     }

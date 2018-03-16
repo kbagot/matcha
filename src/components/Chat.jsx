@@ -145,8 +145,7 @@ export default class Chat extends React.Component{
         if (this.props.user.chat){
             chatIndex = this.props.user.chat.findIndex(elem => elem.login === data.login.login);
         }
-
-        if (!this.props.user.chat || chatIndex === -1 || (chatIndex !== -1 && this.state.open.indexOf(data.login.id.toString()) === -1)){
+        if (!this.props.user.chat || chatIndex === -1 || (chatIndex !== -1 && this.state.open.indexOf(data.login.id) === -1)){
             this.props.socket.emit('chat', {type: 'unreadMsg', msg: data.msg, from: data.login});
         } else {
             this.props.socket.emit('chat', {type: 'readMsg', msg: data.msg, from: data.login});
@@ -439,6 +438,7 @@ export default class Chat extends React.Component{
     }
 
     render (){
+        const {a, ...lol} =  {a:12, b:13};
         let list = this.listUsers({type: "chat", data: this.props.user.match, history: this.state.history});
         let chat = this.renderChat();
         const chatLength = this.props.user.chat ? this.props.user.chat.length : 0;
