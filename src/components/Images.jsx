@@ -14,9 +14,32 @@ export default class Images extends React.Component{
         this.renderEditButtons = this.renderEditButtons.bind(this);
     }
 
+    renderTime(date){
+        const today = Math.round(Date.now() / 1000);
+        const time = {
+            minutes: {
+                count: Math.round((today - date) / 60),
+                unit: ' minutes',
+                limit: 60
+            },
+            hours: {
+                count: Math.round((today - date) / (60*60)),
+                unit: ' heures',
+                limit: 24
+            },
+            days: {
+                count: Math.round((today - date) / (60*60*24)),
+                unit: ' jours'
+            }};
+
+        const index = Object.values(time)[Object.keys(time).findIndex(elem => time[elem].count < time[elem].limit || elem === 'days')];
+
+        return index.count + index.unit;
+    }
+
     renderOnline(){
         const connected = this.props.allUsers.findIndex(elem => elem.id === this.props.profil.id);
-        const title = connected !== -1 ? "Online" : "Derniere connexion le " + this.props.profil.date;
+        const title = connected !== -1 ? "Online" : "Derniere connexion il y a " + this.renderTime(this.props.profil.date);
 
         return (
             <div title={title} style={connected === -1 ? online : Object.assign({}, online, {backgroundColor: 'rgb(51, 204, 51)'})}>

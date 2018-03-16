@@ -78,8 +78,6 @@ class Profil {
 
             if (profil[elem] === null || ['edit', 'city', 'country'].indexOf(elem) !== -1 || (elem === 'orientation' && !orientation) || (elem === 'sexe' && !sexe) || elem === 'age' && !age){
                 delete profil[elem];
-            } else if (elem === 'tags'){
-                profil[elem] = profil[elem].map((node, index) => profil[elem][index] = node.value);
             }
         });
 
@@ -87,13 +85,18 @@ class Profil {
     }
 
     static addTags(db, tags){
+        const uniqTag = [];
         if (tags) {
             tags.map(async (elem) => {
+                if (uniqTag.indexOf(elem.value.trim()) === -1){
+                    uniqTag.push(elem.value.trim());
+                }
                 if (elem.className) {
                     register.addTags(db, elem.value);
                 }
             });
         }
+        return uniqTag;
     }
 
     static async changeLocation(db, profil, sess){
@@ -135,7 +138,7 @@ class Profil {
         let empty;
 
         Profil.changeProfilPic(sess, profil.sexe);
-        Profil.addTags(db, profil.tags);
+        profil.tags = Profil.addTags(db, profil.tags);
         await Profil.changeLocation(db, data.data, sess);
         profil = Profil.cleanProfil(profil);
         empty = Object.values(profil);
@@ -149,6 +152,7 @@ class Profil {
             tags: profil.tags && profil.tags !== sess.data.tags ? 'tags = ? ' : null
         };
 
+        console.log(empty[0]);
         if (empty[0]) {
             const query = "UPDATE users SET " +Object.values(sql).filter(elem => elem ).join() + "WHERE id = ?";
 
@@ -197,7 +201,7 @@ class Profil {
     }
 
     static async sendProfil(db, sess, socket, data, io, setState){
-        const sql = "SELECT users.id, users.login, users.last, users.first, users.age, ROUND(users.spop / ?) AS respop, users.sexe, users.bio, users.orientation, users.tags, users.spop as pop, users.date, location.city, location.country, location.zipcode, likes.user1, likes.user2, img.imgid, " +
+        const sql = "SELECT users.id, users.login, users.last, users.first, users.age, ROUND(users.spop / ?) AS respop, users.sexe, users.bio, users.orientation, users.tags, users.spop as pop, UNIX_TIMESTAMP(users.date) AS date, location.city, location.country, location.zipcode, likes.user1, likes.user2, img.imgid, " +
             "(SELECT st_distance_sphere((SELECT POINT(lon, lat) FROM location WHERE logid = ?), (SELECT POINT(lon, lat) FROM location WHERE logid = ?)) / 1000) AS distance " +
             "FROM users LEFT JOIN img ON img.userid = users.id AND img.profil = '1' LEFT JOIN likes ON ((likes.user1 = ? AND likes.user2 = users.id) OR (likes.user1 = users.id AND likes.user2 = ?)) INNER JOIN location ON location.logid = users.id  WHERE users.id = ?";
         let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");

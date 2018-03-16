@@ -10,7 +10,7 @@ class User {
 
     async dologin(res, db, sess, io, socket, allUsers) {
         const [results, fields] = await db.execute(
-            "SELECT users.* , visit.visits, block.list AS block FROM `users` LEFT JOIN visit ON visit.userid = users.id LEFT JOIN block ON block.userid = users.id WHERE login=?",
+            "SELECT users.* , UNIX_TIMESTAMP(users.date) AS date, visit.visits, block.list AS block FROM `users` LEFT JOIN visit ON visit.userid = users.id LEFT JOIN block ON block.userid = users.id WHERE login=?",
             [res.login]);
 
         if (results[0]) {
@@ -125,7 +125,8 @@ class User {
 
                 [results, fields] = await db.execute(req, [sess.data.id]);
             }
-            req = "INSERT INTO location(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            req = "INSERT INTO locatio" +
+                "n(logid, lat, lon, city, country, zipcode, ip) VALUES (?, ?, ?, ?, ?, ?, ?)";
             [results, fields] = await db.execute(req, [sess.data.id, res.latitude, res.longitude, res.city, ...entry]);
             // respond();
         } catch (e) {

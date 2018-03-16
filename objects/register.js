@@ -111,17 +111,20 @@ class Register {
             try {
                     let password = await bcrypt.hash(data.password, 10);
                     let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags, age, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                    let tags = data.tags.map(val => {
+                    const uniqTag = [];
+                    let tags = data.tags.map((val, index) => {
+                        if (uniqTag.indexOf(val.value.trim()) === -1){
+                            uniqTag.push(val.value.trim());
+                        }
                         if (val.className)
                             Register.addTags(this.db, val.value);
-                            return val.value;
                     });
                     let date = new Date();
                     date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
                     data.first = data.first[0].toUpperCase() + data.last.slice(1);
                     data.last = data.last[0].toUpperCase() + data.last.slice(1);
                     await this.db.execute(req, [data.login, data.last, data.first, password, data.email, data.sexe, data.bio,
-                        data.orientation, JSON.stringify(tags), data.age, date]);
+                        data.orientation, JSON.stringify(uniqTag), data.age, date]);
 
                     req = "INSERT INTO visit VALUES ((SELECT id FROM users WHERE login = ?), '{}')";
                     this.db.execute(req, [data.login]);
