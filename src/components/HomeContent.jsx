@@ -62,24 +62,13 @@ export default class HomeContent extends React.Component {
                 idList = sortable;
             }
         }
-        // if (this.props.user.visits)
-// console.log(Object.keys(this.props.user.visits));
-        // console.log(this.props.user.visits);
-        // console.log(idList);
-        // console.log(this.props.user.visits);
-        // let lol = Object.assign({}, this.props.user.visits);
-        // cons
-        // console.log(lol);
-        //     let lul = Object.keys(lol);
-        //
-        // (lul);
         if (name === 'match')
             view = <Research socket={this.props.socket} allUsers={this.props.allUsers} user={this.props.user}
                        match={'match'} handleClick={this.props.handleClick} render={this.state.match} idList={'home'} refreshlist={this.props.refreshlist}/>;
              else if (this.state[name] || this.state.num === 4)
             view = <HomeUsers socket={this.props.socket} user={this.props.user} profil={this.props.profil}
                            idList={idList} allUsers={this.props.allUsers} handleClick={this.props.handleClick}
-                              star={this.state.star} num={this.state.num} refreshlist={this.props.refreshlist}/>;
+                              star={this.state.star} num={this.state.num} refreshlist={this.props.refreshlist} name={name}/>;
 
         let fu = '';
         let status = ' +';
