@@ -25,7 +25,6 @@ export default class Reset extends React.Component{
     }
 
     handleError(data){
-        console.log(data);
         let error = Object.assign({}, this.state.error);
 
         error[data.type + 'Error'] = data.error;
