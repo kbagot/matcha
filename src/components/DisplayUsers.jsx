@@ -10,7 +10,7 @@ export default class DisplayUsers extends React.Component {
     displayres() {
         return(
             this.props.result.map((node, key) => { //TODO CREATE COMPONENT
-                if (!this.props.user.block || !this.props.user.block.includes(node.id)) {
+                if ((!this.props.user.block || !this.props.user.block.includes(node.id)) && this.props.user.id !== node.id) {
                     let img = node.imgid;
                     let like = '';
                     let online = '';
