@@ -1,7 +1,7 @@
 class Loadhome {
     async request(opt, db, sess, socket, name) {
         try {
-            if (opt && opt.length !== 0) {
+            if (opt && opt.length !== 0 && sess.data) {
                 let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
                 let [req] = await db.query("SELECT * FROM users INNER JOIN location ON location.logid = users.id WHERE users.id = ?", [sess.data.id]);
 

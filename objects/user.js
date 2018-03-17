@@ -4,40 +4,44 @@ let rp = require('request-promise');
 let likes = require('./likes.js');
 let update = require('./update.js');
 
+
 class User {
     constructor(props) {
     }
 
     async dologin(res, db, sess, io, socket, allUsers) {
-        const [results, fields] = await db.execute(
-            "SELECT users.* , UNIX_TIMESTAMP(users.date) AS date, visit.visits, block.list AS block FROM `users` LEFT JOIN visit ON visit.userid = users.id LEFT JOIN block ON block.userid = users.id WHERE login=?",
-            [res.login]);
+            const [results, fields] = await db.execute(
+                "SELECT users.* , UNIX_TIMESTAMP(users.date) AS date, visit.visits, block.list AS block FROM `users` LEFT JOIN visit ON visit.userid = users.id LEFT JOIN block ON block.userid = users.id WHERE login= ?",
+                [res.login]);
 
-        if (results[0]) {
-            bcrypt.compare(res.password, results[0].password, async (err, succ) => {
-                if (succ) {
-                    User.update_date(db, res.login);
-                    delete results[0].password;
-                    sess.data = results[0];
-                    await User.addPopLogin(db, sess);
-                    sess.spop += 10;
-                    sess.save(async (err) => {
-                        if (err)
-                            console.log(err);
-                        await User.update_coords({lon: res.lon, lat: res.last}, db, sess);
-                        update.refreshUser(db, sess, socket)
-                            .then(() => this.updateUsers(sess, allUsers))
-                            .then(() => io.emit('allUsers', allUsers));
-                    });
-                }
-                else
-                    socket.emit('logPass');
-            });
+            if (results[0]) {
+                bcrypt.compare(res.password, results[0].password, async (err, succ) => {
+                    if (succ) {
+                        User.update_date(db, res.login);
+                        delete results[0].password;
+                        sess.data = results[0];
+                        await User.addPopLogin(db, sess);
+                        sess.spop += 10;
+                        sess.save(async (err) => {
+                            if (err)
+                                console.log(err);
+                            await User.update_coords({lon: res.lon, lat: res.last}, db, sess);
+                            update.refreshUser(db, sess, socket)
+                                .then(() => this.updateUsers(sess, allUsers))
+                                .then(() => io.emit('allUsers', allUsers));
+                        });
+                    }
+                    else {
+                        setTimeout(() => socket.emit('logPass'), 500);
+                        // socket.emit('logPass');
+                    }
+                });
+            }
+            else {
+                setTimeout(() => socket.emit('logLog'), 500);
+                // socket.emit('logLog');
+            }
         }
-        else {
-            socket.emit('logLog');
-        }
-    }
 
     static async addPopLogin(db, sess) {
         const sql = "UPDATE users SET spop = spop+10 WHERE id = ?";
