@@ -108,13 +108,14 @@ export default class Research extends React.Component {
 
     componentWillReceiveProps(nextProps){
         let user = (() => {
-            const {notif, match, ...nPuser} = this.props.user;
+            const {notif, match, visits, chat, ...nPuser} = this.props.user;
             return nPuser;
         })();
         let nextUser = (() => {
-            const {notif, match, ...nPuser} = nextProps.user;
+            const {notif, match, visits, chat, ...nPuser} = nextProps.user;
             return nPuser;
         })();
+
 
         if (JSON.stringify(user) !== JSON.stringify(nextUser) || nextProps.refreshlist) {
             if (this.state.match && this.state.match === 'match') {

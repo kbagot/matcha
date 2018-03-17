@@ -78,12 +78,13 @@ export default class User extends React.Component {
 
 
     setProfil(profil) {
-        this.setState({profil: profil,
-            refreshlist: !profil,
-        });
+        this.setState(prevState => ({profil: profil,
+            refreshlist: !prevState.refreshlist,
+        }));
     }
 
     handleClick(ev, node) {
+
         if (!node) {
             const id = Number(ev.target.getAttribute('value'));
             this.props.socket.emit('profil', {type: 'getProfil', id: id}, (data) => this.setProfil(data));
