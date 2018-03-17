@@ -9,6 +9,7 @@ let locate = false;
 
 class Profil {
     static mainHandler(db, sess, socket, data, io, setState, allUsers){
+
         const menu = {
             upload: Profil.handleUpload,
             getImages: Profil.sendImages,
@@ -201,6 +202,7 @@ class Profil {
             sess.data.img[0].profil = true;
         }
         sess.save();
+        socket.emit('user', sess.data);
         io.emit(sess.data.login, sess.data.img);
     }
 

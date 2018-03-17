@@ -145,6 +145,8 @@ class Research {
                 "AND distance < ? AND " +
                 "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
                 "AND (age >= ? AND age <= ?) AND (respop >= " + minpop + " AND respop <= " + maxpop + ")" + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
+
+            console.log(sql);
             // " (SELECT likes.user1, likes.user2, likes.matcha FROM likes, users WHERE (likes.user1 = users.id OR likes.user2 = users.id) AND users.id = " + req[0].id + ") "
             let inserts = [maxspop[0].maxspop / 100, req[0].lon, req[0].lat, opt.m, opt.f, opt.bi, opt.trans, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
