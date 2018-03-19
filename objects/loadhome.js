@@ -10,6 +10,9 @@ class Loadhome {
                 if (opt === 'star') {
                     sort = " ORDER BY pop DESC LIMIT 20";
                     inserts = [maxspop[0].maxspop / 100, req[0].lon, req[0].lat];
+                } else if (opt === 'likes'){
+                    inserts = [maxspop[0].maxspop / 100, req[0].lon, req[0].lat, req[0].id];
+                    sort = ` WHERE likes.user2 IN (?) AND matcha != 1`;
                 } else {
                     if (!opt || opt.length === 0)
                         opt = '';
@@ -27,7 +30,6 @@ class Loadhome {
                     sort;
                 sql = db.format(sql, inserts);
                 let [results] = await db.query(sql);
-
                 socket.emit('ReceiveUsersHome', results, name);
             }
         } catch (e) {

@@ -1,7 +1,9 @@
 class Research {
     async request(opt, db, sess, socket, from) {
         try {
-            let [req] = await db.query("SELECT * FROM users INNER JOIN location ON location.logid = users.id WHERE users.id = ?", [sess.data.id]);
+            let [req] = await db.query("SELECT * FROM users INNER JOIN location ON location.logid = users.id " +
+                "LEFT JOIN img ON img.userid = users.id AND (img.profil = 1) " +
+                "WHERE users.id = ?", [sess.data.id]);
             let usertag = '';
             let ordertag = '';
             let results = [];
@@ -9,67 +11,69 @@ class Research {
             if (req[0].tags && req[0].tags.length !== 0)
                 req[0].tags.map((elem) => {
                     usertag += ', JSON_CONTAINS(tags, ' + db.escape('["' + elem + '"]') + ') AS ' + db.escape(elem);
-                    ordertag += '' + db.escape(elem)  + '' + '+';
+                    ordertag += '' + db.escapeId(elem)  + '' + '+';
                 });
             let matchorder = '';
             if (ordertag && opt.match)
                 matchorder = 'ORDER BY ' + ordertag + '0' + ' DESC';
             if (opt.dofirstmatch) {
-                let i = 0;
-                const j = ['spop', 'tags', 'distance'];
-                if (req[0].orientation === 'm') {
-                    if (req[0].sexe === 'M') {
+                if (req[0].tags.length > 0 && req[0].imgid) {
+                    let i = 0;
+                    const j = ['spop', 'tags', 'distance'];
+                    if (req[0].orientation === 'm') {
+                        if (req[0].sexe === 'M') {
+                            opt['M'] = 'M';
+                            opt['bi'] = 'bi';
+                            opt['m'] = 'm';
+                        }
+                        else if (req[0].sexe === 'F') {
+                            opt['M'] = 'M';
+                            opt['bi'] = 'bi';
+                            opt['f'] = 'f';
+                        }
+                        else if (req[0].sexe === 'T') {
+                            opt['M'] = 'M';
+                            opt['trans'] = 'trans';
+                        }
+                    } else if (req[0].orientation === 'f') {
+                        if (req[0].sexe === 'M') {
+                            opt['F'] = 'F';
+                            opt['bi'] = 'bi';
+                            opt['m'] = 'm';
+                        }
+                        else if (req[0].sexe === 'F') {
+                            opt['F'] = 'F';
+                            opt['bi'] = 'bi';
+                            opt['f'] = 'f';
+                        }
+                        else if (req[0].sexe === 'T') {
+                            opt['F'] = 'F';
+                            opt['trans'] = 'trans';
+                        }
+                    } else if (req[0].orientation === 'bi') {
                         opt['M'] = 'M';
-                        opt['bi'] = 'bi';
-                        opt['m'] = 'm';
-                    }
-                    else if (req[0].sexe === 'F') {
-                        opt['M'] = 'M';
-                        opt['bi'] = 'bi';
-                        opt['f'] = 'f';
-                    }
-                    else if (req[0].sexe === 'T') {
-                        opt['M'] = 'M';
-                        opt['trans'] = 'trans';
-                    }
-                } else if (req[0].orientation === 'f'){
-                    if (req[0].sexe === 'M') {
                         opt['F'] = 'F';
-                        opt['bi'] = 'bi';
-                        opt['m'] = 'm';
+                        if (req[0].sexe === 'T')
+                            opt['trans'] = 'trans';
+                        else {
+                            opt['bi'] = 'bi';
+                            opt[req[0].sexe.toLowerCase()] = req[0].sexe.toLowerCase();
+                        }
+                    } else if (req[0].orientation === 'trans') {
+                        if (req[0].sexe === 'T')
+                            opt['trans'] = 'trans';
+                        else
+                            opt[req[0].sexe.toLowerCase()] = req[0].sexe.toLowerCase();
+                        opt['T'] = 'T';
                     }
-                    else if (req[0].sexe === 'F') {
-                        opt['F'] = 'F';
-                        opt['bi'] = 'bi';
-                        opt['f'] = 'f';
+                    opt.distance = '50';
+                    opt.tags = req[0].tags; // TODO reducteur de tags pour match
+                    opt.spop = req[0].spop;
+                    while (results.length < 25 && i < 3) {
+                        results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
+                        opt[j[i]] = '';
+                        i++;
                     }
-                    else if (req[0].sexe === 'T') {
-                        opt['F'] = 'F';
-                        opt['trans'] = 'trans';
-                    }
-                } else if (req[0].orientation === 'bi') {
-                    opt['M'] = 'M';
-                    opt['F'] = 'F';
-                    if (req[0].sexe === 'T')
-                        opt['trans'] = 'trans';
-                    else {
-                        opt['bi'] = 'bi';
-                        opt[req[0].sexe.toLowerCase()] = req[0].sexe.toLowerCase();
-                    }
-                } else if (req[0].orientation === 'trans') {
-                    if (req[0].sexe === 'T')
-                        opt['trans'] = 'trans';
-                    else
-                        opt[req[0].sexe.toLowerCase()] = req[0].sexe.toLowerCase();
-                    opt['T'] = 'T';
-                }
-                opt.distance = '50';
-                opt.tags = req[0].tags; // TODO reducteur de tags pour match
-                opt.spop = req[0].spop;
-                while (results.length < 25 && i < 3) {
-                    results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
-                    opt[j[i]] = '';
-                    i++;
                 }
             } else
                 results = await Research.doRequest(opt, db, req, usertag, ordertag, matchorder);
@@ -85,8 +89,9 @@ class Research {
         try {
             let order = '';
             let cnt = 0;
+            // console.log(opt.order);
             for (let i in opt.order) {
-                if (opt.order[i] && (opt.order.tags === 'DESC' || opt.order.tags === 'ASC')) {
+                if (opt.order[i] && (opt.order[i] === 'DESC' || opt.order[i] === 'ASC')) {
                     if (cnt === 0)
                         order += 'ORDER BY ';
                     if (cnt !== 0)
@@ -125,7 +130,7 @@ class Research {
             let maxpop = '';
             let [maxspop] = await db.query("SELECT MAX(spop) AS maxspop FROM users");
 
-            if ('spop' in opt && opt.spop) {
+            if ('spop' in opt && opt.spop && Number.isInteger(opt.spop)) {
                 minpop = Math.round(((opt.spop / maxspop[0].maxspop) * 100) - 30);
                 maxpop = Math.round(((opt.spop / maxspop[0].maxspop) * 100) + 30);
             }
@@ -133,6 +138,8 @@ class Research {
                 minpop = 0;
                 maxpop = 100;
             }
+            if (!Number.isInteger(opt.resultLength))
+                opt.resultLength = 0;
 
             let sql = "SELECT * FROM (SELECT users.login, users.first, users.last, users.age, users.sexe, users.bio, users.orientation, " +
                 "users.tags, ROUND(users.spop / ?) AS respop, UNIX_TIMESTAMP(users.date) AS date, location.city, location.country, location.zipcode, img.imgid, users.id, likes.user1, likes.user2, likes.matcha, users.spop AS spop," +
@@ -148,6 +155,7 @@ class Research {
             // " (SELECT likes.user1, likes.user2, likes.matcha FROM likes, users WHERE (likes.user1 = users.id OR likes.user2 = users.id) AND users.id = " + req[0].id + ") "
             let inserts = [maxspop[0].maxspop / 100, req[0].lon, req[0].lat, opt.m, opt.f, opt.bi, opt.trans, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
+            // console.log(sql);
             let [results] = await db.query(sql);
             return (results);
         } catch (e) {

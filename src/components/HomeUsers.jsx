@@ -47,13 +47,10 @@ export default class HomeUsers extends React.Component {
     }
 
     componentWillReceiveProps(nextProps){
-        // if (nextProps.refreshlist)
-        //     this.refresh();
         this.setState ({
             idList: nextProps.idList
         },
            () => {
-            // console.log('refresh' +  this.state.idList);
             this.refresh();
            }
         );
@@ -64,12 +61,9 @@ export default class HomeUsers extends React.Component {
     }
 
     render() {
-        // let res = this.state.result.slice(0, 4);
-        // console.log(this.props.star);
         let res = this.state.result;
-        if (this.props.idList === 'star' && this.props.num !== 0)
+        if ((this.props.idList === 'star' || this.props.idList === 'likes') && this.props.num !== 0)
             res = this.state.result.slice(0, this.props.num);
-
 
         return (
             <div className={'homeres'}>
