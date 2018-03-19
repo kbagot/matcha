@@ -55,7 +55,7 @@ class Register {
         try {
             let error = null;
             let change = data[1] === 'login' || data[1] === 'email';
-            const [rows, fields] = await this.db.execute("SELECT " + data[1] + " FROM `users` WHERE " + data[1] + " = ?", [data[0][data[1]]])
+            const [rows, fields] = await this.db.execute("SELECT " + this.db.escape(data[1]) + " FROM `users` WHERE " + this.db.escape(data[1]) + " = ?", [data[0][data[1]]]);
 
             if ([rows][0][0] && change) {
                 error = (data[1] === 'login' ? 'Ce ' : 'Cet ') + data[1] + " existe deja.";
@@ -151,10 +151,13 @@ class Register {
             password: {login: '', email: ''}
         };
         let res;
+        let error = false;
 
-        if (data[1] && functions[data[1]](data[0]) && await this.uniqueInput(values[data[1]])){
+        const valid = ['login', 'password', 'email'];
+
+        if (data[1] && functions[data[1]](data[0]) && await this.uniqueInput(values[data[1]]) && valid.indexOf(data[1]) !== -1){
             try {
-                let sql = `UPDATE users SET ${data[1]} = ? WHERE login = ?`;
+                let sql = `UPDATE users SET ${this.db.escapeId(data[1])} = ? WHERE login = ?`;
                 let password = await bcrypt.hash(data[0], 10);
 
                 await this.db.execute(sql , [data[1] === 'password'? password : data[0], data[2]]);
@@ -169,12 +172,14 @@ class Register {
                 }
                 res = {msg: data[1] + " modifie avec succes.", type: 'success'};
             } catch (e) {
+                error = true;
                 console.log(e);
             }
         } else {
             res = {error: "Desole une erreure est survenue lors de la modification, veuillez reessayer.", type:'global'};
         }
-        socket.emit('registerError', res);
+        if (!error)
+           socket.emit('registerError', res);
     }
 
     async uniqueInput(data) {
