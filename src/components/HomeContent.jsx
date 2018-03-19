@@ -10,6 +10,7 @@ export default class HomeContent extends React.Component {
             visiteur: false,
             match: false,
             star: false,
+            likes: false,
             morebut: false,
             showres: false,
             num: 4,
@@ -33,6 +34,7 @@ export default class HomeContent extends React.Component {
             ['visiteur']: false,
             ['match']: false,
             ['star']: false,
+            ['likes']: false,
             ['num']: 0,
             [e.target.name]: val
         }
@@ -110,6 +112,7 @@ export default class HomeContent extends React.Component {
             <div className={'homeContent'}>
                 {this.homecontents('star', 'star')}
                 {this.homecontents('visiteur')}
+                {this.homecontents('likes', 'likes')}
                 {this.homecontents('match')}
             </div>
         )

@@ -43,11 +43,6 @@ export default class Research extends React.Component {
         this.handleScroll = this.handleScroll.bind(this);
     }
 
-    // componentWillUpdate(nextProps, nextState)  //TODO refresh animation  maybe  on this
-
-    // componentDidUpdate(prevProps, prevState) {
-    // }
-
     componentWillMount() {
         if (this.props.match === 'match') {
             this.setState({
@@ -116,7 +111,7 @@ export default class Research extends React.Component {
             return nPuser;
         })();
         if (JSON.stringify(user) !== JSON.stringify(nextUser) || nextProps.refreshlist) {
-            if (this.state.match && this.state.match === 'match') {
+            if (this.state.match && this.state.match === 'match' && JSON.stringify(user) !== JSON.stringify(nextUser)) {
                 this.setState(Object.assign({}, initial_state, {
                     ['dofirstmatch']: 'match',
                     ['match']: 'match'
@@ -354,7 +349,7 @@ export default class Research extends React.Component {
             <div className={clasname}>
                 {resForm}
                     <DisplayUsers user={this.props.user} handleClick={this.props.handleClick}
-                                  result={res} allUsers={this.props.allUsers} idList={'home'}/>
+                                  result={res} allUsers={this.props.allUsers} idList={'home'} match={this.state.match}/>
             </div>
         );
     }

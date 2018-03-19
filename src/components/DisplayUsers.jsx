@@ -63,7 +63,10 @@ export default class DisplayUsers extends React.Component {
     }
 
     render () {
-        let val = this.props.result.length > 0 ? this.displayres() : <h2 style={{color: '#718893'}}>Aucun Résultat</h2>;
+        let val = this.props.result.length > 0 ?
+            this.displayres() : this.props.match === 'match' ?
+                <h2 style={{color: '#718893'}}>Veuillez ajouter une photo et renseigner des tags</h2> :
+                <h2 style={{color: '#718893'}}>Aucun Résultat</h2>;
 
         return (
             <div className="resList">
