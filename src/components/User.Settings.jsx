@@ -1,5 +1,7 @@
 import React from 'react';
 
+let timeOut = null;
+
 export default class UserSettings extends React.Component {
     constructor(props){
         super(props);
@@ -32,6 +34,9 @@ export default class UserSettings extends React.Component {
     }
 
     componentWillUnmount(){
+        if (timeOut){
+            clearTimeout(timeOut);
+        }
         this.props.socket.removeListener('registerError');
     }
 
@@ -63,8 +68,10 @@ export default class UserSettings extends React.Component {
                 ['error']: error
             });
         } else {
-            this.setState({success: data.msg}, () =>{
-                setTimeout(() => this.setState({success: null}), 3000);
+            this.setState({success: data.msg}, () => {
+                timeOut = setTimeout(() => {
+                    this.setState({success: null}, () => timeOut = false);
+                }, 2000);
             });
         }
     }
@@ -97,7 +104,7 @@ export default class UserSettings extends React.Component {
             <div className={"editEmail"}>
                 Email:  { edit ?
                 <form name="editEmail" onSubmit={this.handleSubmit}>
-                    <input type={"text"} name={"email"} autoComplete={"off"} value={email} onChange={this.handleChange}/>
+                    <input type={"text"} maxLength={"40"} name={"email"} autoComplete={"off"} value={email} onChange={this.handleChange}/>
                     <input type={"submit"} disabled={!valid} /> {this.state.error.emailError}
                 </form>
                 : <span> {this.props.user.email} <button name="editEmail" onClick={this.handleEdit}>Modifier</button></span>
@@ -114,7 +121,7 @@ export default class UserSettings extends React.Component {
             <div className={"editLogin"}>
                 <span>Login:</span> { edit ?
                 <form name="editLogin" onSubmit={this.handleSubmit}>
-                    <input type={"text"} name={"login"} value={login} onChange={this.handleChange}/>
+                    <input maxLength={"25"} type={"text"} name={"login"} value={login} onChange={this.handleChange}/>
                     <input type={"submit"} disabled={!valid}/> {this.state.error.loginError}
                 </form>
                 : <span> {this.props.user.login} <button name="editLogin" onClick={this.handleEdit}>Modifier</button></span>
@@ -130,7 +137,7 @@ export default class UserSettings extends React.Component {
             <div className={"editPassword"}>
                 {edit ?
                 <form name={"editPassword"} onSubmit={this.handleSubmit}>
-                    <input type={"password"} autoComplete={"password"} name={"password"} value={this.state.password} onChange={this.handleChange} />
+                    <input maxLength={"25"} type={"password"} autoComplete={"password"} name={"password"} value={this.state.password} onChange={this.handleChange} />
                     <input type={"submit"} disabled={!valid}/> {this.state.error.passwordError}
                 </form>
                 : <button name={"editPassword"} onClick={this.handleEdit}>Changer Password</button>}

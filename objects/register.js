@@ -52,55 +52,60 @@ class Register {
     }
 
     async   registerErrorHandling(data, socket){
-        try {
-            let error = null;
-            let change = data[1] === 'login' || data[1] === 'email';
-            const [rows, fields] = await this.db.execute("SELECT " + this.db.escape(data[1]) + " FROM `users` WHERE " + this.db.escape(data[1]) + " = ?", [data[0][data[1]]]);
+        const valid = ['login', 'email', 'password', 'first', 'last', 'age'].indexOf(data[1]) !== -1;
 
-            if ([rows][0][0] && change) {
-                error = (data[1] === 'login' ? 'Ce ' : 'Cet ') + data[1] + " existe deja.";
-            }
-            else {
-                let result = data[0][data[1]];
+        if (valid) {
+            try {
+                let error = null;
+                let change = data[1] === 'login' || data[1] === 'email';
+                const sql = "SELECT " + this.db.escapeId(data[1]) + " FROM `users` WHERE " + this.db.escapeId(data[1]) + " = ?";
+                const [rows, fields] = await this.db.execute(sql, [data[0][data[1]]]);
 
-                switch (data[1]) {
-                    case 'password':
-                        if (!Register.checkPassword(result)) {
-                            error = result.length ? "Minimum: 6 caracteres, 1 chiffre, 1 minuscule et 1 majuscule." : null;
-                        }
-                        break;
-                    case 'last':
-                    case 'first':
-                    case 'login':
-                        if (result.length) {
-                            if (!Register.checkLogin(result)) {
-                                if (data[1] === 'login') {
-                                    error = "Choisissez un login.";
-                                } else {
-                                    error = "Veuillez entrez votre " + (data[1] === 'last' ? 'nom' : 'prenom') + ".";
+                if ([rows][0][0] && change) {
+                    error = (data[1] === 'login' ? 'Ce ' : 'Cet ') + data[1] + " existe deja.";
+                }
+                else {
+                    let result = data[0][data[1]];
+
+                    switch (data[1]) {
+                        case 'password':
+                            if (!Register.checkPassword(result)) {
+                                error = result.length ? "Minimum: 6 caracteres, 1 chiffre, 1 minuscule et 1 majuscule." : null;
+                            }
+                            break;
+                        case 'last':
+                        case 'first':
+                        case 'login':
+                            if (result.length) {
+                                if (!Register.checkLogin(result)) {
+                                    if (data[1] === 'login') {
+                                        error = "Choisissez un login.";
+                                    } else {
+                                        error = "Veuillez entrez votre " + (data[1] === 'last' ? 'nom' : 'prenom') + ".";
+                                    }
                                 }
                             }
-                        }
-                        else {
-                            error = null;
-                        }
-                        break;
-                    case 'email':
-                        if (!Register.checkEmail(result)) {
-                            error = result.length ? "Entrez une adresse email valide." : null;
-                        }
-                        break;
-                    case 'age':
-                        if (result < 18 || result > 99){
-                            error = "Vous devez avoir entre 18 et 99 ans.";
-                        }
-                        break ;
+                            else {
+                                error = null;
+                            }
+                            break;
+                        case 'email':
+                            if (!Register.checkEmail(result)) {
+                                error = result.length ? "Entrez une adresse email valide." : null;
+                            }
+                            break;
+                        case 'age':
+                            if (result < 18 || result > 99) {
+                                error = "Vous devez avoir entre 18 et 99 ans.";
+                            }
+                            break;
+                    }
                 }
+                socket.emit('registerError', {error: error, type: data[1]});
             }
-            socket.emit('registerError', {error: error, type: data[1]});
-        }
-        catch (e) {
-            console.log(e);
+            catch (e) {
+                console.log(e);
+            }
         }
     }
 
@@ -155,7 +160,7 @@ class Register {
 
         const valid = ['login', 'password', 'email'];
 
-        if (data[1] && functions[data[1]](data[0]) && await this.uniqueInput(values[data[1]]) && valid.indexOf(data[1]) !== -1){
+        if (data[1] && functions[data[1]] && functions[data[1]](data[0]) && await this.uniqueInput(values[data[1]]) && valid.indexOf(data[1]) !== -1){
             try {
                 let sql = `UPDATE users SET ${this.db.escapeId(data[1])} = ? WHERE login = ?`;
                 let password = await bcrypt.hash(data[0], 10);
