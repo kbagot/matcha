@@ -8,8 +8,8 @@ class Research {
 
             if (req[0].tags && req[0].tags.length !== 0)
                 req[0].tags.map((elem) => {
-                    usertag += ', JSON_CONTAINS(tags, \'[\"' + elem + '\"]\') AS `' + elem + '` ';
-                    ordertag += '\'' + elem  + '\'' + '+';
+                    usertag += ', JSON_CONTAINS(tags, ' + db.escape('["' + elem + '"]') + ') AS ' + db.escape(elem);
+                    ordertag += '' + db.escape(elem)  + '' + '+';
                 });
             let matchorder = '';
             if (ordertag && opt.match)
@@ -86,7 +86,7 @@ class Research {
             let order = '';
             let cnt = 0;
             for (let i in opt.order) {
-                if (opt.order[i]) {
+                if (opt.order[i] && (opt.order.tags === 'DESC' || opt.order.tags === 'ASC')) {
                     if (cnt === 0)
                         order += 'ORDER BY ';
                     if (cnt !== 0)
@@ -139,13 +139,12 @@ class Research {
                 "(st_distance_sphere(POINT(lon, lat), POINT(?, ?)) / 1000) AS distance " + // TODO  care  maybe  have to be * looking on match result
                 usertag +
                 " from users INNER JOIN location ON location.logid = users.id LEFT JOIN img ON img.userid = users.id AND (img.profil = 1) " +
-                "LEFT JOIN likes ON ((likes.user2 = " + req[0].id + " AND likes.user1 = users.id) OR (likes.user1 = " + req[0].id + " AND likes.user2 = users.id))" +
+                "LEFT JOIN likes ON ((likes.user2 = " + db.escape(req[0].id) + " AND likes.user1 = users.id) OR (likes.user1 = " + db.escape(req[0].id) + " AND likes.user2 = users.id))" +
                 //"(user1=? AND user2=?) OR (user1=? AND user2=?)" +
                 " HAVING orientation IN (?, ?, ?, ?)" +
                 "AND distance < ? AND " +
                 "sexe IN (?, ?, ?) AND JSON_CONTAINS(tags, ?)" +
-                "AND (age >= ? AND age <= ?) AND (respop >= " + minpop + " AND respop <= " + maxpop + ")" + order + " LIMIT " + opt.resultLength + " , 25) AS res " + matchorder;
-
+                "AND (age >= ? AND age <= ?) AND (respop >= " + minpop + " AND respop <= " + maxpop + ")" + order + " LIMIT " + db.escape(opt.resultLength) + " , 25) AS res " + matchorder;
             // " (SELECT likes.user1, likes.user2, likes.matcha FROM likes, users WHERE (likes.user1 = users.id OR likes.user2 = users.id) AND users.id = " + req[0].id + ") "
             let inserts = [maxspop[0].maxspop / 100, req[0].lon, req[0].lat, opt.m, opt.f, opt.bi, opt.trans, opt.distance, opt.M, opt.F, opt.T, JSON.stringify(opt.tags), opt.min, opt.max];
             sql = db.format(sql, inserts);
