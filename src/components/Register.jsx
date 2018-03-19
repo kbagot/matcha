@@ -76,7 +76,7 @@ export default class Register extends React.Component {
         let res = [];
         let ret;
 
-        ["loginError", "passwordError", "emailError", "ageError"].forEach((elem) => {
+        ["loginError", "passwordError", "emailError", "ageError", "lastError", "firstError"].forEach((elem) => {
             res.push(this.state.error[elem] === null);
         });
 
@@ -98,13 +98,13 @@ export default class Register extends React.Component {
             <div style={registerContainer} className={'Register-Container'}>
                 <form style={form} onSubmit={this.handleSubmit}>
                     <span  style={error}>{globalError}</span>
-                    <input style={input} type="text" autoComplete={"username"} value={this.state.login} name="login" onChange={this.handleChange} placeholder={"Login*"}/> <span style={error}>{this.state.error.loginError}</span>
-                    <input style={input} type="text" autoComplete={"family-name"} value={this.state.last} name="last" onChange={this.handleChange} placeholder={"Nom*"}/> <span style={error}>{this.state.error.lastError}</span>
-                    <input style={input} type="text" autoComplete={"given-name"} value={this.state.first} name="first" onChange={this.handleChange} placeholder={"Prenom*"}/> <span style={error}>{this.state.error.firstError}</span>
+                    <input style={input} type="text" maxLength={"25"} autoComplete={"username"} value={this.state.login} name="login" onChange={this.handleChange} placeholder={"Login*"}/> <span style={error}>{this.state.error.loginError}</span>
+                    <input style={input} type="text" maxLength={"25"} autoComplete={"family-name"} value={this.state.last} name="last" onChange={this.handleChange} placeholder={"Nom*"}/> <span style={error}>{this.state.error.lastError}</span>
+                    <input style={input} type="text" maxLength={"25"} autoComplete={"given-name"} value={this.state.first} name="first" onChange={this.handleChange} placeholder={"Prenom*"}/> <span style={error}>{this.state.error.firstError}</span>
                     <input style={ageInput} type={"number"} min={"18"} max={"99"} name="age" onChange={this.handleChange} value={this.state.age} placeholder={"Age*"}/> <span style={error}>{this.state.error.ageError}</span>
-                    <input style={input} type="password" autoComplete={""} value={this.state.password} name="password" onChange={this.handleChange} placeholder={"Password*"}/> <span style={error}>{this.state.error.passwordError}</span>
-                    <input style={input} type="text" autoComplete={"email"} value={this.state.email} name="email" onChange={this.handleChange} placeholder={"Email*"}/> <span style={error}>{this.state.error.emailError}</span>
-                    <textarea style={textarea} value={this.state.bio} name="bio" onChange={this.handleChange} placeholder={"Description"}/>
+                    <input style={input} type="password" maxLength={"25"} autoComplete={""} value={this.state.password} name="password" onChange={this.handleChange} placeholder={"Password*"}/> <span style={error}>{this.state.error.passwordError}</span>
+                    <input style={input} type="text" maxLength={"40"} autoComplete={"email"} value={this.state.email} name="email" onChange={this.handleChange} placeholder={"Email*"}/> <span style={error}>{this.state.error.emailError}</span>
+                    <textarea style={textarea} value={this.state.bio} maxLength={"200"} name="bio" onChange={this.handleChange} placeholder={"Description"}/>
                     <p style={iAm}>Je suis</p>
                     <select style={selectSex} value={this.state.sexe} onChange={this.handleChange} name={"sexe"}>
                         <option value="M">Un Homme</option>

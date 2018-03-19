@@ -91,7 +91,6 @@ export default class App extends React.Component {
     render(){
         let display = '';
 
-        console.log();
         if (this.state.waiting && !this.state.login && !this.state.error){
             display = <div className="loadpage"><ReactLoading delay={0} type='cylon' color='white' width='15%' height='15px'/></div>;
         } else if (this.state.login && !this.state.error && !this.state.waiting) {
