@@ -69,7 +69,12 @@ export default class App extends React.Component {
     }
 
     handleClick(obj){
-        this.setState(prevState => (Object.assign({waiting: !prevState.waiting}, obj)));
+       let waiting = true;
+
+        if (obj){
+            waiting = false;
+        }
+        this.setState(prevState => (Object.assign({waiting: waiting}, obj)));
     }
 
     userLogin(user){
@@ -89,7 +94,7 @@ export default class App extends React.Component {
         if (this.state.waiting && !this.state.login && !this.state.error){
             display = <div className="loadpage"><ReactLoading delay={0} type='cylon' color='white' width='15%' height='15px'/></div>;
         } else if (this.state.login && !this.state.error && !this.state.waiting) {
-                display = <User socket={socket} user={this.state.user}/>;
+            display = <User socket={socket} user={this.state.user}/>;
         } else {
             display = <Guest reset={this.resetLogin} handleChange={this.handleChange} socket={socket} submit={this.handleClick} login={this.state.Login}/>;
         }

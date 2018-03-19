@@ -106,8 +106,8 @@ class Register {
 
     async registerCheck(data, socket){
         if (Register.checkAge(data.age) && Register.checkEmail(data.email) && Register.checkLogin(data.login) &&
-            Register.checkPassword(data.password) && Register.checkOrientation(data.orientation) &&
-            Register.checkSexe(data.sexe) && await this.uniqueInput(data)){
+            Register.checkPassword(data.password) && Register.checkOrientation(data.orientation) && Register.checkLogin(data.last)
+            && Register.checkLogin(data.first) && Register.checkSexe(data.sexe) && Register.checkBio(data.bio) && await this.uniqueInput(data)){
             try {
                     let password = await bcrypt.hash(data.password, 10);
                     let req = "INSERT INTO users(login, last, first, password, email, sexe, bio, orientation, tags, age, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -194,7 +194,7 @@ class Register {
 
     static async addTags(db, ntag) {
         try {
-            const [rows, fields] = await db.execute("REPLACE INTO tags (tag_name) VALUES (?);", [ntag]);
+            const [rows, fields] = await db.execute("REPLACE INTO tags (tag_name) VALUES (?);", [ntag.trim()]);
             return rows[0];
         } catch (err) {
             console.log(err);
@@ -220,28 +220,32 @@ class Register {
         }
     }
 
+    static checkBio(bio){
+        return (bio && typeof bio === typeof "" && bio.length <= 200) || bio === '';
+    }
+
     static checkSexe(sexe){
-        return ['M', 'F', 'T'].indexOf(sexe) !== -1;
+        return ['M', 'F', 'T'].indexOf(sexe) !== -1 && sexe.length === 1;
     }
 
     static checkOrientation(orientation){
-        return ['m', 'f', 'trans', 'bi'].indexOf(orientation) !== -1;
+        return ['m', 'f', 'trans', 'bi'].indexOf(orientation) !== -1 && orientation.length < 5;
     }
 
     static checkAge(age){
-        return age >= 18 && age <= 99;
+        return age >= 18 && age <= 99 && Number.isInteger(Number(age));
     }
 
     static checkEmail(str) {
-        return str.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
+        return typeof str === typeof "" && str.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/) && str.length <= 40;
     }
 
     static checkLogin(str) {
-        return str.replace(/\s/g, '').length
+        return typeof str === typeof "" && str.replace(/\s/g, '').length && str.replace(/\s/g, '').length <= 25;
     }
 
     static checkPassword(str) {
-        return str.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/);
+        return typeof str === typeof "" && str.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/) && str.length <= 25;
     }
 }
 

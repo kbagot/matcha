@@ -166,7 +166,7 @@ export default class About extends React.Component{
             )
         } else {
             return (
-                <textarea name={'bio'} style={textArea} value={this.state.bio !== null ? this.state.bio : this.props.profil.bio} onChange={this.handleChange} wrap={'hard'} />
+                <textarea name={'bio'} style={textArea} maxLength={"200"} value={this.state.bio !== null ? this.state.bio : this.props.profil.bio} onChange={this.handleChange} wrap={'hard'} />
             )
         }
     }
@@ -205,13 +205,13 @@ export default class About extends React.Component{
                     </select><br />
                 </h3>
                 <p style={firstName}>
-                    <input style={name} type="text" autoComplete={"family-name"} value={this.state.last !== null ? this.state.last : this.props.profil.last} name="last" onChange={this.handleChange}/>
-                    <input style={name} type="text" autoComplete={"given-name"} value={this.state.first !== null ? this.state.first : this.props.profil.first} name="first" onChange={this.handleChange}/>
-                    <input style={name} type={"number"} min={"18"} max={"99"} name="age" onChange={this.handleChange} value={this.state.age !== null ? this.state.age : this.props.profil.age}/>
+                    <input style={name} type="text" maxLength={"25"} placeholder={"Nom"} autoComplete={"family-name"} value={this.state.last !== null ? this.state.last : this.props.profil.last} name="last" onChange={this.handleChange}/>
+                    <input style={name} type="text" maxLength={"25"} placeholder={"Prenom"} autoComplete={"given-name"} value={this.state.first !== null ? this.state.first : this.props.profil.first} name="first" onChange={this.handleChange}/>
+                    <input style={name} type={"number"} min={"18"} max={"99"} name="age" placeholder={"Age"} onChange={this.handleChange} value={this.state.age !== null ? this.state.age : this.props.profil.age}/>
                 </p>
                 <p style={firstName}>
-                    <input style={name} type={'text'} name={'city'} value={this.state.city !== null ? this.state.city : this.props.profil.city} onChange={this.handleChange}/>
-                    <input style={name} type={'text'} name={'country'} value={this.state.country !== null ? this.state.country : this.props.profil.country} onChange={this.handleChange}/>
+                    <input style={name} type={'text'} placeholder={"Ville"} name={'city'} value={this.state.city !== null ? this.state.city : this.props.profil.city} onChange={this.handleChange}/>
+                    <input style={name} type={'text'} name={'country'} placeholder={"Pays"} value={this.state.country !== null ? this.state.country : this.props.profil.country} onChange={this.handleChange}/>
                 </p>
                 <p style={firstName}>
                     {this.renderOrientation()}

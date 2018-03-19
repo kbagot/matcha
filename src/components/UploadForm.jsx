@@ -14,20 +14,23 @@ export default class UploadForm extends React.Component{
         if (this.props.user.img.length < 5) {
             const reader = new FileReader();
             const file = ev.target.files[0];
-            const extension = ['jpg', 'jpeg', 'png'].indexOf(file.name.split('.').pop());
-            const type = ['image/jpg', 'image/jpeg', 'image/png'].indexOf(file.type) !== -1;
 
-            reader.addEventListener('load', () => {
-                let obj = {
-                    type: 'upload',
-                    ext: ['jpg', 'jpeg', 'png'][extension],
-                    img: reader.result.replace(/^data:image\/(jpeg|jpg|png);base64,/, "")
-                };
-                this.props.socket.emit('profil', obj);
-            });
+            if (file && file.name) {
+                const extension = ['jpg', 'jpeg', 'png'].indexOf(file.name.split('.').pop());
+                const type = ['image/jpg', 'image/jpeg', 'image/png'].indexOf(file.type) !== -1;
 
-            if (type && Number(file.size) <= 1000000 && extension !== -1) {
-                reader.readAsDataURL(ev.target.files[0]);
+                reader.addEventListener('load', () => {
+                    let obj = {
+                        type: 'upload',
+                        ext: ['jpg', 'jpeg', 'png'][extension],
+                        img: reader.result.replace(/^data:image\/(jpeg|jpg|png);base64,/, "")
+                    };
+                    this.props.socket.emit('profil', obj);
+                });
+
+                if (type && Number(file.size) <= 1000000 && extension !== -1) {
+                    reader.readAsDataURL(ev.target.files[0]);
+                }
             }
         }
     }

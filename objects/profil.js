@@ -9,6 +9,7 @@ let locate = false;
 
 class Profil {
     static mainHandler(db, sess, socket, data, io, setState, allUsers){
+
         const menu = {
             upload: Profil.handleUpload,
             getImages: Profil.sendImages,
@@ -76,12 +77,18 @@ class Profil {
     }
 
     static cleanProfil(profil){
-        Object.keys(profil).map(elem => {
-            const orientation = register.checkOrientation(profil[elem]);
-            const sexe = register.checkSexe(profil[elem]);
-            const age = register.checkAge(profil[elem]);
+        const checker = {
+            sexe: register.checkSexe(profil.sexe),
+            age: register.checkAge(profil.age),
+            orientation: register.checkOrientation(profil.orientation),
+            last: register.checkLogin(profil.last),
+            first: register.checkLogin(profil.first),
+            bio: register.checkBio(profil.bio),
+            tags: (profil.tags && profil.tags.length) || typeof profil.tags === typeof []
+        };
 
-            if (profil[elem] === null || ['edit', 'city', 'country'].indexOf(elem) !== -1 || (elem === 'orientation' && !orientation) || (elem === 'sexe' && !sexe) || elem === 'age' && !age){
+        Object.keys(profil).map(elem => {
+            if (profil[elem] === null || ['edit', 'city', 'country'].indexOf(elem) !== -1 || !checker[elem]){
                 delete profil[elem];
             }
         });
@@ -90,8 +97,10 @@ class Profil {
     }
 
     static addTags(db, tags){
-        const uniqTag = [];
+        let uniqTag = null;
+
         if (tags) {
+            uniqTag = [];
             tags.map(async (elem) => {
                 if (uniqTag.indexOf(elem.value.trim()) === -1){
                     uniqTag.push(elem.value.trim());
@@ -151,13 +160,13 @@ class Profil {
             age: profil.age && profil.age >=18 && profil.age <= 99 && profil.age !== sess.data.age ? ' age = ? ' : null,
             last: profil.last && profil.last !== sess.data.last? ' last = ? ' : null,
             first: profil.first && profil.first !== sess.data.first ? ' first = ? ' : null,
-            bio: profil.bio && profil.bio !== sess.data.bio ? ' bio = ? ' : null,
+            bio: (profil.bio && profil.bio !== sess.data.bio) || profil.bio === '' ? ' bio = ? ' : null,
             sexe: profil.sexe && profil.sexe !== sess.data.sexe ? ' sexe = ? ' : null,
             orientation: profil.orientation  && profil.orientation !== sess.data.orientation ? ' orientation = ? ' : null,
-            tags: profil.tags && profil.tags !== sess.data.tags ? 'tags = ? ' : null
+            tags: (profil.tags && profil.tags !== sess.data.tags) || typeof profil.tags === typeof [] ? 'tags = ? ' : null
         };
 
-        if (empty[0]) {
+        if (empty.length) {
             const query = "UPDATE users SET " +Object.values(sql).filter(elem => elem ).join() + "WHERE id = ?";
 
             await db.execute(query, [...empty, sess.data.id]);
@@ -201,6 +210,7 @@ class Profil {
             sess.data.img[0].profil = true;
         }
         sess.save();
+        socket.emit('user', sess.data);
         io.emit(sess.data.login, sess.data.img);
     }
 
