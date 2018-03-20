@@ -69,8 +69,8 @@ class Controller {
         let SQL = "SELECT login FROM users WHERE hash = ?";
         const [rows] = await this.db.execute(SQL, [hash]);
 
-        SQL= "UPDATE users SET hash = NULL WHERE hash = ?";
-        await this.db.execute(SQL, [hash]);
+        // SQL= "UPDATE users SET hash = NULL WHERE hash = ?";
+        // await this.db.execute(SQL, [hash]);
 
         if (rows[0]) {
             return rows[0].login

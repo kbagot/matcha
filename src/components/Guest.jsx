@@ -20,19 +20,34 @@ export default class Guest extends React.Component{
         this.saveState = this.saveState.bind(this);
         this.handleSubmitPassword = this.handleSubmitPassword.bind(this);
         this.setCookie = this.setCookie.bind(this);
+        this.setReset = this.setReset.bind(this);
+    }
+
+
+    componentDidMount(){
+        this.props.socket.on('hash', (data) => this.setReset(data));
     }
 
     componentWillMount(){
         this.setCookie();
     }
 
+    setReset(valid){
+        if (valid){
+            this.setState({cookieReset: true, login: false, reset: false, status: 'Login'});
+        }
+    }
+
     setCookie(){
         let prevState = JSON.parse(sessionStorage.getItem('GuestState'));
         const reset = Cookie.parse(document.cookie).reset;
-        let obj = {cookieReset: reset, login: false, reset: false, status: 'Login'};
+        let obj = {cookieReset: false, login: true, reset: false, status: 'Login'};
+
 
         if (!reset){
             obj = Object.assign({} , obj, {cookieReset: false, login: true, status: 'Register'});
+        } else {
+            this.props.socket.emit('profil', {type: 'checkHash', hash: reset});
         }
 
         if (prevState){

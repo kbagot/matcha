@@ -36,13 +36,16 @@ let     expressSession = session({
 app.use(expressSession)
     .use(cookieParser())
     .use('/img', express.static(path.join(__dirname, 'img')))
+    .use('/favicon.ico', (q, r) => {
+        r.writeHead(200, {'Content-Type': 'image/x-icon'} );
+        r.end();
+    })
     .use(express.static('./src/style'))
     .use(express.static('./objects'))
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({
         extended: true
     }))
-        // .enable('trust proxy')
     .get("/setup", async (req, res, next) => {
             let     set = new setup(await setup.createConnection());
 
@@ -74,7 +77,7 @@ app.use(expressSession)
             const login = await controller.checkHash(req.params.hash);
 
             if (login){
-                res.cookie('reset', login);
+                res.cookie('reset', req.params.hash);
             }
             res.redirect("/");
         }

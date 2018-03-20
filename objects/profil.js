@@ -20,11 +20,22 @@ class Profil {
             visit: Profil.addVisit,
             block: Profil.addBlock,
             report: Profil.addReport,
-            locate: Profil.locateUser
+            locate: Profil.locateUser,
+            checkHash: Profil.checkHash
         };
 
         if (menu[data.type]){
             menu[data.type](db, sess, socket, data, io, setState, allUsers);
+        }
+    }
+
+    static async checkHash(db, sess, socket, data, io){
+        if (data.hash){
+            const sql = "SELECT login FROM users WHERE hash = ?";
+
+            const [rows] = await db.execute(sql, [data.hash]);
+
+            socket.emit("hash", !!rows.length);
         }
     }
 

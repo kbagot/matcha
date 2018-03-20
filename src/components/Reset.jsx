@@ -40,7 +40,7 @@ export default class Reset extends React.Component{
         document.cookie = "reset=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
         if (login && this.state.password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/)){
             this.props.valid();
-            this.props.socket.emit('Register', {type: 'edit', value: [this.state.password, 'password', login]});
+            this.props.socket.emit('Register', {type: 'edit', value: [this.state.password, 'password', login , true]});
         }
     }
 

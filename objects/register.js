@@ -145,6 +145,17 @@ class Register {
     }
 
     async editSubmit(data, socket, sess, allUsers, io){
+        if (data[3]){
+            let sql = "SELECT login FROM users WHERE hash = ?";
+
+            const [rows] = await this.db.execute(sql, [data[2]]);
+
+            if (rows.length){
+                data[2] = rows[0].login;
+                sql = "UPDATE users SET hash = ? WHERE login = ?";
+                this.db.execute(sql, [null, data[2]]);
+            }
+        }
         const functions = {
             login: Register.checkLogin,
             email: Register.checkEmail,
