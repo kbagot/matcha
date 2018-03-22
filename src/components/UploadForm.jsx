@@ -28,7 +28,7 @@ export default class UploadForm extends React.Component{
                     this.props.socket.emit('profil', obj);
                 });
 
-                if (type && Number(file.size) <= 1000000 && extension !== -1) {
+                if (type && Number(file.size) <= 2000000 && extension !== -1) {
                     reader.readAsDataURL(ev.target.files[0]);
                 }
             }

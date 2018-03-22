@@ -242,7 +242,7 @@ class Profil {
     }
 
     static async handleUpload(db, sess, socket, data, io){
-        if (await fs.exists('img') && sess.data.img.length < 5){
+        if (data.img && typeof data.img === typeof '' && (data.img.length * 3 / 4) <= 2000000 && await fs.exists('img') && sess.data.img.length < 5){
             const id = `${uniqid()}.${data.ext}`;
             const sql = "INSERT INTO img SET userid= ?, imgid = ?, profil= ?";
             const profil = sess.data.img[0].imgid === `nopic.png`;
