@@ -304,6 +304,8 @@ notif
     top: 60px;
     /*position: fixed;*/
     top: 63px;
+    max-height: 150px;
+    overflow: auto;
     position: absolute;
     right: 15%;
     background-color: white;

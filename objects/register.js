@@ -245,7 +245,7 @@ class Register {
     }
 
     static checkOrientation(orientation){
-        return ['m', 'f', 'trans', 'bi'].indexOf(orientation) !== -1 && orientation.length < 5;
+        return ['m', 'f', 'trans', 'bi'].indexOf(orientation) !== -1 && orientation.length <= 5;
     }
 
     static checkAge(age){
