@@ -14,10 +14,12 @@ export default class SelectTags extends React.Component {
     }
 
     componentDidMount() {
-        this.props.socket.emit("getTags", (tags) => {
+        this.props.socket.emit("getTags");
+        this.props.socket.on("reTags", (tags) => {
             // console.log(tags);
             for (let i in tags) {
                 let newt = {value: tags[i].tag_name, label: tags[i].tag_name};
+
                 this.setState({
                     options: [...this.state.options, newt]
                 });
@@ -25,6 +27,9 @@ export default class SelectTags extends React.Component {
         })
     }
 
+    componentWillUnmount(){
+        this.props.socket.removeListener("reTags");
+    }
     componentWillMount(){
         this.setState({multiValue: this.props.tags});
     }

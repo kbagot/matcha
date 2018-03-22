@@ -40,15 +40,15 @@ class Controller {
         socket.on('userDisconnect', () => this.user.userDisconnect(io, sess, socket, allUsers));
         socket.on('profil', (data, setState) => profil.mainHandler(this.db, sess, socket, data, io, setState, allUsers));
         socket.on('Register', (data, fn) => this.register.registerHandling(data, socket, fn, allUsers, io, sess));
-        socket.on('getTags', (fct) => this.getTags(fct));
+        socket.on('getTags', () => this.getTags(socket));
         socket.on('ResearchUsers', async (opt, from) => await this.research.request(opt, this.db, sess, socket, from));
         socket.on('HomeUsers', async (opt, name) => await this.loadhome.request(opt, this.db, sess, socket, name));
 
     }
 
-    async getTags(fct) {
-        let [results, fields] = await this.db.query("SELECT tag_name FROM tags");
-        fct(results);
+    async getTags(socket) {
+        let [results] = await this.db.query("SELECT tag_name FROM tags");
+        socket.emit("reTags", results);
     }
 
     getServerIp() {
