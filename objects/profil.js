@@ -242,7 +242,9 @@ class Profil {
     }
 
     static async handleUpload(db, sess, socket, data, io){
-        if (data.img && typeof data.img === typeof '' && (data.img.length * 3 / 4) <= 2000000 && await fs.exists('img') && sess.data.img.length < 5){
+        const regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+
+        if (data.img && typeof data.img === typeof '' && regex.test(data.img) && (data.img.length * 3 / 4) <= 2000000 && await fs.exists('img') && sess.data.img.length < 5){
             const id = `${uniqid()}.${data.ext}`;
             const sql = "INSERT INTO img SET userid= ?, imgid = ?, profil= ?";
             const profil = sess.data.img[0].imgid === `nopic.png`;
