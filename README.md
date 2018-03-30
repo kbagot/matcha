@@ -20,3 +20,5 @@ Go at localhost:8080/setup
 ```
 Go at localhost:8080
 ```
+
+![Alt text](img/.example.png?raw=true)
